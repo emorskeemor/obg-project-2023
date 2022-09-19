@@ -55,6 +55,7 @@ LOCAL_APPS = [
     "apps.users.apps.UsersConfig",
     "apps.environment.apps.EnvironmentConfig",
     "apps.generator.apps.GeneratorConfig",
+    "apps.students.apps.StudentsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPLICATIONS + LOCAL_APPS
