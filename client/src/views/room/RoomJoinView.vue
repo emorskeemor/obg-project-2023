@@ -7,6 +7,19 @@
       <div style="width:500px" >
         <q-input
             filled
+            v-model="domainName"
+            label="Domain *"
+            hint="domain"
+            lazy-rules
+            type="text"
+            :rules="[val => !!val || '* Required',]"
+        >
+        <template v-slot:prepend>
+            <q-icon name="domain"/>
+        </template>
+        </q-input>
+        <q-input
+            filled
             v-model="roomCode"
             label="Room code *"
             hint="roomcode"
@@ -39,6 +52,7 @@ export default defineComponent({
   data(){
     return {
         roomCode: "",
+        domainName: ""
     }
   },
   methods:{

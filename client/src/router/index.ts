@@ -32,12 +32,6 @@ const routes: Array<RouteRecordRaw> = [
     component: LogoutView
   },
   {
-    path: '/generator',
-    name: 'generator',
-    component: GeneratorTestView,
-    beforeEnter: (to, from) => {return isLoggedIn()}
-  },
-  {
     path: '/room/join',
     name: 'room-join',
     component: RoomJoinView
@@ -50,3 +44,10 @@ const router = createRouter({
 })
 
 export default router
+
+// {
+//   path: '/room/',
+//   name: 'generator',
+//   component: GeneratorTestView,
+//   beforeEnter: (to, from) => {return isLoggedIn()}
+// },

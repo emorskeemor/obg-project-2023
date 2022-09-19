@@ -12,8 +12,8 @@
           </q-toolbar-title>
         </q-toolbar>
       </q-header>
-      <!-- main body -->
 
+      <!-- main body for router view-->
       <q-page-container>
         <router-view />
       </q-page-container>
