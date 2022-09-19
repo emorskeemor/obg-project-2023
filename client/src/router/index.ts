@@ -2,13 +2,16 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/main/HomeView.vue'
 // auth
 import PermissionDeniedView from '@/views/error/PermissionDeniedView.vue'
+import ResourceNotFound from '@/views/error/ResourceNotFound.vue'
+import ServerError from '@/views/error/ServerErrorView.vue' 
 import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
+import TeacherDashboardView from '@/views/main/TeacherDashboardView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
 
-import GeneratorTestView from '@/views/gen/GeneratorTestView.vue'
+// http://localhost:8080/user/352a7ee2-b55d-4096-a0c7-77a4e482f91d/dashboard
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,6 +23,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/401',
     name: 'E401',
     component: PermissionDeniedView
+  },
+  {
+    path: '/404',
+    name: 'E404',
+    component: ResourceNotFound
+  },
+  {
+    path: '/500',
+    name: 'E500',
+    component: ServerError
   },
   {
     path: '/auth/login',
@@ -36,6 +49,21 @@ const routes: Array<RouteRecordRaw> = [
     name: 'room-join',
     component: RoomJoinView
   },
+  {
+    path: '/user/:user_id/dashboard',
+    name: 'user-dashboard',
+    component: TeacherDashboardView,
+    beforeEnter: (to, from) => {
+      if (!isLoggedIn()){
+        return {name:"E404"}
+      }
+    },
+    
+  },
+  { 
+    path: "/:pathMatch(.*)*", 
+    component: ResourceNotFound 
+  }
 ]
 
 const router = createRouter({

@@ -1,6 +1,6 @@
 <template>
     <q-page padding>
-      <!-- <div v-if="!loggedIn">
+      <div v-if="!loggedIn">
         <h1 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
           Are you a...
         </h1>
@@ -17,27 +17,29 @@
           </q-btn>
           
         </div>
-      </div> -->
-      <!-- <div v-else>
-        <TeacherDashboard/>
-      </div> -->
-
-      <div>
-        <TeacherDashboard/>
       </div>
+      
     </q-page>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { isLoggedIn } from 'axios-jwt';
-import TeacherDashboard from '@/components/auth/TeacherDashboard.vue'
 
 export default defineComponent({
   name: 'HomeView',
-  components:{
-    TeacherDashboard
-  },
+  
+  created(){
+      this.$watch(
+      () => this.$route.params,
+      () => {        
+        this.loggedIn = isLoggedIn()
+      },
+      // fetch the data when the view is created and the data is
+      // already being observed
+      { immediate: true }
+    )
+    },
   data(){
     return {
       loggedIn: isLoggedIn()

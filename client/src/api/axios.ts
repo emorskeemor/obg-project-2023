@@ -1,5 +1,8 @@
 import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor } from 'axios-jwt'
 import axios from 'axios'
+import router from '@/router'
+
+
 
 const BASE_URL = 'http://127.0.0.1:8000/api'
 
@@ -10,12 +13,9 @@ axiosInstance.interceptors.response.use(
       return response;
   },
   async function (error) {
-      // if the backend server is inactive, alert the client
+      // if the backend server is inactive, redirect to the 500 error page
       if (error.code === 'ERR_NETWORK') {
-          alert(
-              'A server/network error occurred. ' +
-              'Sorry about this - we will get it fixed shortly.'
-          );
+          router.push({name:"E500"})
           return Promise.reject(error);
       }
 

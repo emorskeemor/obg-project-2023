@@ -10,6 +10,7 @@
           hint="email"
           lazy-rules
           type="email"
+          :error="error"
         >
         <template v-slot:prepend>
           <q-icon name="mail"/>
@@ -24,6 +25,8 @@
           lazy-rules
           type="password"
           autocomplete="on"
+          error-message="Password or username was invalid"
+          :error="error"
           >
         <template v-slot:prepend>
           <q-icon name="password"/>
@@ -37,9 +40,6 @@
             Reset
           </q-btn>
         </div>
-        <div v-if="errmsg !== ''">
-          {{errmsg}}
-        </div>
       </q-form>
     </q-page>
 
@@ -47,8 +47,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-
 import { login } from '@/api/auth'
+import jwt_decode from 'jwt-decode'
+import { DecodedTokenObject } from '@/api/interfaces'
 
 
 
@@ -58,26 +59,30 @@ export default defineComponent({
         return {
             password:"",
             email:"",
-            errmsg:''
+            error: false
         }
     },
     methods:{
         handleLogin(){
-            console.log("logging in attempt");
+            
             login({'email':this.email, 'password':this.password}).then(
-              res=>{
+              accessToken=>{
+                const decoded: DecodedTokenObject = jwt_decode(accessToken)
+                
                 console.log("successful login");
-                this.$router.push({"name":"home"})
+                this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
+                
+                
               }
             ).catch(err=>{
-              this.$data.errmsg = err.response.data.detail
+              this.$data.error = true
             })
 
         },
       handleReset(){
         this.password = ""
         this.email = ""
-        this.errmsg = ""
+        this.error = false
       }
     }
 })

@@ -5,12 +5,12 @@ import { axiosInstance } from './axios'
 const login = async (params: object) => {
   const response = await axiosInstance.post('/token', params)
   
-  // save tokens to storage
-  
   setAuthTokens({
     accessToken: response.data.access,
     refreshToken: response.data.refresh
   })
+
+  return response.data.access
 }
 
 // 5. Clear the auth tokens from localstorage

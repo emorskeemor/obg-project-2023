@@ -3,13 +3,18 @@
       <!-- header content -->
       <q-header elevated >
         <q-toolbar class="bg-teal-4 glossy" style="min-height:10vh">
-          <q-toolbar-title>
-            
-            <q-avatar size="60px">
-              <img :src="require(`./assets/logo.png`)"/>
-            </q-avatar>
-            BLOCKS
+          <q-toolbar-title >
+            <div class="absolute-center">
+              <q-avatar size="60px" @click="returnHome">
+                <img :src="require(`./assets/logo.png`)"/>
+              </q-avatar>
+              BLOCKS
+              
+            </div>
           </q-toolbar-title>
+          <div v-if="loggedIn">
+            <q-btn @click="handleLogout" class="bg-black">Logout</q-btn>
+          </div>
         </q-toolbar>
       </q-header>
 
@@ -18,16 +23,69 @@
         <router-view />
       </q-page-container>
 
+      <q-ajax-bar
+      ref="bar"
+      position="bottom"
+      color="purple-13"
+      size="10px"
+      skip-hijack 
+      />
+
       <!-- footer  -->
       <q-footer reveal elevated>
         <q-toolbar class="bg-teal-4">
           <q-btn class="bg-black" @click="$router.back()">Back</q-btn>
         </q-toolbar>
       </q-footer>
-
-
     </q-layout>
 </template>
+
+<script lang="ts">
+  import { defineComponent } from 'vue';
+  import { getAccessToken, isLoggedIn } from 'axios-jwt';
+  import { logout } from './api/auth';
+import { DecodedTokenObject } from './api/interfaces';
+import jwtDecode from 'jwt-decode';
+  
+  
+  export default defineComponent({
+    name: 'App',
+    created(){
+      this.$watch(
+      () => this.$route.params,
+      () => {
+        this.loggedIn = isLoggedIn()
+      },
+      { immediate: true }
+    )
+    },
+    data(){
+      return {
+        loggedIn: false
+      }
+    },
+    methods:{
+      handleLogout(){
+        logout()
+        this.loggedIn = false
+        this.$router.push({name:"home", force:true})
+      },
+      returnHome(){
+        const accessToken = getAccessToken()
+        if (accessToken){
+          const decoded: DecodedTokenObject = jwtDecode(accessToken)
+          this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
+          
+        }
+        else {
+          this.$router.push({name:"home"})
+
+        }
+      }
+    }
+  });
+  </script>
+  
 
 <style>
 #app {

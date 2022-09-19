@@ -1,3 +1,6 @@
+'''
+configuration for the project
+'''
 
 from pathlib import Path
 import environ
@@ -23,7 +26,8 @@ SECRET_KEY = env(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "8080"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+
 
 
 # Application definition
@@ -40,15 +44,17 @@ DJANGO_APPS = [
 
 # external apps
 THIRD_PARTY_APPLICATIONS = [
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework_simplejwt",
-    "corsheaders",
 ]
 
 # internal apps 
 LOCAL_APPS = [
-    "apps.users.apps.UsersConfig"
+    "apps.users.apps.UsersConfig",
+    "apps.environment.apps.EnvironmentConfig",
+    "apps.generator.apps.GeneratorConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPLICATIONS + LOCAL_APPS
@@ -56,6 +62,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPLICATIONS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -192,3 +200,8 @@ SIMPLE_JWT = {
 
 # declares that the DRF will use JWT for authentication
 REST_USE_JWT = True
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080'
+]
