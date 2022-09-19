@@ -1,14 +1,33 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/generator">Generator</router-link>
+    <q-layout view="lHh Lpr lFf" >
+      <!-- header content -->
+      <q-header elevated >
+        <q-toolbar class="bg-teal-4 glossy" style="min-height:10vh">
+          <q-toolbar-title>
+            
+            <q-avatar size="60px">
+              <img :src="require(`./assets/logo.png`)"/>
+            </q-avatar>
+            BLOCKS
+          </q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+      <!-- main body -->
+
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+
+      <!-- footer  -->
+      <q-footer reveal elevated>
+        <q-toolbar class="bg-teal-4">
+          
+        </q-toolbar>
+      </q-footer>
 
 
-  </nav>
-  <router-view/>
+    </q-layout>
 </template>
-
-
 
 <style>
 #app {

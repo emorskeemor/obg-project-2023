@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/misc/HomeView.vue'
+import HomeView from '../views/main/HomeView.vue'
 // auth
 import PermissionDeniedView from '@/views/error/PermissionDeniedView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
