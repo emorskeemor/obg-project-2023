@@ -4,6 +4,7 @@ import HomeView from '../views/main/HomeView.vue'
 import PermissionDeniedView from '@/views/error/PermissionDeniedView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
+import RoomJoinView from '@/views/room/RoomJoinView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
 
@@ -35,7 +36,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'generator',
     component: GeneratorTestView,
     beforeEnter: (to, from) => {return isLoggedIn()}
-  }
+  },
+  {
+    path: '/room/join',
+    name: 'room-join',
+    component: RoomJoinView
+  },
 ]
 
 const router = createRouter({

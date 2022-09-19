@@ -1,48 +1,51 @@
 
 <template>
-  <q-layout view="lHr lpR lFr" class="shadow-2 rounded-borders">
-    <q-page-container class="q-pa-xl absolute-center" style="width:500px" >
-        <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
-      <q-input
-        filled
-        v-model="username"
-        label="username *"
-        hint="Name and surname"
-        lazy-rules
-      />
-      <q-input
-        filled
-        v-model="password"
-        label="Your password *"
-        hint="password"
-        lazy-rules
-        type="password"
-        autocomplete="on"
-      />
-      <q-input
-        filled
-        v-model="email"
-        label="Your email *"
-        hint="email"
-        lazy-rules
-        type="email"
-      />
-      <div>
-        <!-- <q-btn label="Submit" type="submit" color="primary"/>
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" /> -->
-        <button type="submit">submit</button>
-        <button type="reset">reset</button>
-      </div>
-      <div v-if="errmsg !== ''">
-        {{errmsg}}
-      </div>
-    </q-form>
-    </q-page-container>
+    <q-page class="q-pa-xl absolute-center" style="width:500px" padding >
+      <h1 class="text-h2">Teacher login</h1>
+      <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
+        <q-input
+          filled
+          v-model="email"
+          label="Your email *"
+          hint="email"
+          lazy-rules
+          type="email"
+        >
+        <template v-slot:prepend>
+          <q-icon name="mail"/>
+        </template>
+        </q-input>
 
-  </q-layout>
+        <q-input
+          filled
+          v-model="password"
+          label="Your password *"
+          hint="password"
+          lazy-rules
+          type="password"
+          autocomplete="on"
+          >
+        <template v-slot:prepend>
+          <q-icon name="password"/>
+        </template>
+        </q-input>
+        <div class="q-gutter-md">
+          <q-btn class="bg-green-13 text-white" push size="20px" @click="handleLogin">
+            Login
+          </q-btn>
+          <q-btn class="bg-red-13 text-white" push size="20px" @click="handleReset">
+            Reset
+          </q-btn>
+        </div>
+        <div v-if="errmsg !== ''">
+          {{errmsg}}
+        </div>
+      </q-form>
+    </q-page>
+
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue';
 
 import { login } from '@/api/auth'
@@ -53,7 +56,6 @@ export default defineComponent({
     name:"LoginView",
     data() {
         return {
-            username:"",
             password:"",
             email:"",
             errmsg:''
@@ -62,7 +64,7 @@ export default defineComponent({
     methods:{
         handleLogin(){
             console.log("logging in attempt");
-            login({'email':this.email, 'password':this.password, 'username':this.username}).then(
+            login({'email':this.email, 'password':this.password}).then(
               res=>{
                 console.log("successful login");
                 this.$router.push({"name":"home"})
@@ -73,7 +75,6 @@ export default defineComponent({
 
         },
       handleReset(){
-        this.username = ""
         this.password = ""
         this.email = ""
         this.errmsg = ""
