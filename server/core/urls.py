@@ -26,6 +26,7 @@ urlpatterns += [
     path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     # App API endpoints
-    path('api/users/', include("apps.users.api.urls"), name="user-urls")
+    path('api/users/', include("apps.users.api.urls"), name="user-urls"),
+    path('api/rooms/', include("apps.environment.api.urls"), name="environment-urls")
 
 ]
