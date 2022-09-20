@@ -1,12 +1,17 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/main/HomeView.vue'
-// auth
+// errors
 import PermissionDeniedView from '@/views/error/PermissionDeniedView.vue'
 import ResourceNotFound from '@/views/error/ResourceNotFound.vue'
 import ServerError from '@/views/error/ServerErrorView.vue' 
+// auth
 import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
+
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
+import StudentCredentialsView from '@/views/room/StudentCredentialsView.vue'
+import ChoicesView from '@/views/room/ChoicesView.vue'
+
 import TeacherDashboardView from '@/views/main/TeacherDashboardView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
@@ -59,6 +64,16 @@ const routes: Array<RouteRecordRaw> = [
       }
     },
     
+  },
+  {
+    path: '/room/join/:domain/:code/verify',
+    name: 'room-verification',
+    component: StudentCredentialsView
+  },
+  {
+    path: '/room/:domain/:code/s/:id',
+    name: 'student-choice',
+    component: ChoicesView
   },
   { 
     path: "/:pathMatch(.*)*", 

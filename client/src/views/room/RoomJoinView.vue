@@ -12,6 +12,8 @@
             hint="domain"
             lazy-rules
             type="text"
+            :error="error"
+
             :rules="[val => !!val || '* Required',]"
         >
         <template v-slot:prepend>
@@ -25,6 +27,8 @@
             hint="roomcode"
             lazy-rules
             type="text"
+            :error="error"
+            :error-message="errorMessage"
             :rules="[
             val => !!val || '* Required',
             val => val.length === 8 || 'A code is 8 characters long',
@@ -34,7 +38,7 @@
             <q-icon name="home"/>
         </template>
         </q-input>
-        <q-btn class="bg-green-13 text-white" push size="20px">
+        <q-btn class="bg-green-13 text-white" push size="20px" @click="handleJoin">
             Join
         </q-btn>
 
@@ -44,7 +48,9 @@
 </template>
 
 <script lang="ts">
+import { axiosInstance } from '@/api/axios';
 import { defineComponent } from 'vue';
+
 
 
 export default defineComponent({
@@ -52,11 +58,33 @@ export default defineComponent({
   data(){
     return {
         roomCode: "",
-        domainName: ""
+        domainName: "",
+        error:false,
+        errorMessage:""
     }
   },
   methods:{
-
+    handleJoin(){
+      this.error = false
+      if (this.roomCode.length === 8 && this.domainName.length != 0){
+        axiosInstance.get(`rooms/v/${this.roomCode}/?domain=${this.domainName}`).then(
+          response=>{
+            if (response.status === 200) {
+              this.$router.push({name:"room-verification", params:{
+                code:this.roomCode,
+                domain:this.domainName,
+              }
+            })              
+            } else {
+              this.error = true
+              this.errorMessage = "Room with given domain not found"
+            }
+          }
+        )
+      } else{
+        this.error = true
+      }
+    }
   }
 });
 </script>
