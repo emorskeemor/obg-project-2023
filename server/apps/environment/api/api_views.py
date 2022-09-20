@@ -1,4 +1,4 @@
-from rest_framework import views, generics, permissions
+from rest_framework import viewsets, generics, permissions
 from .serializers import RoomSerializer
 
 from apps.environment.models import Room
@@ -20,3 +20,10 @@ class RoomView(generics.RetrieveAPIView):
             Room, code=code, domain=domain)
         self.check_object_permissions(self.request, obj)
         return obj        
+
+# Viewsets
+
+class RoomViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RoomSerializer
+    queryset = Room.objects.all()

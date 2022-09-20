@@ -160,7 +160,8 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # WARNING - THIS PERMISSION MUST BE SET TO 'ISUATHENTICATED' DURING PRODUCTION TO PROTECT ENDPOINTS
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
 SITE_ID = 1
