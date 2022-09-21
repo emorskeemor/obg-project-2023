@@ -69,7 +69,10 @@ class RoomViewSet(viewsets.ModelViewSet):
             email = serialized.data.get("email")
             # if the student already exists in the room, deny access
             if Student.objects.filter(room=room, email=email).exists():
-                raise exceptions.ValidationError({"detail":"A user with this email is already registered to this room"})
+                return response.Response(
+                    {"detail":"A user with this email is already registered to this room"}, 
+                    status=status.HTTP_403_FORBIDDEN
+                    )
             
             new_student = Student(
                 room=room, 
