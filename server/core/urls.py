@@ -10,6 +10,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from rest_framework.schemas import get_schema_view
+
+
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 # DJANGO SPECIFIC
@@ -30,4 +33,12 @@ urlpatterns += [
     path('api/rooms/', include("apps.environment.api.urls"), name="environment-urls"),
     path('api/students/', include("apps.students.api.urls"), name="students-urls")
 
+]
+
+urlpatterns += [
+    path('api-schema', get_schema_view(
+        title="OBG Schema endpoints",
+        description="Option Block Generator Schema",
+        version="1.0.0"
+    ), name='schema'),
 ]
