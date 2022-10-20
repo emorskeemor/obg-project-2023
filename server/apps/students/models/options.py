@@ -1,10 +1,14 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.template.defaultfilters import slugify
-
 import uuid
 
+from django.db import models
+from django.template.defaultfilters import slugify
+from django.utils.translation import gettext_lazy as _
+
+
 class Option(models.Model):
+    '''
+    represents an option that a student can choose
+    '''
     uuid = models.UUIDField(_("student uuid"), default=uuid.uuid4, editable=False)
     title = models.CharField(_("subject name"), max_length=100)
     subject_code = models.CharField(_("subject code"), max_length=2, blank=True)

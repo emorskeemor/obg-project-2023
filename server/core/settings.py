@@ -3,6 +3,7 @@ configuration for the project
 '''
 
 from pathlib import Path
+
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -168,6 +169,7 @@ SITE_ID = 1
 
 # simple JWT
 import datetime
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
@@ -207,3 +209,8 @@ REST_USE_JWT = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080'
 ]
+
+BLOCK_GENERATOR_OPTIONS = {
+    # use during debugging to read from static file
+    "data_and_options_use_static":True,
+}

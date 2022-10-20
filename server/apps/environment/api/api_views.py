@@ -1,14 +1,12 @@
-from rest_framework import viewsets, generics, permissions, response, status, exceptions
-from rest_framework.decorators import action
-
-from .serializers import RoomSerializer, RoomJoinSerializer
-
+from apps.environment.api.permissions import RoomAccessPermission
 from apps.environment.models import Room
 from apps.students.models import Student
-from apps.environment.api.permissions import RoomAccessPermission
-
 from django.shortcuts import get_object_or_404
+from rest_framework import (exceptions, generics, permissions, response,
+                            status, viewsets)
+from rest_framework.decorators import action
 
+from .serializers import RoomJoinSerializer, RoomSerializer
 
 
 class RoomView(generics.RetrieveAPIView):
@@ -17,12 +15,10 @@ class RoomView(generics.RetrieveAPIView):
     permission_classes = [RoomAccessPermission]
 
     def get_object(self):
-        print("ghsgdssd")
         return super().get_object()
 
 
     def retrieve(self, request, pk, *args, **kwargs):
-        print("dadasd")
         code = self.request.GET.get("code")
         domain = self.request.GET.get("domain")
         obj = get_object_or_404(

@@ -1,12 +1,12 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-
 import uuid
 
 from apps.environment.models import Room
+from django.conf import settings
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from .options import Option
+
 
 class Student(models.Model):
     uuid = models.UUIDField(_("student uuid"), default=uuid.uuid4, editable=False)

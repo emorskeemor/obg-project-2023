@@ -1,10 +1,14 @@
-from django.db import models
 from django.core.exceptions import ValidationError
-from .students import Student
+from django.db import models
+
 from .options import Option
+from .students import Student
+
 
 class Choice(models.Model):
-    '''Through field between student and option'''
+    '''
+    Through field between student and option
+    '''
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
 
