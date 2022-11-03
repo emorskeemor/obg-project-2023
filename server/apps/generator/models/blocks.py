@@ -11,6 +11,9 @@ from apps.students.models import Option
 
 class OptionBlocks(models.Model):
     
+    class Meta:
+        verbose_name_plural = "Option blocks"
+    
     room = models.ForeignKey(
         Room, 
         verbose_name=_("room connected to"), 
@@ -27,12 +30,12 @@ class OptionBlocks(models.Model):
         )
     
     def __str__(self) -> str:
-        return "%s[%s]" % (self.room, self.title)
+        return "%s[%s]" % (self.room.code, self.title)
     
     def save(self, *args, **kwargs):
         if self.title is None:
             self.title = "%s[%i]" % (self.title, self.pk)
-        super(OptionBlocks).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         
 class Block(models.Model):
     '''
@@ -61,4 +64,4 @@ class Block(models.Model):
         )
     
     def __str__(self) -> str:
-        return "%s[%s]" % (self.blocks.title, self.block_id)
+        return "%s[%s(%s)]" % (self.blocks.room.code, self.blocks.title, self.block_id)

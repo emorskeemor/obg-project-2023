@@ -31,3 +31,6 @@ class GenerationSettings(models.Model):
         verbose_name=_("number of option blocks")
         )
     
+    def __str__(self) -> str:
+        return "%s settings" % self.room.title
+    

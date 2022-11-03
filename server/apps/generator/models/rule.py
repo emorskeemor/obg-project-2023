@@ -1,9 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-from django.core import validators
 
-from apps.environment.models import Room
+from apps.environment.models import GenerationSettings
 from apps.students.models import Option
 
 class InsertTogether(models.Model):
@@ -15,8 +13,8 @@ class InsertTogether(models.Model):
         related_name="targets"
         )
     settings = models.ForeignKey(
-        Room, 
-        verbose_name=_(""), 
+        GenerationSettings, 
+        verbose_name=_("settings connected to"), 
         on_delete=models.CASCADE
         )
     
@@ -24,6 +22,9 @@ class InsertTogether(models.Model):
         Option, 
         verbose_name=_("target subjects")
         )
+    
+    class Meta:
+        verbose_name_plural = "Insert together"
     
     def __str__(self) -> str:
         return "%s[%s]" % (self.settings.title, self.target.title)
