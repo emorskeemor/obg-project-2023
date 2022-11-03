@@ -9,25 +9,6 @@ from rest_framework.decorators import action
 from .serializers import RoomJoinSerializer, RoomSerializer
 
 
-class RoomView(generics.RetrieveAPIView):
-    '''View for viewing the details about a room'''
-    serializer_class = RoomSerializer
-    permission_classes = [RoomAccessPermission]
-
-    def get_object(self):
-        return super().get_object()
-
-
-    def retrieve(self, request, pk, *args, **kwargs):
-        code = self.request.GET.get("code")
-        domain = self.request.GET.get("domain")
-        obj = get_object_or_404(
-            Room, code=code, domain=domain)
-        self.check_object_permissions(self.request, obj)
-        # return super().retrieve(request, *args, **kwargs)    
-        serialized = self.serializer_class(obj)
-        return response.Response(serialized.data, status=status.HTTP_200_OK)
-
 # Viewsets
 
 def get_domain(request)->str:
@@ -52,7 +33,9 @@ class RoomViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def join(self, request):
-        
+        '''
+        join a room
+        '''
         serialized = RoomJoinSerializer(data=request.data)
         if serialized.is_valid():
             code = serialized.data.get("code")

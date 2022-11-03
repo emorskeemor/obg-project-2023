@@ -6,10 +6,15 @@ from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
 
-from apps.students.models import Student, Choice, Option
+from apps.students.models import Student, Choice, Option, Requirement
 from core.utils import is_valid_uuid
 
-from .serializers import ChoiceSerializer, OptionSerializer, StudentSerializer
+from .serializers import (
+    ChoiceSerializer, 
+    OptionSerializer, 
+    StudentSerializer,
+    RequirementSerializer
+    )
 
 class StudentViewset(ModelViewSet):
     permission_classes = [AllowAny]
@@ -38,3 +43,8 @@ class OptionViewset(ModelViewSet):
     serializer_class = OptionSerializer
     queryset = Option.objects.all()
     
+class RequirementViewSet(ModelViewSet):
+    permission_classes = [AllowAny]
+
+    serializer_class = RequirementSerializer
+    queryset = Requirement.objects.all()

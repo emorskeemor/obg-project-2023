@@ -214,3 +214,6 @@ BLOCK_GENERATOR_OPTIONS = {
     # use during debugging to read from static file
     "data_and_options_use_static":True,
 }
+
+
+MAX_BLOCKS = 15
