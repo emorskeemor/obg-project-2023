@@ -5,11 +5,14 @@ from django.core import validators
 from .rooms import Room
 
 class GenerationSettings(models.Model):
-    
+    '''
+    settings for generation that can be saved
+    '''
     room = models.ForeignKey(
         Room,
         on_delete=models.CASCADE,
-        verbose_name=_("room connected to")
+        verbose_name=_("room connected to"),
+        related_name="settings"
     )
     title = models.CharField(
         max_length=50,
@@ -31,6 +34,9 @@ class GenerationSettings(models.Model):
         verbose_name=_("number of option blocks")
         )
     
+    class Meta:
+        verbose_name_plural = "Settings"
+    
     def __str__(self) -> str:
-        return "%s settings" % self.room.title
+        return "%s [%s] <settings>" % (self.room, self.title)
     

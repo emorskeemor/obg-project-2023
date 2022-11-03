@@ -10,7 +10,9 @@ from apps.students.models import Option
     
 
 class OptionBlocks(models.Model):
-    
+    '''
+    option blocks that have been saved
+    '''
     class Meta:
         verbose_name_plural = "Option blocks"
     
@@ -43,8 +45,8 @@ class Block(models.Model):
     '''
     options = models.ManyToManyField(
         Option,
-        verbose_name=_("options connected to the block")
-        
+        verbose_name=_("options connected to the block"),
+        related_name="options"
         )
     number_of_subjects = models.IntegerField(
         _("number of subjects")
@@ -60,7 +62,8 @@ class Block(models.Model):
     blocks = models.ForeignKey(
         OptionBlocks, 
         verbose_name=_("set of blocks connected to"), 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="blocks"
         )
     
     def __str__(self) -> str:
