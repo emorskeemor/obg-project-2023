@@ -60,7 +60,7 @@ class StudentViewset(ModelViewSet):
                 room=room
                 )
             available_options = choices.options.all()
-            for options in clean_options(options, get("max_opts_per_student")):
+            for options in clean_options(data, get("max_opts_per_student")):
                 first_name = None,
                 last_name = None
                 if get("generate_dummy_names"):
