@@ -99,6 +99,21 @@ class OptionViewset(ModelViewSet):
     serializer_class = OptionSerializer
     queryset = Option.objects.all()
     
+    @action(methods=["post"], detail=False)
+    def dump(self, request):
+        options = parse_memory_handler(request, "options", slice(2))
+        new_options = []
+        for name, code in options:
+            new_options.append(
+                Option(
+                    title=name,
+                    subject_code=code
+                )
+            )
+        Option.objects.bulk_create(new_options)
+            
+        return Response({"message":"successful"}, status=status.HTTP_200_OK)
+    
 class RequirementViewSet(ModelViewSet):
     '''views to access requirements that are linked to options'''
     permission_classes = [AllowAny]
