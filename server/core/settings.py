@@ -171,7 +171,8 @@ SITE_ID = 1
 import datetime
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=10),
+    # WARNING CHANGE ACCESS TOKEN TO BE SHORTER
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=100),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,

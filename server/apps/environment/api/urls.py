@@ -11,8 +11,8 @@ from rest_framework.routers import DefaultRouter
 urlpatterns = []
 
 router = DefaultRouter()
-router.register(r'r', RoomViewSet, basename="rooms")
-router.register(r'o', AvailableOptionsViewset, basename="available-options")
-router.register(r's', SettingsViewset, basename="settings")
+router.register(r'rooms', RoomViewSet, basename="rooms")
+router.register(r'opts', AvailableOptionsViewset, basename="available-options")
+router.register(r'settings', SettingsViewset, basename="settings")
 
 urlpatterns += router.urls

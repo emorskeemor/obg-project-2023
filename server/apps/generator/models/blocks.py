@@ -15,6 +15,7 @@ class OptionBlocks(models.Model):
     '''
     class Meta:
         verbose_name_plural = "Option blocks"
+        unique_together = ("room", "title")
     
     room = models.ForeignKey(
         Room, 

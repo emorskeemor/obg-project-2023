@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core import validators
+from django.core import validators, exceptions
 from django.conf import settings
 
 from .rooms import Room
@@ -55,13 +55,9 @@ class GenerationSettings(models.Model):
         default=5000
         )
     
-    
-    
-    
-    
     class Meta:
         verbose_name_plural = "Settings"
+        unique_together = ("room", "title")
     
     def __str__(self) -> str:
         return "%s [%s] <settings>" % (self.room, self.title)
-    

@@ -34,12 +34,12 @@ class StudentViewset(ModelViewSet):
     queryset = Student.objects.all()
     lookup_field = "uuid"
 
-    def retrieve(self, request, uuid):
-        if not is_valid_uuid(uuid):
-            raise exceptions.ValidationError("uuid invalid")
-        obj = get_object_or_404(Student, uuid=uuid)
-        serializer = StudentSerializer(obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # def retrieve(self, request, uuid):
+    #     if not is_valid_uuid(uuid):
+    #         raise exceptions.ValidationError("uuid invalid")
+    #     obj = get_object_or_404(Student, uuid=uuid)
+    #     serializer = StudentSerializer(obj)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ChoiceViewset(ModelViewSet):
