@@ -17,8 +17,9 @@ from .serializers import (
     StudentSerializer,
     )
 
+# implmeneted the serializer here to avoid circular imports
 class RequirementSerializer(ModelSerializer):
-    
+    '''serialize requirement objects'''
     room = RoomSerializer(read_only=True)
     option = OptionSerializer(read_only=True)
     
@@ -27,6 +28,7 @@ class RequirementSerializer(ModelSerializer):
         fields = "__all__"
 
 class StudentViewset(ModelViewSet):
+    '''views to access students'''
     permission_classes = [AllowAny]
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
@@ -39,21 +41,23 @@ class StudentViewset(ModelViewSet):
         serializer = StudentSerializer(obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
 
 class ChoiceViewset(ModelViewSet):
+    '''views to access choices'''
     permission_classes = [AllowAny]
 
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
 
 class OptionViewset(ModelViewSet):
+    '''views to access options'''
     permission_classes = [AllowAny]
 
     serializer_class = OptionSerializer
     queryset = Option.objects.all()
     
 class RequirementViewSet(ModelViewSet):
+    '''views to access requirements that are linked to options'''
     permission_classes = [AllowAny]
 
     serializer_class = RequirementSerializer

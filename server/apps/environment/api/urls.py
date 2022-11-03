@@ -13,6 +13,6 @@ urlpatterns = []
 router = DefaultRouter()
 router.register(r'r', RoomViewSet, basename="rooms")
 router.register(r'o', AvailableOptionsViewset, basename="available-options")
-router.register(r's', RoomViewSet, basename="settings")
+router.register(r's', SettingsViewset, basename="settings")
 
 urlpatterns += router.urls

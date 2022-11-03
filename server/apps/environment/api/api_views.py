@@ -18,9 +18,6 @@ from .serializers import (
     AvailableOptionsSerializer,
 )
 
-
-
-
 # Viewsets
 
 def get_domain(request)->str:
@@ -30,6 +27,7 @@ def get_domain(request)->str:
     return domain
 
 class RoomViewSet(viewsets.ModelViewSet):
+    '''views to view rooms and join them'''
     permission_classes = [permissions.AllowAny]
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
@@ -84,11 +82,13 @@ class RoomViewSet(viewsets.ModelViewSet):
             )
 
 class SettingsViewset(viewsets.ModelViewSet):
+    '''views to access settings'''
     permission_classes = [permissions.AllowAny]
     serializer_class = SettingsSerializer
     queryset = GenerationSettings.objects.all()
     
 class AvailableOptionsViewset(viewsets.ModelViewSet):
+    '''views to access available options per room'''
     permission_classes = [permissions.AllowAny]
     serializer_class = AvailableOptionsSerializer
     queryset = AvalilableOptions.objects.all()
