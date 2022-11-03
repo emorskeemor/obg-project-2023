@@ -44,6 +44,7 @@ class StudentViewset(ModelViewSet):
     @action(detail=False, methods=["post"])
     def dump(self, request):
         
+        raise Exception("saftey")
         data = parse_memory_handler(request, "data", slice(4))
         
         serialized = StudentDumpSerializer(data=request.data)
@@ -60,8 +61,9 @@ class StudentViewset(ModelViewSet):
                 room=room
                 )
             available_options = choices.options.all()
-            for options in clean_options(data, get("max_opts_per_student")):
-                first_name = None,
+            for options in data:
+                options = clean_options(options, max_opts=get("max_opts_per_student"))
+                first_name = None
                 last_name = None
                 if get("generate_dummy_names"):
                     first_name = names.get_first_name()
