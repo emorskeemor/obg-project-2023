@@ -10,6 +10,7 @@ class AvalilableOptionsAdmin(admin.ModelAdmin):
     inlines = [
         OptionsInLine,
     ]
+    fields = ("title","room")
 
 admin.site.register(Room)
 admin.site.register(GenerationSettings)

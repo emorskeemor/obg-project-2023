@@ -67,4 +67,4 @@ class Block(models.Model):
         )
     
     def __str__(self) -> str:
-        return "%s[%s(%s)]" % (self.blocks.room.code, self.blocks.title, self.block_id)
+        return "%s[%s] <%s>" % (self.blocks.title, self.block_id, self.blocks.room.code, )

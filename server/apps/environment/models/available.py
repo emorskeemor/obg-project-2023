@@ -22,5 +22,8 @@ class AvalilableOptions(models.Model):
         related_name="rooms"
         )
     
+    class Meta:
+        verbose_name_plural = "available options"
+    
     def __str__(self) -> str:
         return "%s [%s] <opts>" % (self.room, self.title)

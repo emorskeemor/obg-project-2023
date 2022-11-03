@@ -5,7 +5,9 @@ from apps.environment.models import GenerationSettings
 from apps.students.models import Option
 
 class InsertTogether(models.Model):
-    
+    '''
+    defines subjects that must be inserted when a target subject is inserted
+    '''
     target = models.ForeignKey(
         Option, 
         verbose_name=_("target option"), 

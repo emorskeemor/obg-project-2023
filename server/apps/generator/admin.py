@@ -10,6 +10,7 @@ class BlockAdmin(admin.ModelAdmin):
     inlines = [
         OptionsInLine,
     ]
+    fields = ("number_of_subjects", "block_id", "blocks")
 
 
 admin.site.register(InsertTogether)
