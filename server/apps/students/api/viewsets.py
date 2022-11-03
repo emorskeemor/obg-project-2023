@@ -17,8 +17,11 @@ from .serializers import (
     ChoiceSerializer, 
     OptionSerializer, 
     StudentSerializer,
-    DumpCSVSerializer
+    StudentDumpSerializer
     )
+
+
+from blocks.core.pregenerate.clean import clean_options
 
 import names
 # implmeneted the serializer here to avoid circular imports
@@ -39,11 +42,11 @@ class StudentViewset(ModelViewSet):
     lookup_field = "uuid"
 
     @action(detail=False, methods=["post"])
-    def dummy_dump(self, request):
+    def dump(self, request):
         
         data = parse_memory_handler(request, "data", slice(4))
         
-        serialized = DumpCSVSerializer(data=request.data)
+        serialized = StudentDumpSerializer(data=request.data)
         if serialized.is_valid():
             get = serialized.data.get
             room_code = get("room_code")
@@ -57,8 +60,7 @@ class StudentViewset(ModelViewSet):
                 room=room
                 )
             available_options = choices.options.all()
-            
-            for options in data:
+            for options in clean_options(options, get("max_opts_per_student")):
                 first_name = None,
                 last_name = None
                 if get("generate_dummy_names"):
@@ -67,6 +69,7 @@ class StudentViewset(ModelViewSet):
                 student = Student.objects.create(
                     first_name=first_name,
                     last_name=last_name,
+                    room=room,
                     email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
                 )
                 student.save()
@@ -102,6 +105,7 @@ class OptionViewset(ModelViewSet):
     @action(methods=["post"], detail=False)
     def dump(self, request):
         options = parse_memory_handler(request, "options", slice(2))
+        raise Exception("saftey")
         new_options = []
         for name, code in options:
             new_options.append(

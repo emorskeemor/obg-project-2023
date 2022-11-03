@@ -54,7 +54,6 @@ class GeneratorViewSet(ViewSet):
             # we are either get the data from a csv or we are reading from a database
             # and converting it to a dictionary
             if cleaned("data_using_csv") is True:
-                
                 data = parse_memory_handler(request, "data_csv", slice(4))
                 data = populate_with_id([clean_options(opts, 4) for opts in data])
             else:
@@ -74,6 +73,7 @@ class GeneratorViewSet(ViewSet):
             for option in student.options.all():
                 options.append(option.subject_code)
             data[student.uuid] = options
+        return data
 
       
 class OptionBlockViewset(ModelViewSet):
