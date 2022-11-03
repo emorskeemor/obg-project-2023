@@ -36,7 +36,7 @@ class PregenerateSerializer(serializers.Serializer):
     
     settings_title = serializers.CharField()
     room_code = serializers.CharField()
-    options = serializers.IntegerField()
+    options_title = serializers.CharField()
     
     data_using_csv = serializers.BooleanField(default=False, required=False)
     subjects_using_csv = serializers.BooleanField(default=False, required=False)

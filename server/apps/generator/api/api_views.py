@@ -16,7 +16,7 @@ from apps.generator.models import (
 )
 
 from apps.environment.models import (
-    GenerationSettings,Room
+    GenerationSettings,Room, AvalilableOptions
 )
 
 from apps.students.models import (
@@ -26,6 +26,7 @@ from apps.students.models import (
 from django.shortcuts import get_object_or_404  
 
 from blocks.core.pregenerate.clean import populate_with_id, clean_options
+from blocks.core.generate.utility import Generator
 
 from core.utils import parse_memory_handler
 
@@ -36,10 +37,7 @@ class GeneratorViewSet(ViewSet):
     @action(detail=False, methods=["post"])
     def run(self, request):
         # shortcut
-        
-        
         serialized = PregenerateSerializer(data=request.data)
-        
         
         if serialized.is_valid(raise_exception=True):
             
@@ -58,11 +56,31 @@ class GeneratorViewSet(ViewSet):
                 data = populate_with_id([clean_options(opts, 4) for opts in data])
             else:
                 data = self.students_from_room(room)
-                    
-                    
-            print(data)
                 
-        return response.Response({"data":"successs"}, status=status.HTTP_200_OK)
+            choices = get_object_or_404(
+                AvalilableOptions,
+                room=room, 
+                title=cleaned("options_title")
+                )
+            options = [opt.subject_code for opt in choices.options.all()]
+            
+            generator = Generator(
+                data=data,
+                options_codes=options,
+                num_blocks=settings.blocks,
+                class_size=settings.class_size
+            )          
+            generator.prepare_generation()       
+            generator.run_generation()
+            generator.evaluate_generation(
+            ebacc={
+                "humanities":["Hi","Ge"],
+                "languages":["Fr","Sn"],
+                "sciences":["Sc","Co"],
+                "vocational":["Co","Bs","Eg","Cb"]
+            })
+                                    
+            return response.Response(generator.best_evaluation.blocks, status=status.HTTP_200_OK)
     
     @staticmethod
     def students_from_room(room):
