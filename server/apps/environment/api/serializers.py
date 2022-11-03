@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from apps.environment.models import Room
+from apps.environment.models import Room, AvalilableOptions, GenerationSettings
+
+from apps.students.api.serializers import OptionSerializer
 
 class RoomSerializer(serializers.ModelSerializer):
 
@@ -19,3 +21,20 @@ class RoomJoinSerializer(serializers.Serializer):
 
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
+
+class AvailableOptionsSerializer(serializers.ModelSerializer):
+    
+    room = RoomSerializer(read_only=True)
+    options = OptionSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = AvalilableOptions
+        fields = "__all__"
+        
+class SettingsSerializer(serializers.ModelSerializer):
+    
+    room = RoomSerializer(read_only=True)
+    
+    class Meta:
+        moedl = GenerationSettings
+        fields = "__all__"

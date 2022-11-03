@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status, exceptions
@@ -7,14 +8,23 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 
 from apps.students.models import Student, Choice, Option, Requirement
+from apps.environment.api.serializers import RoomSerializer
 from core.utils import is_valid_uuid
 
 from .serializers import (
     ChoiceSerializer, 
     OptionSerializer, 
     StudentSerializer,
-    RequirementSerializer
     )
+
+class RequirementSerializer(ModelSerializer):
+    
+    room = RoomSerializer(read_only=True)
+    option = OptionSerializer(read_only=True)
+    
+    class Meta:
+        model = Requirement
+        fields = "__all__"
 
 class StudentViewset(ModelViewSet):
     permission_classes = [AllowAny]

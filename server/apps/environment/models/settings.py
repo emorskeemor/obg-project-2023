@@ -57,6 +57,8 @@ class GenerationSettings(models.Model):
     
     
     
+    
+    
     class Meta:
         verbose_name_plural = "Settings"
     

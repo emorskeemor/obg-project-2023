@@ -1,12 +1,24 @@
 from apps.environment.api.permissions import RoomAccessPermission
-from apps.environment.models import Room
+from apps.environment.models import (
+    Room, 
+    GenerationSettings, 
+    AvalilableOptions
+    )
 from apps.students.models import Student
+
 from django.shortcuts import get_object_or_404
-from rest_framework import (exceptions, generics, permissions, response,
+from rest_framework import (exceptions, permissions, response,
                             status, viewsets)
 from rest_framework.decorators import action
 
-from .serializers import RoomJoinSerializer, RoomSerializer
+from .serializers import (
+    RoomSerializer,
+    RoomJoinSerializer,
+    SettingsSerializer,
+    AvailableOptionsSerializer,
+)
+
+
 
 
 # Viewsets
@@ -70,3 +82,13 @@ class RoomViewSet(viewsets.ModelViewSet):
         return response.Response(
             {"detail": first_error}, status=status.HTTP_400_BAD_REQUEST
             )
+
+class SettingsViewset(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = SettingsSerializer
+    queryset = GenerationSettings.objects.all()
+    
+class AvailableOptionsViewset(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = AvailableOptionsSerializer
+    queryset = AvalilableOptions.objects.all()

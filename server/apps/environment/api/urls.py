@@ -1,12 +1,18 @@
 from django.urls import path
 
-from .api_views import RoomViewSet
+from .api_views import (
+    RoomViewSet, 
+    AvailableOptionsViewset, 
+    SettingsViewset
+    )
 
 from rest_framework.routers import DefaultRouter
 
 urlpatterns = []
 
 router = DefaultRouter()
-router.register(r'v', RoomViewSet, basename="rooms")
+router.register(r'r', RoomViewSet, basename="rooms")
+router.register(r'o', AvailableOptionsViewset, basename="available-options")
+router.register(r's', RoomViewSet, basename="settings")
 
 urlpatterns += router.urls
