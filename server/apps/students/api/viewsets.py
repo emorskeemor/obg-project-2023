@@ -9,14 +9,18 @@ from django.shortcuts import get_object_or_404
 
 from apps.students.models import Student, Choice, Option, Requirement
 from apps.environment.api.serializers import RoomSerializer
-from core.utils import is_valid_uuid
+from apps.environment.models import Room, AvalilableOptions
+
+from core.utils import parse_memory_handler
 
 from .serializers import (
     ChoiceSerializer, 
     OptionSerializer, 
     StudentSerializer,
+    DumpCSVSerializer
     )
 
+import names
 # implmeneted the serializer here to avoid circular imports
 class RequirementSerializer(ModelSerializer):
     '''serialize requirement objects'''
@@ -34,12 +38,51 @@ class StudentViewset(ModelViewSet):
     queryset = Student.objects.all()
     lookup_field = "uuid"
 
-    # def retrieve(self, request, uuid):
-    #     if not is_valid_uuid(uuid):
-    #         raise exceptions.ValidationError("uuid invalid")
-    #     obj = get_object_or_404(Student, uuid=uuid)
-    #     serializer = StudentSerializer(obj)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    @action(detail=False, methods=["post"])
+    def dummy_dump(self, request):
+        
+        data = parse_memory_handler(request, "data", slice(4))
+        
+        serialized = DumpCSVSerializer(data=request.data)
+        if serialized.is_valid():
+            get = serialized.data.get
+            room_code = get("room_code")
+            room = get_object_or_404(Room, code=room_code)
+            
+            options_using = get("options_using")
+            
+            choices = get_object_or_404(
+                AvalilableOptions,
+                title=options_using,
+                room=room
+                )
+            available_options = choices.options.all()
+            
+            for options in data:
+                first_name = None,
+                last_name = None
+                if get("generate_dummy_names"):
+                    first_name = names.get_first_name()
+                    last_name = names.get_last_name()
+                student = Student.objects.create(
+                    first_name=first_name,
+                    last_name=last_name,
+                    email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
+                )
+                student.save()
+                
+                student_choices = []
+                for option_code in options:
+                    option = available_options.get(subject_code=option_code)
+                    new_choice = Choice(
+                        option=option,
+                        student =student
+                    )
+                    student_choices.append(new_choice)
+                Choice.objects.bulk_create(student_choices)
+                
+                
+            return Response({"message":"successful"}, status=status.HTTP_200_OK)
 
 
 class ChoiceViewset(ModelViewSet):

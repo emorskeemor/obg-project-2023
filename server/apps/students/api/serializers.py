@@ -22,3 +22,8 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = "__all__"
 
+class DumpCSVSerializer(serializers.Serializer):
+    
+    options_using = serializers.CharField()
+    room_code = serializers.CharField()
+    generate_dummy_names = serializers.BooleanField(default=False)
