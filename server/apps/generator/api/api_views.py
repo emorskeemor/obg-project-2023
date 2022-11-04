@@ -21,10 +21,10 @@ from apps.environment.models import (GenerationSettings,Room, AvalilableOptionCh
 from apps.students.models import (Choice, Student, Option)
 # django
 from django.shortcuts import get_object_or_404  
+from django.conf import settings
 # option block api
 from blocks.core.pregenerate.clean import populate_with_id, clean_options
 from blocks.core.generate.utility import Generator
-from blocks.core.postgenerate.evaluation import EvaluationUtility
 
 from core.utils import csv_file_to_list
 
@@ -45,7 +45,7 @@ class GerneratorViewset(ViewSet):
         if serialized.is_valid(raise_exception=True):
             cleaned_get = serialized.data.get
             room = get_object_or_404(Room, code=cleaned_get("room_code"))
-            settings = get_object_or_404(
+            room_settings = get_object_or_404(
                 GenerationSettings, 
                 room=room,
                 title=cleaned_get("settings_title")
@@ -54,7 +54,7 @@ class GerneratorViewset(ViewSet):
             # and converting it to a dictionary
             if cleaned_get("data_using_csv") is True:
                 options = file_to_list(
-                    name="data_csv", 
+                    name=settings.DATA_CSV_LOOKUP, 
                     slice_func=slice(4),
                     hints="each line requires n items of 'subject_codes'"
                 )
@@ -69,7 +69,7 @@ class GerneratorViewset(ViewSet):
             override = {}
             if cleaned_get("subjects_using_csv"):
                 options = file_to_list(
-                    name="options_csv", 
+                    name=settings.OPTIONS_CSV_LOOKUP, 
                     slice_func=1,
                     hints="each line requires two items 'subject_name','subject_code'"
                 )
@@ -94,20 +94,24 @@ class GerneratorViewset(ViewSet):
             generator = Generator(
                 data=data,
                 options_codes=options,
-                num_blocks=settings.blocks,
-                class_size=settings.class_size
+                num_blocks=room_settings.blocks,
+                class_size=room_settings.class_size
             )          
             generator.prepare_generation()     
+            generator.update_classes_per_subject(**override)
             # handle double inserts
-            double_inserts = InsertTogether.objects.filter(settings=settings)
+            double_inserts = InsertTogether.objects.filter(settings=room_settings)
             for double_insert in double_inserts:
                 target = double_insert.target.subject_code
                 targets = [
                     opt["subject_code"] for opt in double_insert.targets.values("subject_code")
                     ]
                 generator.insert_together(target,*targets)
-            generator.debug()
-            generator.update_classes_per_subject(**override)
+            if settings.GENERATOR_DEBUG:
+                generator.debug()
+            if settings.NODE_DEBUG:
+                generator.node.debug = True
+            
             generator.run_generation()
             generator.evaluate_generation(
                 ebacc={

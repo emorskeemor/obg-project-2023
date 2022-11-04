@@ -2,13 +2,17 @@ from apps.environment.api.permissions import RoomAccessPermission
 from apps.environment.models import (
     Room, 
     GenerationSettings, 
-    AvalilableOptionChoices
+    AvalilableOptionChoices,
+    AvailableOption
     )
 from apps.students.models import Student
 
 from django.shortcuts import get_object_or_404
-from rest_framework import (exceptions, permissions, response,
-                            status, viewsets)
+
+from rest_framework import (
+    exceptions, permissions, 
+    response, status, viewsets
+    )
 from rest_framework.decorators import action
 
 from .serializers import (
@@ -16,6 +20,7 @@ from .serializers import (
     RoomJoinSerializer,
     SettingsSerializer,
     AvailableOptionChoiceSerializer,
+    AvailableOptionSerializer
 )
 
 # Viewsets
@@ -27,8 +32,9 @@ def get_domain(request)->str:
     return domain
 
 class RoomViewSet(viewsets.ModelViewSet):
-    '''views to view rooms and join them'''
-    permission_classes = [permissions.AllowAny]
+    '''
+    views to view rooms and join them
+    '''
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
 
@@ -44,7 +50,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def join(self, request):
         '''
-        join a room
+        allow a student to join a room
         '''
         serialized = RoomJoinSerializer(data=request.data)
         if serialized.is_valid():
@@ -82,13 +88,23 @@ class RoomViewSet(viewsets.ModelViewSet):
             )
 
 class SettingsViewset(viewsets.ModelViewSet):
-    '''views to access settings'''
-    permission_classes = [permissions.AllowAny]
+    '''
+    views to access settings
+    '''
     serializer_class = SettingsSerializer
     queryset = GenerationSettings.objects.all()
     
-class AvailableOptionsViewset(viewsets.ModelViewSet):
-    '''views to access available options per room'''
-    permission_classes = [permissions.AllowAny]
+class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
+    '''
+    views to access available options per room
+    '''
     serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()
+    
+class AvailableOptionViewset(viewsets.ModelViewSet):
+    '''
+    views to access available option that is 
+    linked to available option choices
+    '''
+    serializer_class = AvailableOptionSerializer
+    queryset = AvailableOption.objects.all() 

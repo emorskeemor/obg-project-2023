@@ -216,8 +216,16 @@ BLOCK_GENERATOR_OPTIONS = {
     "data_and_options_use_static":True,
 }
 
-
+# option block options
 MAX_BLOCKS = 15
 DEFAULT_CLASS_SIZE = 24
 MAX_CLASS_SIZE = 40
 ROOM_CODE_LENGTH = 8
+
+# API Files options
+DATA_CSV_LOOKUP = "data"
+OPTIONS_CSV_LOOKUP = "options"
+
+# generator settings (DEBUG ONLY)
+NODE_DEBUG = False
+GENERATOR_DEBUG = False
