@@ -14,18 +14,22 @@ from drf_yasg import openapi
 
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
+# define schema
 schema_view = get_schema_view(
    openapi.Info(
-      title="Snippets API",
+      title="Option Block Generator API",
       default_version='v1',
-      description="Test description",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
+      description=(
+          "Computer science project 2022-2023. "
+          "API endpoints in detail"
+          ),
+      contact=openapi.Contact(email="rome.salarda@edgbarrowschool.co.uk"),
       license=openapi.License(name="BSD License"),
    ),
    public=True,
-   permission_classes=[permissions.AllowAny],
+   permission_classes=[permissions.IsAdminUser],
 )
+
 # DJANGO SPECIFIC
 urlpatterns = [
     # admin
@@ -44,17 +48,13 @@ urlpatterns += [
     path('api-rooms/', include("apps.environment.api.urls"), name="environment-urls"),
     path('api-students/', include("apps.students.api.urls"), name="students-urls"),
     path('api-generate/', include("apps.generator.api.urls"), name="generator-urls"),
-    # schema
-    re_path(r'^api-schema(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^api-schema/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api-schema-docs/', schema_view.with_ui('redoc', cache_timeout=0)),
     
 ]
 
-# urlpatterns += [
-#     path('api-schema', get_schema_view(
-#         title="OBG Schema endpoints",
-#         description="Option Block Generator Schema",
-#         version="1.0.0"
-#     ), name='schema'),
-# ]
+# SCHEMA ENDPOINTS
+urlpatterns += [
+    re_path(r'^api-schema(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^api-schema/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('', schema_view.with_ui('redoc', cache_timeout=0)),
+    
+]
