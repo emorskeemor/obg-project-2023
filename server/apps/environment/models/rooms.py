@@ -32,6 +32,13 @@ class Room(models.Model):
         null=True
     )
     public = models.BooleanField(_("room is public"), default=False)
+    email_domain = models.CharField(
+        max_length=50,
+        verbose_name=_("email domain match"),
+        help_text="student email domain name must match this domain",
+        blank=True,
+        null=True
+    )
 
     def __str__(self) -> str:
         return "%s/%s" % (self.domain, self.code)

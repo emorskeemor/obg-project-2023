@@ -19,14 +19,18 @@ from .serializers import (
     StudentSerializer,
     StudentDumpSerializer
     )
+from .pagination import StudentPaginator
 
 
 from blocks.core.pregenerate.clean import clean_options
 
 import names
+
 # implmeneted the serializer here to avoid circular imports
 class RequirementSerializer(ModelSerializer):
-    '''serialize requirement objects'''
+    '''
+    serialize requirement 
+    '''
     room = RoomSerializer(read_only=True)
     option = OptionSerializer(read_only=True)
     
@@ -35,17 +39,22 @@ class RequirementSerializer(ModelSerializer):
         fields = "__all__"
 
 class StudentViewset(ModelViewSet):
-    '''views to access students'''
+    '''
+    views to access students
+    '''
     permission_classes = [AllowAny]
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
+    pagination_class = StudentPaginator
+    
     lookup_field = "uuid"
 
-    @action(detail=False, methods=["post"])
-    def dump(self, request):
-        
+    @action(detail=False, methods=["post"], url_path="dump-students")
+    def dump_students(self, request):
+        '''
+        dump csv containing student options into the database
+        '''
         data = csv_file_to_list(request, "data", slice(4))
-        
         serialized = StudentDumpSerializer(data=request.data)
         if serialized.is_valid():
             get = serialized.data.get
@@ -91,21 +100,28 @@ class StudentViewset(ModelViewSet):
 
 
 class ChoiceViewset(ModelViewSet):
-    '''views to access choices'''
+    '''
+    views to access choices
+    '''
     permission_classes = [AllowAny]
 
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
 
 class OptionViewset(ModelViewSet):
-    '''views to access options'''
+    '''
+    views to access options
+    '''
     permission_classes = [AllowAny]
 
     serializer_class = OptionSerializer
     queryset = Option.objects.all()
     
-    @action(methods=["post"], detail=False)
-    def dump(self, request):
+    @action(methods=["post"], detail=False, url_path="dump-options")
+    def dump_options(self, request):
+        '''
+        dump csv containing options and option codes to the database
+        '''
         options = csv_file_to_list(request, "options", slice(2))
         new_options = []
         for name, code in options:
@@ -120,7 +136,9 @@ class OptionViewset(ModelViewSet):
         return Response({"message":"successful"}, status=status.HTTP_200_OK)
     
 class RequirementViewSet(ModelViewSet):
-    '''views to access requirements that are linked to options'''
+    '''
+    views to access requirements that are linked to options
+    '''
     permission_classes = [AllowAny]
 
     serializer_class = RequirementSerializer

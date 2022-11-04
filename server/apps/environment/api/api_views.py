@@ -62,6 +62,11 @@ class RoomViewSet(viewsets.ModelViewSet):
                 domain=serialized.data.get("domain")
                 )
             email = serialized.data.get("email")
+            _, domain = email.split("@")
+            if domain != room.email_domain:
+                raise exceptions.ValidationError(
+                    {"error":"domain email did not match required domain name"}
+                )
             # if the student already exists in the room, deny access
             if Student.objects.filter(room=room, email=email).exists():
                 return response.Response(

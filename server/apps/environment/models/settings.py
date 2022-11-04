@@ -51,7 +51,7 @@ class GenerationSettings(models.Model):
         )
     
     lesson_cost = models.FloatField(
-        _("cost per lesson"),
+        verbose_name=_("cost per lesson"),
         default=5000
         )
     
