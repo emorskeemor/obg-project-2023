@@ -34,8 +34,8 @@ class AvailableOption(models.Model):
         )
     
     class Meta:
-        verbose_name_plural = "Available Option"
+        verbose_name_plural = "Available Options"
         unique_together = ("option", "option_choices")
     
     def __str__(self) -> str:
-        return "%s/%s" % (self.option, self.option_choices)
+        return "[%s]|%s|" % (self.option.title, self.option_choices.title)

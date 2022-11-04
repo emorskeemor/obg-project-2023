@@ -27,7 +27,7 @@ urlpatterns += [
     path('api-users/', include("apps.users.api.urls"), name="user-urls"),
     path('api-rooms/', include("apps.environment.api.urls"), name="environment-urls"),
     path('api-students/', include("apps.students.api.urls"), name="students-urls"),
-    path('api-generate/', include("apps.generator.api.urls"), name="students-urls"),
+    path('api-generate/', include("apps.generator.api.urls"), name="generator-urls"),
 
 ]
 

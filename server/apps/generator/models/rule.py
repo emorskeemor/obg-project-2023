@@ -28,4 +28,4 @@ class InsertTogether(models.Model):
         verbose_name_plural = "Insert together"
     
     def __str__(self) -> str:
-        return "%s[%s]" % (self.settings.title, self.target.title)
+        return "[%s]|%s|" % (self.settings.title, self.target.title)
