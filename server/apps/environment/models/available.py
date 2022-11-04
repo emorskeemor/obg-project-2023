@@ -17,7 +17,8 @@ class AvalilableOptions(models.Model):
     title = models.CharField(_("preset title"), max_length=50)
     options = models.ManyToManyField(
         Option, 
-        verbose_name=_("available options")
+        through="AvailableOption",
+        verbose_name=_("available options"),
         )
     room = models.ForeignKey(
         Room, 

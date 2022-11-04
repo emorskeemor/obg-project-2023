@@ -1,3 +1,3 @@
 from .rooms import Room
 from .settings import GenerationSettings
-from .available import AvalilableOptions
+from .available import AvalilableOptions, AvailableOption
