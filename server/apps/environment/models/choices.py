@@ -16,6 +16,7 @@ class AvalilableOptionChoices(models.Model):
         Option, 
         through="AvailableOption",
         verbose_name=_("available options"),
+        related_name="available_option_choices"
         )
     room = models.ForeignKey(
         Room, 

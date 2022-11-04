@@ -15,7 +15,7 @@ from .serializers import (
     RoomSerializer,
     RoomJoinSerializer,
     SettingsSerializer,
-    AvailableOptionsSerializer,
+    AvailableOptionChoiceSerializer,
 )
 
 # Viewsets
@@ -90,5 +90,5 @@ class SettingsViewset(viewsets.ModelViewSet):
 class AvailableOptionsViewset(viewsets.ModelViewSet):
     '''views to access available options per room'''
     permission_classes = [permissions.AllowAny]
-    serializer_class = AvailableOptionsSerializer
+    serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()

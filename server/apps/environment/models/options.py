@@ -9,7 +9,9 @@ from apps.students.models import Option
 from .choices import AvalilableOptionChoices
 
 class AvailableOption(models.Model):
-    
+    '''
+    through field between AvailableOptionChoices and Option
+    '''
     option = models.ForeignKey(
         Option, 
         verbose_name=_("option connected to"), 

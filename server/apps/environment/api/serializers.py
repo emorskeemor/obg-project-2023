@@ -20,7 +20,7 @@ class RoomJoinSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
 
-class AvailableOptionsSerializer(serializers.ModelSerializer):
+class AvailableOptionChoiceSerializer(serializers.ModelSerializer):
     '''serialize avaliable option objects'''
     room = RoomSerializer(read_only=True)
     options = OptionSerializer(many=True, read_only=True)

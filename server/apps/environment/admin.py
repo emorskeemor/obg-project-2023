@@ -7,10 +7,12 @@ class OptionsInLine(admin.TabularInline):
     model = AvalilableOptionChoices.options.through
 
 class AvalilableOptionsAdmin(admin.ModelAdmin):
-
-    fields = ("title","room", "options")
+    inlines = [
+        OptionsInLine,
+    ]
+    fields = ("title","room")
 
 admin.site.register(Room)
 admin.site.register(GenerationSettings)
-admin.site.register(AvalilableOptionChoices)
+admin.site.register(AvalilableOptionChoices, AvalilableOptionsAdmin)
 admin.site.register(AvailableOption)
