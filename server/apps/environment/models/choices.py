@@ -27,6 +27,6 @@ class AvalilableOptionChoices(models.Model):
     
     class Meta:
         verbose_name_plural = "Available Option Choices"
-    
+        
     def __str__(self) -> str:
         return "%s [%s] <opts>" % (self.room, self.title)

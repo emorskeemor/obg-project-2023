@@ -77,7 +77,8 @@ class StudentViewset(ModelViewSet):
                 
                 student_choices = []
                 for option_code in options:
-                    option = available_options.get(subject_code=option_code)
+                    # warning: ambiguous 404
+                    option = get_object_or_404(available_options, subject_code=option_code)
                     new_choice = Choice(
                         option=option,
                         student =student

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from django.core import validators
+from django.core import validators, exceptions
 
 from apps.students.models import Option
 
@@ -35,7 +35,7 @@ class AvailableOption(models.Model):
     
     class Meta:
         verbose_name_plural = "Available Option"
+        unique_together = ("option", "option_choices")
     
     def __str__(self) -> str:
-        return "%s/%s" % (self.option, self.available_options)
-    
+        return "%s/%s" % (self.option, self.option_choices)
