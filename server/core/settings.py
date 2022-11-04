@@ -49,6 +49,7 @@ THIRD_PARTY_APPLICATIONS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework_simplejwt",
+    "drf_yasg"
 ]
 
 # internal apps 
@@ -163,6 +164,7 @@ REST_FRAMEWORK = {
     ),
     # WARNING - THIS PERMISSION MUST BE SET TO 'ISUATHENTICATED' DURING PRODUCTION TO PROTECT ENDPOINTS
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 SITE_ID = 1
