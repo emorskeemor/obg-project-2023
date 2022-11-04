@@ -21,6 +21,8 @@ from .serializers import (
     )
 from .pagination import StudentPaginator
 
+from drf_yasg.utils import swagger_auto_schema
+
 
 from blocks.core.pregenerate.clean import clean_options
 
@@ -49,6 +51,7 @@ class StudentViewset(ModelViewSet):
     
     lookup_field = "uuid"
 
+    @swagger_auto_schema(request_body=StudentDumpSerializer)
     @action(detail=False, methods=["post"], url_path="dump-students")
     def dump_students(self, request):
         '''

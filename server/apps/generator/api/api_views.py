@@ -26,6 +26,8 @@ from django.conf import settings
 from blocks.core.pregenerate.clean import populate_with_id, clean_options
 from blocks.core.generate.utility import Generator
 
+from drf_yasg.utils import swagger_auto_schema
+
 from core.utils import csv_file_to_list
 
 class GerneratorViewset(ViewSet):
@@ -34,6 +36,7 @@ class GerneratorViewset(ViewSet):
     '''
     permission_classes = [AllowAny]
     
+    @swagger_auto_schema(request_body=PregenerateSerializer)
     @action(detail=False, methods=["post"])
     def run(self, request):
         '''

@@ -28,3 +28,4 @@ class StudentDumpSerializer(serializers.Serializer):
     room_code = serializers.CharField()
     generate_dummy_names = serializers.BooleanField(default=False)
     max_opts_per_student = serializers.IntegerField(default=4, required=False)
+    data = serializers.FileField(read_only=True)

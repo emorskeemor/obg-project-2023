@@ -37,7 +37,6 @@ urlpatterns = [
 # API ENDPOINTS
 urlpatterns += [
     # JWT api token endpoints
-    path('api-schema-doc/', schema_view.with_ui('redoc', cache_timeout=0)),
     path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     # App API endpoints
@@ -45,7 +44,11 @@ urlpatterns += [
     path('api-rooms/', include("apps.environment.api.urls"), name="environment-urls"),
     path('api-students/', include("apps.students.api.urls"), name="students-urls"),
     path('api-generate/', include("apps.generator.api.urls"), name="generator-urls"),
-
+    # schema
+    re_path(r'^api-schema(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^api-schema/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api-schema-docs/', schema_view.with_ui('redoc', cache_timeout=0)),
+    
 ]
 
 # urlpatterns += [
