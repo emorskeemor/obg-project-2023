@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .api_views import (
-    GeneratorViewSet,
+    GerneratorViewset,
     OptionBlockViewset,
     BlockViewset,
     InsertTogetherViewset,
@@ -15,10 +15,10 @@ urlpatterns = [
 
 router = DefaultRouter()
 
-router.register(r"u", GeneratorViewSet, basename="generator")
-router.register(r"o", OptionBlockViewset, basename="option-blocks")
-router.register(r"b", BlockViewset, basename="block")
-router.register(r"t", InsertTogetherViewset, basename="together")
+router.register(r"generator", GerneratorViewset, basename="generator")
+router.register(r"option-blocks", OptionBlockViewset, basename="option-blocks")
+router.register(r"blocks", BlockViewset, basename="block")
+router.register(r"together", InsertTogetherViewset, basename="together")
 
 
 urlpatterns +=  router.urls
