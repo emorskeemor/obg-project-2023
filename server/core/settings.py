@@ -207,13 +207,14 @@ SIMPLE_JWT = {
 REST_USE_JWT = True
 
 # CORS
+# crucial to define so that the frontend can communitcate
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080'
 ]
 
 BLOCK_GENERATOR_OPTIONS = {
     # use during debugging to read from static file
-    "data_and_options_use_static":True,
+    "data_and_options_use_static":False,
 }
 
 # option block options
