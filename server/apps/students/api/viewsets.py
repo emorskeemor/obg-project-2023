@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from apps.students.models import Student, Choice, Option, Requirement
 from apps.environment.api.serializers import RoomSerializer
-from apps.environment.models import Room, AvalilableOptions
+from apps.environment.models import Room, AvalilableOptionChoices
 
 from core.utils import csv_file_to_list
 
@@ -44,7 +44,6 @@ class StudentViewset(ModelViewSet):
     @action(detail=False, methods=["post"])
     def dump(self, request):
         
-        raise Exception("saftey")
         data = csv_file_to_list(request, "data", slice(4))
         
         serialized = StudentDumpSerializer(data=request.data)
@@ -56,7 +55,7 @@ class StudentViewset(ModelViewSet):
             options_using = get("options_using")
             
             choices = get_object_or_404(
-                AvalilableOptions,
+                AvalilableOptionChoices,
                 title=options_using,
                 room=room
                 )
@@ -107,7 +106,6 @@ class OptionViewset(ModelViewSet):
     @action(methods=["post"], detail=False)
     def dump(self, request):
         options = csv_file_to_list(request, "options", slice(2))
-        raise Exception("saftey")
         new_options = []
         for name, code in options:
             new_options.append(

@@ -17,7 +17,7 @@ from .serializers import (
 )
 # models
 from apps.generator.models import (OptionBlocks,Block,InsertTogether)
-from apps.environment.models import (GenerationSettings,Room, AvalilableOptions)
+from apps.environment.models import (GenerationSettings,Room, AvalilableOptionChoices)
 from apps.students.models import (Choice, Student, Option)
 # django
 from django.shortcuts import get_object_or_404  
@@ -63,7 +63,7 @@ class GerneratorViewset(ViewSet):
             # get the subject codes 
             if cleaned_get("subjects_using_csv"):
                 choices = get_object_or_404(
-                    AvalilableOptions,
+                    AvalilableOptionChoices,
                     room=room, 
                     title=cleaned_get("options_title")
                     )

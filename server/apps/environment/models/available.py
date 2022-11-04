@@ -5,34 +5,9 @@ from django.core import validators
 
 from apps.students.models import Option
 
-from .rooms import Room
 
+from .choices import AvalilableOptionChoices
 
-    
-    
-class AvalilableOptions(models.Model):
-    '''
-    available options available for a given room
-    '''
-    title = models.CharField(_("preset title"), max_length=50)
-    options = models.ManyToManyField(
-        Option, 
-        through="AvailableOption",
-        verbose_name=_("available options"),
-        )
-    room = models.ForeignKey(
-        Room, 
-        verbose_name=_("room connected to"), 
-        on_delete=models.CASCADE,
-        related_name="rooms"
-        )
-    
-    class Meta:
-        verbose_name_plural = "available options"
-    
-    def __str__(self) -> str:
-        return "%s [%s] <opts>" % (self.room, self.title)
-    
 class AvailableOption(models.Model):
     
     option = models.ForeignKey(
@@ -40,8 +15,8 @@ class AvailableOption(models.Model):
         verbose_name=_("option connected to"), 
         on_delete=models.CASCADE
         )
-    available_options = models.ForeignKey(
-        AvalilableOptions, 
+    option_choices = models.ForeignKey(
+        AvalilableOptionChoices, 
         verbose_name=_("available options"), 
         on_delete=models.CASCADE
         )
@@ -55,3 +30,10 @@ class AvailableOption(models.Model):
             blank=True,
             null=True
         )
+    
+    class Meta:
+        verbose_name_plural = "Available Option"
+    
+    def __str__(self) -> str:
+        return "%s/%s" % (self.option, self.available_options)
+    

@@ -2,7 +2,7 @@ from apps.environment.api.permissions import RoomAccessPermission
 from apps.environment.models import (
     Room, 
     GenerationSettings, 
-    AvalilableOptions
+    AvalilableOptionChoices
     )
 from apps.students.models import Student
 
@@ -91,4 +91,4 @@ class AvailableOptionsViewset(viewsets.ModelViewSet):
     '''views to access available options per room'''
     permission_classes = [permissions.AllowAny]
     serializer_class = AvailableOptionsSerializer
-    queryset = AvalilableOptions.objects.all()
+    queryset = AvalilableOptionChoices.objects.all()

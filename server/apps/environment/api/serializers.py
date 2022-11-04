@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.environment.models import Room, AvalilableOptions, GenerationSettings
+from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings
 
 from apps.students.api.serializers import OptionSerializer
 
@@ -26,7 +26,7 @@ class AvailableOptionsSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, read_only=True)
     
     class Meta:
-        model = AvalilableOptions
+        model = AvalilableOptionChoices
         fields = "__all__"
         
 class SettingsSerializer(serializers.ModelSerializer):
