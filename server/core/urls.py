@@ -24,7 +24,6 @@ schema_view = get_schema_view(
           "API endpoints in detail"
           ),
       contact=openapi.Contact(email="rome.salarda@edgbarrowschool.co.uk"),
-      license=openapi.License(name="BSD License"),
    ),
    public=True,
    permission_classes=[permissions.IsAdminUser],
@@ -45,7 +44,7 @@ urlpatterns += [
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     # App API endpoints
     path('api-users/', include("apps.users.api.urls"), name="user-urls"),
-    path('api-rooms/', include("apps.environment.api.urls"), name="environment-urls"),
+    path('api/-rooms/', include("apps.environment.api.urls"), name="environment-urls"),
     path('api-students/', include("apps.students.api.urls"), name="students-urls"),
     path('api-generate/', include("apps.generator.api.urls"), name="generator-urls"),
     
@@ -54,7 +53,7 @@ urlpatterns += [
 # SCHEMA ENDPOINTS
 urlpatterns += [
     re_path(r'^api-schema(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^api-schema/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^api-db-schema/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('', schema_view.with_ui('redoc', cache_timeout=0)),
     
 ]

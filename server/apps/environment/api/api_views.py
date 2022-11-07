@@ -28,7 +28,7 @@ from .serializers import (
 def get_domain(request)->str:
     domain = request.GET.get("domain", None)
     if domain is None:
-        raise exceptions.ValidationError({"error":"domain name was not provided as a url parameter"})
+        raise exceptions.ValidationError({"detail":"domain name was not provided as a url parameter"})
     return domain
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -65,7 +65,7 @@ class RoomViewSet(viewsets.ModelViewSet):
             _, domain = email.split("@")
             if domain != room.email_domain:
                 raise exceptions.ValidationError(
-                    {"error":"domain email did not match required domain name"}
+                    {"detail":"domain email did not match required domain name"}
                 )
             # if the student already exists in the room, deny access
             if Student.objects.filter(room=room, email=email).exists():

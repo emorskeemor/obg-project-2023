@@ -67,7 +67,7 @@ export default defineComponent({
     handleJoin(){
       this.error = false
       if (this.roomCode.length === 8 && this.domainName.length != 0){
-        axiosInstance.get(`rooms/v/${this.roomCode}/?domain=${this.domainName}`).then(
+        axiosInstance.get(`-rooms/rooms/${this.roomCode}/?domain=${this.domainName}`).then(
           response=>{
             if (response.status === 200) {
               this.$router.push({name:"room-verification", params:{

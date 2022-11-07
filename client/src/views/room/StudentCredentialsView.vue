@@ -67,7 +67,7 @@ export default defineComponent({
       this.error = false
       this.errorMessage = ""
       if (this.email.length != 0 && this.firstName.length != 0 && this.lastName.length != 0 ){
-        axiosInstance.post(`rooms/v/join/`, {
+        axiosInstance.post(`-rooms/rooms/join/`, {
         code:this.$route.params.code,
         domain:this.$route.params.domain,
         first_name:this.firstName,
