@@ -10,6 +10,7 @@
             lazy-rules
             type="text"
             :error="error"
+            :rules="[val => !!val || 'field is required']"
         >
         <template v-slot:prepend>
             <q-icon name="mail"/>
@@ -20,6 +21,7 @@
             lazy-rules
             type="text"
             :error="error"
+            :rules="[val => !!val || 'field is required']"
         >
         <template v-slot:prepend>
             <q-icon name="person"/>
@@ -31,6 +33,7 @@
             type="text"
             :error="error"
             :error-message="errorMessage"
+            :rules="[val => !!val || 'field is required']"
         >
         <template v-slot:prepend>
             <q-icon name="person"/>
@@ -48,7 +51,6 @@
 
 <script lang="ts">
     import { axiosInstance } from '@/api/axios';
-import { AxiosError } from 'axios';
     import { defineComponent } from 'vue';
     
 export default defineComponent({
@@ -58,6 +60,7 @@ export default defineComponent({
         email: "",
         firstName: "",
         lastName: "",
+        // error handling
         errorMessage:"",
         error: false
     }
@@ -66,6 +69,12 @@ export default defineComponent({
     attemptEnter(){
       this.error = false
       this.errorMessage = ""
+      // do some validation
+
+      // NOTE THIS VALIDATION IS FOR TESTING AND SHOULD BE REWORKED FOR MORE 
+      // ACCURATE ERROR MESSAGES
+
+
       if (this.email.length != 0 && this.firstName.length != 0 && this.lastName.length != 0 ){
         axiosInstance.post(`-rooms/rooms/join/`, {
         code:this.$route.params.code,

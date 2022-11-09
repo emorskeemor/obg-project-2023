@@ -9,7 +9,7 @@ import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
 
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
-import StudentCredentialsView from '@/views/room/StudentCredentialsView.vue'
+import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
 import ChoicesView from '@/views/room/ChoicesView.vue'
 
 import TeacherDashboardView from '@/views/main/TeacherDashboardView.vue'

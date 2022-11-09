@@ -1,6 +1,6 @@
 <template>
     <q-layout view="lHh Lpr lFf" >
-      <!-- header content -->
+      <!-- navigation bar content -->
       <q-header elevated >
         <q-toolbar class="bg-teal-4 glossy" style="min-height:10vh">
           <q-toolbar-title >
@@ -12,6 +12,7 @@
               
             </div>
           </q-toolbar-title>
+          <!-- logout button -->
           <div v-if="loggedIn">
             <q-btn @click="handleLogout" class="bg-black">Logout</q-btn>
           </div>
@@ -23,6 +24,7 @@
         <router-view />
       </q-page-container>
 
+      <!-- ajax loading bar when sending requests -->
       <q-ajax-bar
       ref="bar"
       position="bottom"
@@ -38,15 +40,16 @@
         </q-toolbar>
       </q-footer>
     </q-layout>
+
 </template>
 
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { getAccessToken, isLoggedIn } from 'axios-jwt';
   import { logout } from './api/auth';
-import { DecodedTokenObject } from './api/interfaces';
-import jwtDecode from 'jwt-decode';
-  
+  import { DecodedTokenObject } from './api/interfaces';
+  import jwtDecode from 'jwt-decode';
+    
   
   export default defineComponent({
     name: 'App',
@@ -66,16 +69,19 @@ import jwtDecode from 'jwt-decode';
     },
     methods:{
       handleLogout(){
+        // logout the user by removing the access and refresh tokens from local
+        // storage and then change the flag, once done redirect back to the home page
         logout()
         this.loggedIn = false
         this.$router.push({name:"home", force:true})
       },
       returnHome(){
+        // check that the user is still logged in. We do this by gettings the access token if
+        // it is still present. If not, we know the user is no longer logged in
         const accessToken = getAccessToken()
         if (accessToken){
           const decoded: DecodedTokenObject = jwtDecode(accessToken)
           this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
-          
         }
         else {
           this.$router.push({name:"home"})
