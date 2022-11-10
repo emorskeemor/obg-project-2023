@@ -107,6 +107,22 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()
     
+    @action(detail=False, methods=["get"], url_path="room-choices")
+    def available_room_choices(self, request):
+        get = request.GET.get
+        room = get_object_or_404(
+            Room,
+            domain=get("domain"),
+            code=get("code")
+        )
+        available_options = self.queryset.filter(room=room)
+        
+        serialized = self.serializer_class(available_options, many=True)
+        
+        
+        return response.Response(serialized.data, status=status.HTTP_200_OK)
+
+    
 class AvailableOptionViewset(viewsets.ModelViewSet):
     '''
     views to access available option that is 

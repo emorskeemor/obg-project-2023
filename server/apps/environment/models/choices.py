@@ -5,7 +5,6 @@ from django.core import validators
 
 from apps.students.models import Option
 
-from .rooms import Room
 
 class AvalilableOptionChoices(models.Model):
     '''
@@ -17,12 +16,6 @@ class AvalilableOptionChoices(models.Model):
         through="AvailableOption",
         verbose_name=_("available options"),
         related_name="available_option_choices"
-        )
-    room = models.ForeignKey(
-        Room, 
-        verbose_name=_("room connected to"), 
-        on_delete=models.CASCADE,
-        related_name="rooms"
         )
     
     class Meta:

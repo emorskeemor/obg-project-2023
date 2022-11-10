@@ -39,6 +39,11 @@ class Room(models.Model):
         blank=True,
         null=True
     )
+    options_using = models.OneToOneField(
+        "AvalilableOptionChoices",
+        on_delete=models.CASCADE,
+        null=True
+    )
 
     def __str__(self) -> str:
         return "%s/%s" % (self.domain, self.code)
