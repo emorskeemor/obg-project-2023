@@ -110,6 +110,22 @@ class ChoiceViewset(ModelViewSet):
 
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
+    
+    @action(detail=False, methods=["get"], url_path="student_choices")
+    def students_options(self, request):
+        '''
+        gets a student's subjects if any
+        '''
+        get = request.GET.get
+        student = get_object_or_404(Student, uuid=get("student"))
+        
+        serialized = OptionSerializer(
+            student.options.all().values(
+                "uuid", "subject_code", "description", "title"
+                ), 
+            many=True
+            )
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 class OptionViewset(ModelViewSet):
     '''

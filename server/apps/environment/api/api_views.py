@@ -68,11 +68,12 @@ class RoomViewSet(viewsets.ModelViewSet):
                     {"detail":"domain email did not match required domain name"}
                 )
             # if the student already exists in the room, deny access
-            if Student.objects.filter(room=room, email=email).exists():
+            existing = Student.objects.filter(room=room, email=email)
+            if existing.exists():
                 return response.Response(
-                    {"detail":"A user with this email is already registered to this room"}, 
-                    status=status.HTTP_403_FORBIDDEN
-                    )
+                    {"student_uuid":get_object_or_404(existing, email=email).uuid}, 
+                    status=status.HTTP_200_OK
+                )
             
             new_student = Student(
                 room=room, 
