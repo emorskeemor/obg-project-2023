@@ -1,50 +1,80 @@
 <template>
-    <q-page class="q-pa-xl absolute-center" padding >
-      <h1 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-        class="text-h2" >
-        Enter your details
-      </h1>
-      <div style="width:500px" >
-        <q-input
-            filled v-model="email" label="email *" hint="email"
-            lazy-rules
-            type="text"
-            :error="error"
-            :rules="[val => !!val || 'field is required']"
-        >
-        <template v-slot:prepend>
-            <q-icon name="mail"/>
-        </template>
-        </q-input>
-        <q-input
-            filled v-model="firstName" label="first name *" hint="first name"
-            lazy-rules
-            type="text"
-            :error="error"
-            :rules="[val => !!val || 'field is required']"
-        >
-        <template v-slot:prepend>
-            <q-icon name="person"/>
-        </template>
-        </q-input>
-        <q-input
-            filled v-model="lastName" label="last name *" hint="last name"
-            lazy-rules
-            type="text"
-            :error="error"
-            :error-message="errorMessage"
-            :rules="[val => !!val || 'field is required']"
-        >
-        <template v-slot:prepend>
-            <q-icon name="person"/>
-        </template>
-        </q-input>
-       
+    <q-page class="q-pa-xs no-scroll" padding >
+        <div class="bg-white text-black">
+          <h1 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+          class="text-h1" >
+            Enter your details
+          </h1>
+        </div>
+        <div class="q-gutter-md">
+          <!-- email input -->
+          <div class="fit row wrap justify-center items-start">
+          <q-input
+              filled v-model="email" label="email *" hint="email"
+              lazy-rules
+              type="text"
+              :error="error"
+              :rules="[val => !!val || 'field is required']"
+              style="width:60vh"
+
+          >
+          <template v-slot:prepend>
+              <q-icon name="mail"/>
+          </template>
+          </q-input>
+        </div>
+
+        <!-- first name input -->
+        <div class="fit row wrap justify-center items-start">
+
+          <q-input
+              filled v-model="firstName" label="first name *" hint="first name"
+              lazy-rules
+              type="text"
+              :error="error"
+              :rules="[val => !!val || 'field is required']"
+              style="width:60vh"
+
+          >
+          <template v-slot:prepend>
+              <q-icon name="person"/>
+          </template>
+          </q-input>
+        </div>
+        <!-- last name input -->
+        <div class="fit row wrap justify-center items-start">
+
+          <q-input
+              filled v-model="lastName" label="last name *" hint="last name"
+              lazy-rules
+              type="text"
+              :error="error"
+              :error-message="errorMessage"
+              :rules="[val => !!val || 'field is required']"
+              style="width:60vh"
+
+          >
+          <template v-slot:prepend>
+              <q-icon name="person"/>
+          </template>
+          </q-input>
+
+        </div>
+        <!-- attempt to enter button -->
         <q-btn class="bg-green-13 text-white" push size="20px" @click="attemptEnter">
             Continue
         </q-btn>
 
       </div>
+
+      <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="serverError">
+        <div class="absolute-center">
+          {{serverErrorMessage}}
+        </div>
+        <template v-slot:action>
+          <q-btn flat color="white" label="Dissmis" @click="dismissAllErrors" />
+        </template>
+      </q-banner>
       
     </q-page>
 </template>
@@ -62,7 +92,11 @@ export default defineComponent({
         lastName: "",
         // error handling
         errorMessage:"",
-        error: false
+        error: false ,
+
+        serverError: false,
+        serverErrorMessage: ""
+
     }
   },
   methods:{
@@ -73,7 +107,7 @@ export default defineComponent({
 
       // NOTE THIS VALIDATION IS FOR TESTING AND SHOULD BE REWORKED FOR MORE 
       // ACCURATE ERROR MESSAGES
-      
+
       if (this.email.length != 0 && this.firstName.length != 0 && this.lastName.length != 0 ){
         axiosInstance.post(`api-rooms/rooms/join/`, {
         // room details
@@ -99,8 +133,8 @@ export default defineComponent({
           }
           else {
             // raise error message from the server
-            this.error = true
-            this.errorMessage = response.data.detail
+            this.serverError = true
+            this.serverErrorMessage = response.data.detail
             }
           }
         )
@@ -116,6 +150,12 @@ export default defineComponent({
             this.errorMessage = "a first name is required"
           }
         }
+    },
+    dismissAllErrors() {
+      this.error = false
+      this.errorMessage = ""
+      this.serverError = false
+      this.serverErrorMessage = ""
     }
   }
 });

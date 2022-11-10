@@ -57,8 +57,10 @@
       </div>
       
       <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="roomNotFound">
-        We could not find the given room with the domain and room code you have provided. Please ensure all details 
-        have been typed correctly.
+        <div class="absolute-center">
+          We could not find the given room with the domain and room code you have provided. Please ensure all details 
+          have been typed correctly.
+        </div>
         <template v-slot:action>
           <q-btn flat color="white" label="Dissmis" @click="roomNotFound=false" />
         </template>

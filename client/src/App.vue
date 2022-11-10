@@ -4,7 +4,7 @@
       <q-header elevated >
         <q-toolbar class="bg-teal-4 glossy" style="min-height:10vh">
           <q-toolbar-title >
-            <div class="absolute-center">
+            <div class="absolute-center cursor-pointer q-hoverable">
               <q-avatar size="60px" @click="returnHome">
                 <img :src="require(`./assets/logo.png`)"/>
               </q-avatar>
@@ -28,7 +28,7 @@
       <!-- ajax loading bar when sending requests -->
       <q-ajax-bar
       ref="bar"
-      position="bottom"
+      position="top"
       color="purple-13"
       size="10px"
       skip-hijack 

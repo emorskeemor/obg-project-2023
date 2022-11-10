@@ -1,7 +1,7 @@
 <template>
     <q-page padding>
         <h1><q-icon name="error"/></h1>
-        <h3>500</h3>
+        <h3>500 Internal server error</h3>
         <h4>There seems to be an error on our end</h4>
         <h6>Maybe try again later</h6>
     </q-page>

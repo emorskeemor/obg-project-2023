@@ -7,11 +7,11 @@ import ServerError from '@/views/error/ServerErrorView.vue'
 // auth
 import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
-
+// students and rooms
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
 import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
 import ChoicesView from '@/views/room/ChoicesView.vue'
-
+// teacher
 import TeacherDashboardView from '@/views/main/TeacherDashboardView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'home',
     component: HomeView
   },
+  // error webpages
   {
     path: '/401',
     name: 'E401',
@@ -34,6 +35,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'E404',
     component: ResourceNotFound
   },
+  // authentication web pages
   {
     path: '/500',
     name: 'E500',
@@ -49,6 +51,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'logout',
     component: LogoutView
   },
+  // other related
   {
     path: '/room/join',
     name: 'room-join',
@@ -75,6 +78,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'student-choice',
     component: ChoicesView
   },
+  // 404 error as no url path matched
   { 
     path: "/:pathMatch(.*)*", 
     component: ResourceNotFound 

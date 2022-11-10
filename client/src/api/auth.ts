@@ -3,7 +3,7 @@ import { axiosInstance } from './axios'
 
 // points to access token and refresh token retrieval
 const login = async (params: object) => {
-  const response = await axiosInstance.post('/token', params)
+  const response = await axiosInstance.post('api/token', params)
   
   // sets the tokens in local storage
   setAuthTokens({
