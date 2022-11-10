@@ -42,7 +42,8 @@ class Room(models.Model):
     options_using = models.OneToOneField(
         "AvalilableOptionChoices",
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        related_name="room",
     )
 
     def __str__(self) -> str:

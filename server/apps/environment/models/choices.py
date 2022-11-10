@@ -22,4 +22,4 @@ class AvalilableOptionChoices(models.Model):
         verbose_name_plural = "Available Option Choices"
         
     def __str__(self) -> str:
-        return "%s [%s] <opts>" % (self.room.code, self.title)
+        return "%s <opts>" % (self.title)
