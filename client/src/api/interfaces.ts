@@ -1,3 +1,5 @@
+// all interfaces use due to TS
+
 export interface DecodedTokenObject {
     exp: number,
     ist: number,

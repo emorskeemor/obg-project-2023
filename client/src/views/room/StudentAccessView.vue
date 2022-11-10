@@ -73,42 +73,49 @@ export default defineComponent({
 
       // NOTE THIS VALIDATION IS FOR TESTING AND SHOULD BE REWORKED FOR MORE 
       // ACCURATE ERROR MESSAGES
-
-
+      
       if (this.email.length != 0 && this.firstName.length != 0 && this.lastName.length != 0 ){
-        axiosInstance.post(`-rooms/rooms/join/`, {
+        axiosInstance.post(`api-rooms/rooms/join/`, {
+        // room details
         code:this.$route.params.code,
         domain:this.$route.params.domain,
+        // student details
         first_name:this.firstName,
         last_name:this.lastName,
         email:this.email
+
       }).then(
-        res=>{          
-          console.log(res);
-          
-          if (res.status === 200) {
-            const studet_id = res.data.student_uuid
+        response=>{          
+      
+          if (response.status === 200) {
+            // joining was successful
+            const studentID = response.data.student_uuid
             const params = this.$route.params
             this.$router.push({name:"student-choice", params:{
               domain:params.domain,
               code:params.code,
-              id:studet_id
+              id:studentID
             }})
-            
           }
           else {
+            // raise error message from the server
             this.error = true
-            this.errorMessage = res.data.detail
+            this.errorMessage = response.data.detail
+            }
           }
-          
-          
-        }
         )
 
-      }else {
-            this.error = true
-            this.errorMessage = "please fill in all inputs"
+      } else {
+        // handle the error
+          this.error = true
+          if (this.email.length <= 0) {
+            this.errorMessage = "an email is required"
+          } else if (this.lastName.length <= 0) {
+            this.errorMessage = "a last name is required"
+          } else if (this.firstName.length <= 0) {
+            this.errorMessage = "a first name is required"
           }
+        }
     }
   }
 });

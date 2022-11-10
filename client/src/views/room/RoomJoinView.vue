@@ -20,7 +20,7 @@
               lazy-rules
               type="text"
               :error="error"
-              :rules="[val => !!val || 'This field is required',]"
+              :rules="[val => !!val || 'A domain name is required',]"
               style="width:60vh"
           >
           <template v-slot:prepend>
@@ -40,7 +40,7 @@
               :error="error"
               :error-message="errorMessage"
               :rules="[
-              val => !!val || '* Required',
+              val => !!val || 'A room code is required',
               val => val.length === 8 || 'A code is 8 characters long',]"
               style="width:60vh">
             <template v-slot:prepend>
@@ -56,7 +56,15 @@
 
       </div>
       
+      <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="roomNotFound">
+        We could not find the given room with the domain and room code you have provided. Please ensure all details 
+        have been typed correctly.
+        <template v-slot:action>
+          <q-btn flat color="white" label="Dissmis" @click="roomNotFound=false" />
+        </template>
+      </q-banner>
     </q-page>
+    
 </template>
 
 <script lang="ts">
@@ -74,14 +82,17 @@ export default defineComponent({
         error:false,
         errorMessage:"",
 
+        roomNotFound:false,
+        // maximum length the room code needs to be
         roomCodeLength: 8
     }
   },
   methods:{
     handleAccess(){
       // verify that the room does exist to allow access to the next stage
-      this.error = false
-      this.errorMessage = ""
+      // this.error = false
+      // this.errorMessage = ""
+      this.roomNotFound = false
       
       if (this.roomCode.length === this.roomCodeLength && this.domainName.length != 0){
         axiosInstance.get(`api-rooms/rooms/${this.roomCode}/?domain=${this.domainName}`).then(
@@ -96,8 +107,9 @@ export default defineComponent({
             )              
             } else {
               // display default error that was raised by the server            
+              // this.errorMessage = "Room with given domain and room code not found"
+              this.roomNotFound = true
               this.error = true
-              this.errorMessage = "Room with given domain and room code not found"
             }
           }
         )

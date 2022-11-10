@@ -9,14 +9,15 @@
                 <img :src="require(`./assets/logo.png`)"/>
               </q-avatar>
               BLOCKS
-              
             </div>
           </q-toolbar-title>
+          
           <!-- logout button -->
           <div v-if="loggedIn">
             <q-btn @click="handleLogout" class="bg-black">Logout</q-btn>
           </div>
         </q-toolbar>
+
       </q-header>
 
       <!-- main body for router view-->
