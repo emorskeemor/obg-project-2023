@@ -121,13 +121,20 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             code=get("code")
         )
         queryset = room.options_using.options.order_by("title").all()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = OptionSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        
+        serialized = OptionSerializer(queryset, many=True)
+        import time
+        time.sleep(3)
+        return response.Response(serialized.data)
+        
+        
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = OptionSerializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
 
-        serializer = OptionSerializer(queryset, many=True)
-        return response.Response(serializer.data)
+        # serializer = OptionSerializer(queryset, many=True)
+        # return response.Response(serializer.data)
     
 class AvailableOptionViewset(viewsets.ModelViewSet):
     '''

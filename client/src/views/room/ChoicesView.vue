@@ -13,8 +13,6 @@
                     label="Search"
                     lazy-rules
                     type="text"
-                    :error="error"
-                    :error-message="errorMessage"
                     >
                   <template v-slot:prepend>
                       <q-icon name="search"/>
@@ -22,8 +20,9 @@
                 </q-input>
               </q-card-section>
               <draggable
+              v-if="!fetching"
               class="list-group"
-              :list="availableOptions"
+              :list="getSearchedPages()"
               :group="{name:'available_options', pull:'clone', put:false}"
               :clone="cloneOption"
               itemKey="title"
@@ -130,6 +129,7 @@ import { axiosInstance } from '@/api/axios';
 import { defineComponent } from 'vue';
 import draggable from "vuedraggable";
 
+const optionsPerPage = 3
 
 export default defineComponent({
   name: 'StudentChoices',
@@ -145,11 +145,10 @@ export default defineComponent({
       numberOfAllowedOptions:0,
       // available options to the user
       availableOptionsPage:1,
-      availableOptionsPrevious:null,
-      availableOptionsNext:null,
       availableOptionsCount:0,
       availableOptions:[],
       maximumOptionPages:0,
+      fetching:true,
       // student data
       studentData: {
         firstName:"",
@@ -162,35 +161,48 @@ export default defineComponent({
       errorMessage:""
     }
   },
-  computed: {
-    calculateMaxPage() {
-      return this.availableOptionsCount/3
-    }
-  },
+ 
   beforeMount(){
+    // we need to fetch some information before the data is rendered
     const params = this.$route.params
-    
-    this.getAvailableOptions()
+    this.fetching = true
+    // get the student
     axiosInstance.get(
       `api-students/students/${params.id}`
       ).then(
         response=>{
-          const data = response.data
-          this.chosenOptions = [...data.options]
-          this.numberOfAllowedOptions = data.max_choices
-          this.studentData.firstName = data.first_name
-          this.studentData.lastName = data.last_name
-          this.studentData.uuid = data.uuid
+          if (response.status == "200"){
+            // student was found and we can get their current options
+            // if any and their allowed number of choices
+            const data = response.data
+            this.chosenOptions = [...data.options]
+            this.numberOfAllowedOptions = data.max_choices
+            this.studentData.firstName = data.first_name
+            this.studentData.lastName = data.last_name
+            this.studentData.uuid = data.uuid
+          } else if (response.status == "404") {
+            // a 404 means the student uuid in the url was invalid
+            // and we should redirect to a 404
+            this.$router.push({name:"E404"})
+          }
+
         }
       )
-  },
-  watch: {
-    availableOptionsPage(newValue, oldValue){
-      this.getAvailableOptions()
-    }
+    // get the available options for the student
+    axiosInstance.get(
+      `api-rooms/available-option-choices/room-choices/?domain=${params.domain}&code=${params.code}&page=${this.availableOptionsPage}`
+      ).then(response=>{
+        this.availableOptions = response.data
+        this.availableOptionsCount = this.availableOptions.length
+        this.maximumOptionPages = Math.floor(this.availableOptionsCount/optionsPerPage) + 1
+        this.fetching = false
+
+      })
   },
   methods:{
+    // option related methods
     moveOption(event) {
+      // called whenever an options is moved
       this.errorRaised = false
       if (this.chosenOptions.length >= this.numberOfAllowedOptions){
         this.errorRaised = true
@@ -205,37 +217,42 @@ export default defineComponent({
             return false
           }
         }
-
-
       }
     },
-    // clone new option
     cloneOption(option){
-      console.log("cloning");
       return option
     },
     deleteChosenOption(index){
       this.chosenOptions.splice(index, 1)
+    },
+    // searching and pagination
+    searchFilter(option) {
+      return (option.title.toLowerCase().includes(this.search))
+    },
+    getSearchedPages() {
+      if (this.fetching) {
+        return []
+      }
+      if (this.search === "") {
+        return this.calculatePagination(this.availableOptions)
+      } else {
+        return this.calculatePagination(
+          this.availableOptions.filter(this.searchFilter)
+          );
+      }
+    },
+    calculatePagination(options) {
+      let startingPage = (this.availableOptionsPage-1)*optionsPerPage
+      
+      this.availableOptionsCount = options.length
+      this.maximumOptionPages = Math.floor(this.availableOptionsCount/optionsPerPage) + 1
+
+      return options.slice(
+        startingPage,
+        startingPage + optionsPerPage
+      )
 
     },
-    
-
-
-    // pagination methods
-    
-    // api methods
-    getAvailableOptions() {
-      const params = this.$route.params
-      axiosInstance.get(
-      `api-rooms/available-option-choices/room-choices/?domain=${params.domain}&code=${params.code}&page=${this.availableOptionsPage}`
-      ).then(response=>{
-        this.availableOptions = response.data.results
-        this.availableOptionsPrevious = response.data.previous
-        this.availableOptionsNext = response.data.next
-        this.availableOptionsCount = response.data.count
-        this.maximumOptionPages = Math.floor(this.availableOptionsCount/3) + 1
-      })
-    }
 
   }
   
