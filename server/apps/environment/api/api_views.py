@@ -24,7 +24,7 @@ from .serializers import (
     OptionSerializer
 )
 
-from .pagination import AvailableOptionSerializer
+from .pagination import AvailableOptionPagination
 
 
 # Viewsets
@@ -110,7 +110,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     '''
     serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()
-    pagination_class = AvailableOptionSerializer
+    pagination_class = AvailableOptionPagination
     
     @action(detail=False, methods=["get"], url_path="room-choices")
     def available_room_choices(self, request):

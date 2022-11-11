@@ -4,13 +4,13 @@
 
           <!-- available options that the student can choose from -->
           <div class="col-4 q-gutter-md">
-            <q-card class="bg-grey-3">
+            <q-card class="bg-grey-3" style="min-height:77vh">
               <q-card-section class="bg-grey-4">
-                <div class="text-h4 text-black main-font">Available options</div>
+                <div class="text-h4 text-black main-font" style="padding-bottom:1vh">Available options</div>
                 <q-input
                     filled
                     v-model="search"
-                    hint="search"
+                    label="Search"
                     lazy-rules
                     type="text"
                     :error="error"
@@ -37,7 +37,7 @@
                     </q-card-section>
                     <q-separator dark inset />
                     <!-- view info about the option -->
-                    <q-card-actions>
+                    <q-card-actions class="justify-center">
                       <q-btn class="bg-blue text-white" style="width:10vh">Info</q-btn>
                     </q-card-actions>
                   </q-card>
@@ -46,7 +46,7 @@
             </draggable>
             
             <!-- pagination  -->
-            <div class="row justify-center bg-grey-4" style="padding:1vh">
+            <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
               <q-pagination
                 v-model="availableOptionsPage"
                 :max=maximumOptionPages
@@ -61,8 +61,6 @@
 
               />
             </div>
-            {{maximumOptionPages}}
-
             </q-card>
             
           </div>
@@ -73,7 +71,7 @@
               <div class="text-h4 text-black main-font">Details</div>
               <div class="text-body1">Drag the subjects you would like to take into the chosen subjects section to the right</div>
               <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
-                <q-btn class="bg-teal-13 text-white" glossy style="width:10vh">Save</q-btn>
+                <q-btn class="bg-teal-13 text-white" style="width:10vh">Save</q-btn>
               </div>
             </q-card>
           </div>
@@ -81,7 +79,7 @@
           <!-- The chosen options the student has chosen -->
           <div class="col-4 q-gutter-md">
             
-            <q-card class="bg-grey-3" style="min-height:67vh">
+            <q-card class="bg-grey-3" style="min-height:77vh">
               
               <q-card-section class="bg-grey-4">
                 <div class="text-h4 text-black main-font">Chosen options</div>
@@ -193,6 +191,7 @@ export default defineComponent({
   },
   methods:{
     moveOption(event) {
+      this.errorRaised = false
       if (this.chosenOptions.length >= this.numberOfAllowedOptions){
         this.errorRaised = true
         this.errorMessage = "Too many options"

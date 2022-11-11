@@ -2,7 +2,7 @@
     <q-layout view="lHh Lpr lFf" >
       <!-- navigation bar content -->
       <q-header elevated >
-        <q-toolbar class="bg-teal-4 glossy" style="min-height:10vh">
+        <q-toolbar class="bg-teal-4 glossy" style="min-height:8vh">
           <q-toolbar-title >
             <div class="absolute-center cursor-pointer q-hoverable">
               <q-avatar size="60px" @click="returnHome">
