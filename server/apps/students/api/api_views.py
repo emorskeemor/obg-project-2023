@@ -46,7 +46,7 @@ class StudentViewset(ModelViewSet):
     '''
     permission_classes = [AllowAny]
     serializer_class = StudentSerializer
-    queryset = Student.objects.all()
+    queryset = Student.objects.all().order_by("first_name")
     pagination_class = StudentPaginator
     
     lookup_field = "uuid"
@@ -101,7 +101,6 @@ class StudentViewset(ModelViewSet):
                 
             return Response({"message":"successful"}, status=status.HTTP_200_OK)
 
-
 class ChoiceViewset(ModelViewSet):
     '''
     views to access choices
@@ -120,7 +119,7 @@ class ChoiceViewset(ModelViewSet):
         student = get_object_or_404(Student, uuid=get("student"))
         
         serialized = OptionSerializer(
-            student.options.all().values(
+            student.options.all().order_by("title").values(
                 "uuid", "subject_code", "description", "title"
                 ), 
             many=True

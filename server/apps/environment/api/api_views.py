@@ -20,8 +20,12 @@ from .serializers import (
     RoomJoinSerializer,
     SettingsSerializer,
     AvailableOptionChoiceSerializer,
-    AvailableOptionSerializer
+    AvailableOptionSerializer,
+    OptionSerializer
 )
+
+from .pagination import AvailableOptionSerializer
+
 
 # Viewsets
 
@@ -106,6 +110,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     '''
     serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()
+    pagination_class = AvailableOptionSerializer
     
     @action(detail=False, methods=["get"], url_path="room-choices")
     def available_room_choices(self, request):
@@ -115,13 +120,14 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             domain=get("domain"),
             code=get("code")
         )
-        available_options = self.queryset.filter(room=room)
-        
-        serialized = self.serializer_class(available_options, many=True)
-        
-        
-        return response.Response(serialized.data, status=status.HTTP_200_OK)
+        queryset = room.options_using.options.order_by("title").all()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = OptionSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
+        serializer = OptionSerializer(queryset, many=True)
+        return response.Response(serializer.data)
     
 class AvailableOptionViewset(viewsets.ModelViewSet):
     '''

@@ -6,7 +6,6 @@ import { Quasar } from 'quasar'
 import quasarUserOptions from '@/quasar-user-options'
 import VueApexCharts from "vue3-apexcharts";
 
-
 const app = createApp(App)
 // Quasar for styling
 app.use(Quasar, quasarUserOptions)
@@ -17,3 +16,4 @@ app.use(store)
 // VUE routing
 app.use(router)
 app.mount('#app')
+

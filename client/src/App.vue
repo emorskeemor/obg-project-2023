@@ -115,4 +115,8 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
+
+.main-font {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 </style>

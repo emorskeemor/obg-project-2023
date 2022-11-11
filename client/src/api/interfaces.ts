@@ -7,3 +7,13 @@ export interface DecodedTokenObject {
     token_type: string,
     user_id:string
   }
+
+interface DraggedContext {
+  element: object
+}
+
+export interface MoveObject {
+  to:HTMLDivElement
+  from:HTMLDivElement
+  draggedContext: object
+}

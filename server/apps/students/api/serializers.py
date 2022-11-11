@@ -14,6 +14,10 @@ class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = "__all__"
+        
+    def update(self, instance, validated_data):
+        print(validated_data)
+        return super().update(instance, validated_data)
 
 class StudentSerializer(serializers.ModelSerializer):
     '''serialize student objects'''

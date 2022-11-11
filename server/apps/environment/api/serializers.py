@@ -38,14 +38,14 @@ class AvailableOptionChoiceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = AvalilableOptionChoices
-        fields = "__all__"
+        fields = "__all__"        
         
 class AvailableOptionSerializer(serializers.ModelSerializer):
     '''
     serialize a single available option
     '''
     option = OptionSerializer(read_only=True)
-    option_choices = AvailableOptionChoiceSerializer(read_only=True)
+    option_choices = AvailableOptionChoiceSerializer(many=True)
     
     class Meta:
         model = AvailableOption
