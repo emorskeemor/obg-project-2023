@@ -48,7 +48,7 @@
             </draggable>
 
             <!-- display a message to display if no searched pages are found -->
-            <div v-if="getSearchedPages().length === 0">
+            <div v-if="getSearchedPages().length === 0 && !fetching">
               <q-card class="bg-grey-5 rounded-borders"  style="padding:5vh;margin:3vh">
                 <div class="text-h4 text-black main-font">Whoopsie!</div>
                 <div class="text-h6">We could not find the subject you are looking for.</div>
@@ -123,7 +123,6 @@
                           <q-card-section style="padding:5px">
                             <div class="text-h5 text-white">{{element.title}}</div>
                           </q-card-section>
-                          <q-separator dark inset />
                           <q-card-actions>
                             <q-btn class="bg-blue-grey text-white" @click="removeReserveOption(index)" icon="highlight_off" label="remove"/>
                         <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info" label="info"/>
@@ -171,7 +170,6 @@
                           <div class="text-h5 text-white">{{index+1}}</div>
                         </q-badge>
                       </q-card-section>
-                      <q-separator dark inset />
                       <q-card-actions>
                         <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(index)" icon="highlight_off" label="remove"/>
                         <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info" label="info"/>

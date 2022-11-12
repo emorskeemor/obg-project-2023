@@ -124,7 +124,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
         
         serialized = OptionSerializer(queryset, many=True)
         import time
-        # time.sleep(1.5)
+        time.sleep(1.5)
         return response.Response(serialized.data)
         
         
