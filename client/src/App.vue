@@ -5,10 +5,10 @@
         <q-toolbar class="bg-teal-4 glossy" style="min-height:8vh">
           <q-toolbar-title >
             <div class="absolute-center cursor-pointer q-hoverable">
-              <q-avatar size="60px" @click="returnHome">
+              <q-avatar size="60px" @click="returnHome" square>
                 <img :src="require(`./assets/logo.png`)"/>
               </q-avatar>
-              BLOCKS
+              EDGBARROW
             </div>
           </q-toolbar-title>
           
@@ -23,15 +23,15 @@
       <!-- main body for router view-->
       <q-page-container>
         <router-view />
+        
       </q-page-container>
 
       <!-- ajax loading bar when sending requests -->
       <q-ajax-bar
       ref="bar"
-      position="top"
-      color="purple-13"
+      position="bottom"
+      color="orange-8"
       size="10px"
-      skip-hijack 
       />
 
       <!-- footer  -->
