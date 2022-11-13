@@ -17,7 +17,8 @@ class InsertTogether(models.Model):
     settings = models.ForeignKey(
         GenerationSettings, 
         verbose_name=_("settings connected to"), 
-        on_delete=models.CASCADE,        )
+        on_delete=models.CASCADE
+        )
     
     targets = models.ManyToManyField(
         Option, 

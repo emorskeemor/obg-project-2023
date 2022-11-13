@@ -10,7 +10,7 @@ class GenerationSettings(models.Model):
     settings for generation that can be saved
     '''
     # the room that the settings is linked to
-    room = models.ForeignKey(
+    room = models.OneToOneField(
         Room,
         on_delete=models.CASCADE,
         verbose_name=_("room connected to"),

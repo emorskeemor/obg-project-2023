@@ -6,12 +6,14 @@ from rest_framework import status, exceptions
 from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
+from copy import deepcopy
 
 from apps.students.models import Student, Choice, Option, Requirement
+from apps.generator.models import InsertTogether
 from apps.environment.api.serializers import RoomSerializer
-from apps.environment.models import Room, AvalilableOptionChoices
+from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings
 
-from core.utils import csv_file_to_list
+from core.utils import csv_file_to_list, valid_uuid_or_error
 
 from .serializers import (
     ChoiceSerializer, 
@@ -100,7 +102,18 @@ class StudentViewset(ModelViewSet):
                 
                 
             return Response({"message":"successful"}, status=status.HTTP_200_OK)
-
+        
+    def retrieve(self, request, uuid=None, *args, **kwargs):
+        student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=uuid)
+        choices = Choice.objects.filter(student=student).order_by("priority")
+        ordered_options = []
+        for choice in choices:
+            ordered_options.append(OptionSerializer(choice.option).data)
+        serialized = StudentSerializer(student)
+        serialized_data = deepcopy(serialized.data)
+        serialized_data["options"] = ordered_options
+        return Response(serialized_data)
+    
 class ChoiceViewset(ModelViewSet):
     '''
     views to access choices
@@ -125,6 +138,61 @@ class ChoiceViewset(ModelViewSet):
             many=True
             )
         return Response(serialized.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["put"], url_path="update_student_options")
+    def update_student_options(self, request, pk=None):
+
+        student = get_object_or_404(Student, pk=pk)
+        options = student.options.all()
+        
+        # get the room
+        data = request.data.get("data")
+        code = request.data.get("code")
+        domain = request.data.get("domain")
+        
+        room = get_object_or_404(Room, code=code, domain=domain)
+        settings = get_object_or_404(GenerationSettings, room=room)
+        rules = InsertTogether.objects.filter(settings=settings)
+        
+        forbidden = []
+        for rule in rules:
+            forbidden.append([rule.target] + list(rule.targets.all()))
+        
+        options = Option.objects.all()
+        # create the new choices
+        new_option_choice = []
+        
+        for index, option in enumerate(data):
+            option_uuid = option.get("uuid")
+            reserve = option.get("reserve", False)
+            valid_uuid_or_error(option_uuid)
+            option = get_object_or_404(options, uuid=option_uuid)
+            new_choice = Choice(
+                student=student,
+                option=option,
+                priority=index,
+                reserve=reserve
+            )
+            new_option_choice.append(new_choice)
+        
+        for rule in forbidden:
+            count = 0
+            for choice in new_option_choice:
+                if choice.option in rule:
+                    count += 1
+            if count == len(rule):  
+                raise exceptions.ValidationError(
+                    {"detail":f"Options ({', '.join([option.title for option in rule])}) cannot be chosen together"})
+                
+        # clear all choices
+        for option in options:
+            student.options.remove(option)
+
+        
+        # check insert togethers                
+        Choice.objects.bulk_create(new_option_choice)
+        
+        return Response({"detail":"success"}, status=status.HTTP_200_OK)
 
 class OptionViewset(ModelViewSet):
     '''

@@ -32,13 +32,13 @@
               <!-- iterate over all available options in pagination -->
               <template #item="{element}">
                 <div class="row justify-center items-center">
-                  <q-card style="width:40vh;margin:1vh" class="bg-teal-3 glossy">
+                  <q-card style="width:55vh;margin:1vh" class="bg-teal-3 glossy">
                     <q-card-section>
                       <div class="text-h5 text-white">{{element.title}}</div>
                     </q-card-section>
                     <!-- view info about the option -->
                     <q-card-actions>
-                      <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info" label="info">
+                      <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info">
                         
                       </q-btn>
                     </q-card-actions>
@@ -119,13 +119,13 @@
                   >
                     <template #item="{element, index}">
                       <div class="row justify-center items-center">
-                        <q-card style="width:40vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
+                        <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
                           <q-card-section style="padding:5px">
                             <div class="text-h5 text-white">{{element.title}}</div>
                           </q-card-section>
                           <q-card-actions>
-                            <q-btn class="bg-blue-grey text-white" @click="removeReserveOption(index)" icon="highlight_off" label="remove"/>
-                        <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info" label="info"/>
+                            <q-btn class="bg-blue-grey text-white" @click="removeReserveOption(index)" icon="highlight_off"/>
+                            <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info"/>
                           </q-card-actions>
                         </q-card>
                       </div>
@@ -138,10 +138,13 @@
               <!-- save options and reserves -->
               <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
                 <q-btn-group>
-                  <q-btn class="bg-red-5 text-white" style="width:15vh" icon-right="check_circle" size="small" label="save"
+                  <q-btn class="bg-red-5 text-white" icon-right="check_circle" size="small" label="save"
+                  @click="saveChoices()"
                   :disable="chosenOptions.length != maximumAllowedOptions || reserveOptions.length !== maximumReserveOptions"
                   />
-                  <q-btn class="bg-blue text-white" style="width:15vh" icon-right="help" size="small" label="help"/>
+                  <q-btn class="bg-blue text-white" icon-right="help" size="small" label="help"/>
+                  <q-btn class="bg-light-blue text-white" icon-right="route" size="small" label="pathways"/>
+
                 </q-btn-group>
               </div>
             </q-card>
@@ -162,8 +165,8 @@
               id="chosenOptions"
               >
                 <template #item="{element, index}">
-                  <div class="row justify-center items-center">
-                    <q-card style="width:40vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
+                  <div class="row justify-center items-center" v-if="!fetching">
+                    <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
                       <q-card-section style="padding:5px">
                         <div class="text-h5 text-white">{{element.title}}</div>
                         <q-badge color="red-12 row justify-center rounded-borders" floating rounded style="width:4vh;height:4vh">
@@ -171,8 +174,8 @@
                         </q-badge>
                       </q-card-section>
                       <q-card-actions>
-                        <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(index)" icon="highlight_off" label="remove"/>
-                        <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info" label="info"/>
+                        <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(index)" icon="highlight_off"/>
+                        <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info"/>
                       </q-card-actions>
                     </q-card>
                   </div>
@@ -208,13 +211,22 @@
         </div>
         <!-- banner to show any errors raised when moving options -->
         <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="this.errorMessage.length !== 0">
-        <div class="absolute-center">
-          {{errorMessage}}
-        </div>
-        <template v-slot:action>
-          <q-btn flat color="white" label="Dissmis" @click="this.errorMessage=''" />
-        </template>
-      </q-banner>
+          <div class="absolute-center">
+            {{errorMessage}}
+          </div>
+          <template v-slot:action>
+            <q-btn flat color="white" label="Dissmis" @click="this.errorMessage=''" />
+          </template>
+        </q-banner>
+
+        <q-banner inline-actions class="text-white bg-green absolute-bottom" v-if="this.successMessage.length !== 0">
+          <div class="absolute-center">
+            {{successMessage}}
+          </div>
+          <template v-slot:action>
+            <q-btn flat color="white" label="Dissmis" @click="this.successMessage=''" />
+          </template>
+        </q-banner>
 
       <q-dialog v-model="displaySubjectInfo">
         <q-card>
@@ -277,7 +289,8 @@ export default defineComponent({
       displaySubjectInfo:false,
       displaySubjectDetails: {},
       //
-      errorMessage:""
+      errorMessage:"",
+      successMessage:"",
     }
   },
  
@@ -299,6 +312,7 @@ export default defineComponent({
             this.studentData.firstName = data.first_name
             this.studentData.lastName = data.last_name
             this.studentData.uuid = data.uuid
+            this.studentData.id = data.id
           } else if (response.status == "404") {
             // a 404 means the student uuid in the url was invalid
             // and we should redirect to a 404
@@ -415,6 +429,22 @@ export default defineComponent({
     },
     closeSubjectInfo(){
       this.displaySubjectInfo = false
+    },
+
+    saveChoices(){
+      axiosInstance.put(`api-students/choices/${this.studentData.id}/update_student_options/`, {
+        "data":this.chosenOptions,
+        "code":this.$route.params.code,
+        "domain":this.$route.params.domain,
+      }
+      ).then(response=>{
+        if (response.status == "200"){
+          this.successMessage = "saved successfully"
+        } else if (response.status == "400") {
+          this.errorMessage = response.data.detail
+        }
+
+      })
     }
 
   }
