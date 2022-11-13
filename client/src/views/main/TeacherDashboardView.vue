@@ -27,13 +27,10 @@ export default defineComponent({
   created(){
     this.fetchUserData()
     this.loggedIn = isLoggedIn()
-    
   },
   methods:{
     fetchUserData(){
       console.log("dashboard user", this.$route.params.user_id);
-      
-      
     }
   }
 });

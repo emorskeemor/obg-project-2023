@@ -57,7 +57,8 @@ class StudentViewset(ModelViewSet):
     @action(detail=False, methods=["post"], url_path="dump-students")
     def dump_students(self, request):
         '''
-        dump csv containing student options into the database
+        Dump csv containing student options into the database.
+        WARNING : Caution while using this endpoint as it will create many records in the DB
         '''
         data = csv_file_to_list(request, "data", slice(4))
         serialized = StudentDumpSerializer(data=request.data)
@@ -104,21 +105,27 @@ class StudentViewset(ModelViewSet):
             return Response({"message":"successful"}, status=status.HTTP_200_OK)
         
     def retrieve(self, request, uuid=None, *args, **kwargs):
+        '''
+        return a student with their ordered options and their reserve options
+        '''
         student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=uuid)
+        # order the students' choices by priority and get the reserve options
         choices = Choice.objects.filter(student=student).order_by("priority")
         reserved = choices.filter(reserve=True)
         ordered_options = []
+        # serialize main options and add it to the serialized student data
         for choice in choices.filter(reserve=False):
             ordered_options.append(OptionSerializer(choice.option).data)
         serialized = StudentSerializer(student)
         serialized_data = deepcopy(serialized.data)
         serialized_data["options"] = ordered_options
-        
+        # serialize the reserve options and add it to the serialized student data
         serialized_reserves = []
         for reserve in reserved:
             serialized_reserves.append(OptionSerializer(reserve.option).data)
         serialized_data["reserves"] = serialized_reserves
-        return Response(serialized_data)
+        
+        return Response(serialized_data, status=status.HTTP_200_OK)
     
 class ChoiceViewset(ModelViewSet):
     '''
@@ -147,10 +154,15 @@ class ChoiceViewset(ModelViewSet):
     
     @action(detail=True, methods=["put"], url_path="update_student_options")
     def update_student_options(self, request, pk=None):
-
+        '''
+        update the students options by providing the new options and new reserve options.
+        All previous options will be overriden.
+        '''
         student = get_object_or_404(Student, pk=pk)
         options = student.options.all()
         
+        # first serialize the incoming data to ensure if conforms to our
+        # formatting standards
         # handle main options
         main_options = request.data.get("main_options")
         serialized_main_options = OptionSerializer(data=main_options, many=True)
@@ -160,13 +172,12 @@ class ChoiceViewset(ModelViewSet):
         reserve_options = request.data.get("reserve_options")
         serialized_reserves = OptionSerializer(data=reserve_options, many=True)
         serialized_reserves.is_valid(raise_exception=True)
-        
+        # mark these options as reserve
         for reserve in reserve_options:
             reserve["reserve"] = True
             main_options.append(reserve)          
         
-            
-                    
+        # get the room so we can get the rules that the options must abide by   
         code = request.data.get("code")
         domain = request.data.get("domain")
         
@@ -181,7 +192,7 @@ class ChoiceViewset(ModelViewSet):
         options = Option.objects.all()
         # create the new choices
         new_option_choice = []
-        
+        # create our new set of options
         for index, option in enumerate(main_options):
             option_uuid = option.get("uuid")
             reserve = option.get("reserve", False)
@@ -194,7 +205,8 @@ class ChoiceViewset(ModelViewSet):
                 reserve=reserve
             )
             new_option_choice.append(new_choice)
-        
+        # see if the students options contain subjects that are not allowed to be together.
+        # choices that are marked as reserve will not influence the rule
         for rule in forbidden:
             count = 0
             for choice in new_option_choice:
@@ -202,14 +214,14 @@ class ChoiceViewset(ModelViewSet):
                     count += 1
             if count == len(rule):  
                 raise exceptions.ValidationError(
-                    {"detail":f"Options ({', '.join([option.title for option in rule])}) cannot be chosen together"})
+                    {"detail":f"Options ({', '.join([option.title for option in rule])}) cannot be chosen together"}
+                    )
                 
         # clear all choices
         for option in options:
             student.options.remove(option)
-
-        
-        # check insert togethers                
+            
+        # save the new set of options        
         Choice.objects.bulk_create(new_option_choice)
         
         return Response({"detail":"success"}, status=status.HTTP_200_OK)
@@ -226,7 +238,9 @@ class OptionViewset(ModelViewSet):
     @action(methods=["post"], detail=False, url_path="dump-options")
     def dump_options(self, request):
         '''
-        dump csv containing options and option codes to the database
+        dump csv containing options and option codes to the database.
+        WARNING : Caution while using this endpoint as it will create many records in the DB
+
         '''
         options = csv_file_to_list(request, "options", slice(2))
         new_options = []

@@ -15,4 +15,5 @@ class AvalilableOptionsAdmin(admin.ModelAdmin):
 admin.site.register(Room)
 admin.site.register(GenerationSettings)
 admin.site.register(AvalilableOptionChoices, AvalilableOptionsAdmin)
-admin.site.register(AvailableOption)
+# unregistered to reduce confusion
+# admin.site.register(AvailableOption)

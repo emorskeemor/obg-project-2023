@@ -1,14 +1,14 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .api_views import TestApiView
-from .viewsets import UserViewSet
+from .api_views import UserViewSet
 
 urlpatterns = [
-    path("test/", TestApiView.as_view(), name="test-view")
+    
 ]
+
 router = DefaultRouter()
-router.register(r"u", UserViewSet, basename="users")
+router.register(r"users", UserViewSet, basename="users")
 
 
 urlpatterns += router.urls

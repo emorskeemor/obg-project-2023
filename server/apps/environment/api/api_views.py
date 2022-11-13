@@ -26,7 +26,6 @@ from .serializers import (
 
 from .pagination import AvailableOptionPagination
 
-
 # Viewsets
 
 def get_domain(request)->str:
@@ -41,8 +40,6 @@ class RoomViewSet(viewsets.ModelViewSet):
     '''
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
-
-    lookup_field = "code"
 
     def retrieve(self, request, code, *args, **kwargs):
         room = get_object_or_404(
@@ -95,8 +92,13 @@ class RoomViewSet(viewsets.ModelViewSet):
         first_error = tuple(serialized.errors.values())[0][0]
         return response.Response(
             {"detail": first_error}, status=status.HTTP_400_BAD_REQUEST
-            )
-
+            )    
+    
+    def create(self, request, *args, **kwargs):
+        
+        pass
+        
+    
 class SettingsViewset(viewsets.ModelViewSet):
     '''
     views to access settings
