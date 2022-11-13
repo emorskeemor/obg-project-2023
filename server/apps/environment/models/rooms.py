@@ -45,6 +45,9 @@ class Room(models.Model):
         null=True,
         related_name="room",
     )
+    
+    class Meta:
+        unique_together = ("code", "domain")
 
     def __str__(self) -> str:
         return "%s/%s" % (self.domain, self.code)

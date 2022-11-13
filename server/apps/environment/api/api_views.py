@@ -51,38 +51,45 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def join(self, request):
         '''
-        allow a student to join a room
+        Allow a student to join a room
         '''
         serialized = RoomJoinSerializer(data=request.data)
         if serialized.is_valid():
-            code = serialized.data.get("code")
-            # get the room
+            cleaned_get = serialized.data.get
+            # deny access if the current room is not public
+            if cleaned_get("public") is False:
+                return response.Response(
+                    {"detail":"room is currently unavailable"}, status=status.HTTP_403_FORBIDDEN
+                    )
+            code = cleaned_get("code")
+            # get the room we need to work with if the domain and code match
             room = get_object_or_404(
                 Room, 
                 code=code,
-                domain=serialized.data.get("domain")
+                domain=cleaned_get("domain")
                 )
-            email = serialized.data.get("email")
-            _, domain = email.split("@")
-            if domain != room.email_domain:
-                raise exceptions.ValidationError(
-                    {"detail":"domain email did not match required domain name"}
-                )
-            # if the student already exists in the room, deny access
+            email = cleaned_get("email")
+            # validate the email domain matches requirement
+            if room.email_domain:
+                _, domain = email.split("@")
+                if domain != room.email_domain:
+                    raise exceptions.ValidationError(
+                        {"detail":"domain email given did not match required domain name for the room"}
+                    )
+            # if the student already exists in the room, just return the student
             existing = Student.objects.filter(room=room, email=email)
             if existing.exists():
                 return response.Response(
                     {"student_uuid":get_object_or_404(existing, email=email).uuid}, 
                     status=status.HTTP_200_OK
                 )
-            
+            # create the new student as they don't already exist
             new_student = Student(
                 room=room, 
                 email=email, 
-                first_name=serialized.data.get("first_name"),
-                last_name=serialized.data.get("last_name")
+                first_name=cleaned_get("first_name"),
+                last_name=cleaned_get("last_name")
                 )
-
             new_student.save()
             return response.Response(
                 {"student_uuid":new_student.uuid}, 
@@ -94,9 +101,20 @@ class RoomViewSet(viewsets.ModelViewSet):
             {"detail": first_error}, status=status.HTTP_400_BAD_REQUEST
             )    
     
-    def create(self, request, *args, **kwargs):
+    def perform_create(self, serializer):
+        # we also need to create settings that will be attached to this
+        # room when it is created
+        new_room = serializer.save(admin=self.request.user)
+        settings_title = self.request.data.get("settings_title", "my_settings")
+        new_settings = GenerationSettings(
+            room=new_room,
+            title=settings_title
+        )
+        new_settings.save()
         
-        pass
+    
+        
+        
         
     
 class SettingsViewset(viewsets.ModelViewSet):
