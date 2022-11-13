@@ -1,11 +1,11 @@
 <template>
     <q-page class="q-pa-xs no-scroll" padding >
-        <div class="bg-white text-black">
-          <h1 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          class="text-h1" >
-            Enter your details
-          </h1>
-        </div>
+        <q-card style="width:100vh;padding:5vh" class="absolute-center bg-grey-3">
+          <div class="text-h1 main-font">
+            Student access
+          </div>
+          <div class="text-h5 text-center q-pb-xl">Enter your school credentials</div> 
+
         <div class="q-gutter-md">
           <!-- email input -->
           <div class="fit row wrap justify-center items-start">
@@ -61,30 +61,28 @@
 
         </div>
         <!-- attempt to enter button -->
-        <q-btn class="bg-green-13 text-white" push size="20px" @click="attemptEnter">
-            Continue
-        </q-btn>
+        <q-btn class="bg-green-13 text-white" push size="20px" @click="attemptEnter" label="Continue" icon-right="login"/>
 
       </div>
 
-      <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="serverError">
-        <div class="absolute-center">
-          {{serverErrorMessage}}
-        </div>
-        <template v-slot:action>
-          <q-btn flat color="white" label="Dissmis" @click="dismissAllErrors" />
-        </template>
-      </q-banner>
+    </q-card> 
+    <BannerComponent v-if="serverError" :message="serverErrorMessage" @dismiss="dismissAllErrors" colour="red"/>
       
     </q-page>
 </template>
 
 <script lang="ts">
-    import { axiosInstance } from '@/api/axios';
-    import { defineComponent } from 'vue';
+import { axiosInstance } from '@/api/axios';
+import BannerComponent from '@/components/misc/BannerComponent.vue';
+import { defineComponent } from 'vue';
+
+
     
 export default defineComponent({
   name: 'StudentCrendentials',
+  components: {
+    BannerComponent
+  },
   data(){
     return {
         email: "",

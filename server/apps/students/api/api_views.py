@@ -106,12 +106,18 @@ class StudentViewset(ModelViewSet):
     def retrieve(self, request, uuid=None, *args, **kwargs):
         student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=uuid)
         choices = Choice.objects.filter(student=student).order_by("priority")
+        reserved = choices.filter(reserve=True)
         ordered_options = []
-        for choice in choices:
+        for choice in choices.filter(reserve=False):
             ordered_options.append(OptionSerializer(choice.option).data)
         serialized = StudentSerializer(student)
         serialized_data = deepcopy(serialized.data)
         serialized_data["options"] = ordered_options
+        
+        serialized_reserves = []
+        for reserve in reserved:
+            serialized_reserves.append(OptionSerializer(reserve.option).data)
+        serialized_data["reserves"] = serialized_reserves
         return Response(serialized_data)
     
 class ChoiceViewset(ModelViewSet):
@@ -145,8 +151,22 @@ class ChoiceViewset(ModelViewSet):
         student = get_object_or_404(Student, pk=pk)
         options = student.options.all()
         
-        # get the room
-        data = request.data.get("data")
+        # handle main options
+        main_options = request.data.get("main_options")
+        serialized_main_options = OptionSerializer(data=main_options, many=True)
+        serialized_main_options.is_valid(raise_exception=True)
+        
+        # handle the serve options
+        reserve_options = request.data.get("reserve_options")
+        serialized_reserves = OptionSerializer(data=reserve_options, many=True)
+        serialized_reserves.is_valid(raise_exception=True)
+        
+        for reserve in reserve_options:
+            reserve["reserve"] = True
+            main_options.append(reserve)          
+        
+            
+                    
         code = request.data.get("code")
         domain = request.data.get("domain")
         
@@ -162,7 +182,7 @@ class ChoiceViewset(ModelViewSet):
         # create the new choices
         new_option_choice = []
         
-        for index, option in enumerate(data):
+        for index, option in enumerate(main_options):
             option_uuid = option.get("uuid")
             reserve = option.get("reserve", False)
             valid_uuid_or_error(option_uuid)

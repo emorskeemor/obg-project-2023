@@ -7,18 +7,14 @@
             <q-card class="bg-grey-3" style="min-height:77vh">
               <q-card-section class="bg-grey-4">
                 <div class="text-h4 text-black main-font" style="padding-bottom:1vh">Available options</div>
-                <q-input
-                    filled
-                    v-model="search"
-                    label="Search"
-                    lazy-rules
-                    type="text"
-                    >
+                <!-- search bar -->
+                <q-input filled v-model="search" label="Search" lazy-rules type="text">
                   <template v-slot:prepend>
                       <q-icon name="search"/>
                   </template>
                 </q-input>
               </q-card-section>
+              <!-- available options draggable zone -->
               <draggable
                 v-if="!fetching"
                 class="list-group"
@@ -30,22 +26,10 @@
                 id="availableOptions"
               >
               <!-- iterate over all available options in pagination -->
-              <template #item="{element}">
-                <div class="row justify-center items-center">
-                  <q-card style="width:55vh;margin:1vh" class="bg-teal-3 glossy">
-                    <q-card-section>
-                      <div class="text-h5 text-white">{{element.title}}</div>
-                    </q-card-section>
-                    <!-- view info about the option -->
-                    <q-card-actions>
-                      <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info">
-                        
-                      </q-btn>
-                    </q-card-actions>
-                  </q-card>
-                </div>
-              </template>
-            </draggable>
+                <template #item="{element}">
+                    <AvailableOptionItem :element="element" @showInfo="loadSubjectInfo"/>
+                </template>
+              </draggable>
 
             <!-- display a message to display if no searched pages are found -->
             <div v-if="getSearchedPages().length === 0 && !fetching">
@@ -57,37 +41,17 @@
 
             <!-- display a skeleton if the options have not yet loaded -->
             <div v-if="fetching">
-              <div  v-for="i in [1,2,3]" :key="i">
-                <div class="row justify-center items-center">
-                    <q-card style="width:40vh;margin:1vh" class="bg-teal-3 glossy">
-                      <q-card-section>
-                        <q-skeleton type="text" />
-                      </q-card-section>
-                      <q-separator dark inset />
-                      <q-card-actions class="justify-center">
-                        <q-skeleton type="QBtn" />
-
-                      </q-card-actions>
-                    </q-card>
-                  </div>
-
-              </div>
+              <SkeletonComponent v-for="i in [1,2,3]" :key="i"/>
             </div>
             
             <!-- pagination  -->
             <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
               <q-pagination
                 v-model="availableOptionsPage"
-                :max=maximumOptionPages
-                :max-pages=5
-                direction-links
-                push
-                color="teal"
-                active-design="push"
-                active-color="red-5"
-                :modelValue="availableOptionsPage"
-                :boundary-numbers="false"
-
+                :max=maximumOptionPages :max-pages=5
+                direction-links push
+                color="teal" active-design="push" active-color="red-5"
+                :modelValue="availableOptionsPage" 
               />
             </div>
             </q-card>
@@ -99,7 +63,6 @@
             <q-card class="bg-grey-3" style="padding:20px;min-height:75vh">
               <!-- details about how to choose the options -->
               <div class="text-h4 text-black main-font">Hello {{studentData.firstName}} {{studentData.lastName}}</div>
-
               <div class="text-body1">Drag the subjects you would like to take into the chosen subjects section to the right</div>
 
               <!-- display how may subjects the student can take -->
@@ -117,21 +80,13 @@
                   itemKey="name"
                   id="reserveOptions"
                   >
-                    <template #item="{element, index}">
-                      <div class="row justify-center items-center">
-                        <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
-                          <q-card-section style="padding:5px">
-                            <div class="text-h5 text-white">{{element.title}}</div>
-                          </q-card-section>
-                          <q-card-actions>
-                            <q-btn class="bg-blue-grey text-white" @click="removeReserveOption(index)" icon="highlight_off"/>
-                            <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info"/>
-                          </q-card-actions>
-                        </q-card>
-                      </div>
+                    <template #item="{element}">
+                      <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeReserveOption"
+                      itemStyle="width:40vh;margin:1vh;max-height:15vh;"
+                      />
                     </template>
                   </draggable>
-                  <div v-if="reserveOptions.length == 0 && !fetching" class="bg-grey-5 rounded-borders" style="padding:10px">
+                  <div v-if="reserveOptions.length == 0 && !fetching" class="bg-grey-4 rounded-borders shadow-3" style="padding:10px">
                     <div class="text-h5 text-black main-font">Drag a reserve subject<div class="text-weight-bold">above</div> this box</div>
                   </div>
               </q-card-section>
@@ -148,7 +103,6 @@
                 </q-btn-group>
               </div>
             </q-card>
-            
           </div>
 
           <!-- The chosen options the student has chosen -->
@@ -162,90 +116,50 @@
               :list="chosenOptions"
               :group="{name:'chosenOptions', pull:true, put:true}"
               itemKey="name"
-              id="chosenOptions"
-              >
+              id="chosenOptions">
                 <template #item="{element, index}">
-                  <div class="row justify-center items-center" v-if="!fetching">
-                    <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
-                      <q-card-section style="padding:5px">
-                        <div class="text-h5 text-white">{{element.title}}</div>
-                        <q-badge color="red-12 row justify-center rounded-borders" floating rounded style="width:4vh;height:4vh">
-                          <div class="text-h5 text-white">{{index+1}}</div>
-                        </q-badge>
-                      </q-card-section>
-                      <q-card-actions>
-                        <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(index)" icon="highlight_off"/>
-                        <q-btn class="bg-blue text-white" @click="loadSubjectInfo(element)" icon="info"/>
-                      </q-card-actions>
-                    </q-card>
-                  </div>
+                  <OptionItem 
+                  :element="element" 
+                  @showInfo="loadSubjectInfo" @removeOption="removeChosenOption"
+                   v-if="!fetching"
+                  itemStyle="width:55vh;margin:1vh;max-height:15vh;">
+                    <q-badge color="red-12 row justify-center rounded-borders" floating rounded style="width:4vh;height:4vh">
+                      <div class="text-h5 text-white">{{index+1}}</div>
+                    </q-badge>
+                  </OptionItem>
                 </template>
+                
               </draggable>
             <!-- display a skeleton if the options have not yet loaded -->
             <div v-if="fetching">
-              <div  v-for="i in [1,2,3,4]" :key="i">
-                <div class="row justify-center items-center">
-                    <q-card style="width:40vh;margin:1vh" class="bg-teal-3 glossy">
-                      <q-card-section>
-                        <q-skeleton type="text" />
-                      </q-card-section>
-                      <q-separator dark inset />
-                      <q-card-actions class="justify-center">
-                        <q-skeleton type="QBtn" />
-                      </q-card-actions>
-                    </q-card>
-                  </div>
-              </div>
+              <SkeletonComponent v-for="i in [1,2,3,4]" :key="i"/>>
             </div>
             <!-- display a box to indicate where to place the subject -->
             <div v-if="chosenOptions.length == 0 && !fetching">
-              <q-card class="bg-grey-5 rounded-borders"  style="padding:1vh;margin-inline:3vh;margin-top: 10px;">
+              <q-card class="bg-grey-4 rounded-borders"  style="padding:1vh;margin-inline:3vh;margin-top: 10px;">
                 <div class="text-h5 text-black main-font">Drag in an option <div class="text-weight-bold">above</div> this box</div>
               </q-card>
             </div>
             <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
-
             </div>
             </q-card>
           </div>
         </div>
-        <!-- banner to show any errors raised when moving options -->
-        <q-banner inline-actions class="text-white bg-red absolute-bottom" v-if="this.errorMessage.length !== 0">
-          <div class="absolute-center">
-            {{errorMessage}}
-          </div>
-          <template v-slot:action>
-            <q-btn flat color="white" label="Dissmis" @click="this.errorMessage=''" />
-          </template>
-        </q-banner>
-
-        <q-banner inline-actions class="text-white bg-green absolute-bottom" v-if="this.successMessage.length !== 0">
-          <div class="absolute-center">
-            {{successMessage}}
-          </div>
-          <template v-slot:action>
-            <q-btn flat color="white" label="Dissmis" @click="this.successMessage=''" />
-          </template>
-        </q-banner>
-
-      <q-dialog v-model="displaySubjectInfo">
-        <q-card>
-          <q-card-section class="bg-teal-3 glossy">
-            <div class="text-h6 text-white text-weight-bold">{{displaySubjectDetails.title}},{{displaySubjectDetails.subject_code}}</div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none q-pa-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco 
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit 
-            in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" v-close-popup />
-          </q-card-actions>
-        </q-card>
+       
+      <BannerComponent 
+        colour="green" 
+        :message="successMessage" 
+        @dismiss="this.successMessage=''" 
+        v-if="successMessage.length !== 0"
+      />
+      <BannerComponent 
+        colour="red" 
+        :message="errorMessage" 
+        @dismiss="this.errorMessage=''"
+        v-if="errorMessage.length !== 0"
+      />
+      <q-dialog v-model="displaySubjectInfo" >
+        <SubjectInfoDialog :details="displaySubjectDetails"/>
       </q-dialog>
     </q-page>
 </template>
@@ -253,14 +167,25 @@
 <script lang="js">
 import { axiosInstance } from '@/api/axios';
 import { defineComponent } from 'vue';
+import BannerComponent from '@/components/misc/BannerComponent.vue';
+import SkeletonComponent from '@/components/misc/SkeletonComponent.vue';
+import AvailableOptionItem from '@/components/options/AvailableOptionItem.vue';
+import OptionItem from '@/components/options/OptionItem.vue';
+import SubjectInfoDialog from '@/components/options/SubjectInfoDialog.vue';
+
 import draggable from "vuedraggable";
 
-const optionsPerPage = 3
+const optionsPerPage = 5
 
 export default defineComponent({
   name: 'StudentChoices',
   components: {
-    draggable
+    draggable,
+    BannerComponent,
+    SkeletonComponent,
+    AvailableOptionItem,
+    OptionItem,
+    SubjectInfoDialog,
   },
   display: "Custom Clone",
   order: 3,
@@ -308,6 +233,7 @@ export default defineComponent({
             // if any and their allowed number of choices
             const data = response.data
             this.chosenOptions = [...data.options]
+            this.reserveOptions = [...data.reserves]
             this.maximumAllowedOptions = data.max_choices
             this.studentData.firstName = data.first_name
             this.studentData.lastName = data.last_name
@@ -415,7 +341,7 @@ export default defineComponent({
       let startingPage = (this.availableOptionsPage-1)*optionsPerPage
       
       this.availableOptionsCount = options.length
-      this.maximumOptionPages = Math.floor(this.availableOptionsCount/optionsPerPage) + 1
+      this.maximumOptionPages = Math.floor(this.availableOptionsCount/optionsPerPage) 
 
       return options.slice(
         startingPage,
@@ -433,9 +359,10 @@ export default defineComponent({
 
     saveChoices(){
       axiosInstance.put(`api-students/choices/${this.studentData.id}/update_student_options/`, {
-        "data":this.chosenOptions,
+        "main_options":this.chosenOptions,
         "code":this.$route.params.code,
         "domain":this.$route.params.domain,
+        "reserve_options":this.reserveOptions,
       }
       ).then(response=>{
         if (response.status == "200"){

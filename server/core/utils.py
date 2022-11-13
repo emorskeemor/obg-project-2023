@@ -10,6 +10,8 @@ def is_valid_uuid(uuid_to_test, version=4):
     checks if uuid is valid
     '''
     try:
+        if uuid_to_test is None:
+            raise ValueError
         uuid_obj = UUID(uuid_to_test, version=version)
     except ValueError:
         return False

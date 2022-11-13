@@ -1,17 +1,14 @@
 <template>
     <q-page class="q-pa-xs no-scroll" padding>
       <!-- header  -->
-      <div class="bg-white text-black">
-        <h1 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-        class="text-h1 text-center">
+      <q-card style="width:100vh;padding:5vh" class="absolute-center bg-grey-3"> 
+          <div class="text-h1 text-center">
           Access a room
-        </h1>
-        <h1 class="text-h5 text-center q-pb-xl">Enter the details of the room bellow</h1>
-      </div>
+        </div>
+        <div class="text-h5 text-center q-pb-xl">Enter the details of the room bellow</div> 
       <!-- domain name input -->
       <div class="q-gutter-md">
         <div class="fit row wrap justify-center items-start">
-
           <q-input
               filled
               v-model="domainName"
@@ -50,9 +47,8 @@
         </div>
 
       <!-- submit button to request access -->
-        <q-btn class="bg-green-13 text-white" push size="20px" @click="handleAccess">
-            Join
-        </q-btn>
+        <q-btn class="bg-green-13 text-white" push size="20px" @click="handleAccess" label="Join" icon-right="login"/>
+            
 
       </div>
       
@@ -65,6 +61,7 @@
           <q-btn flat color="white" label="Dissmis" @click="roomNotFound=false" />
         </template>
       </q-banner>
+      </q-card>
     </q-page>
     
 </template>
