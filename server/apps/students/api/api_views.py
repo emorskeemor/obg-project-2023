@@ -198,7 +198,7 @@ class ChoiceViewset(ModelViewSet):
         for rule in forbidden:
             count = 0
             for choice in new_option_choice:
-                if choice.option in rule:
+                if choice.option in rule and choice.reserve is False:
                     count += 1
             if count == len(rule):  
                 raise exceptions.ValidationError(

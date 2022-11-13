@@ -82,6 +82,7 @@
                   >
                     <template #item="{element}">
                       <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeReserveOption"
+                      v-if="!fetching"
                       itemStyle="width:40vh;margin:1vh;max-height:15vh;"
                       />
                     </template>
@@ -89,6 +90,9 @@
                   <div v-if="reserveOptions.length == 0 && !fetching" class="bg-grey-4 rounded-borders shadow-3" style="padding:10px">
                     <div class="text-h5 text-black main-font">Drag a reserve subject<div class="text-weight-bold">above</div> this box</div>
                   </div>
+                  <div v-if="fetching">
+                  <SkeletonComponent v-for="i in [1,2]" :key="i"/>
+                </div>
               </q-card-section>
               <!-- save options and reserves -->
               <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
@@ -115,6 +119,7 @@
               class="list-group"
               :list="chosenOptions"
               :group="{name:'chosenOptions', pull:true, put:true}"
+              @change="changesMade=true"
               itemKey="name"
               id="chosenOptions">
                 <template #item="{element, index}">
@@ -213,9 +218,11 @@ export default defineComponent({
       search:"",
       displaySubjectInfo:false,
       displaySubjectDetails: {},
-      //
+      // messages
       errorMessage:"",
       successMessage:"",
+
+      changesMade:false,
     }
   },
  
@@ -259,17 +266,22 @@ export default defineComponent({
       })
   },
   beforeRouteLeave (to, from , next) {
-    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-    if (answer) {
-      next()
+    if (this.changesMade === true) {
+      const answer = window.confirm('You have unsaved changes! Are you sure you want to leave this page?')
+      if (answer) {
+        next()
+      } else {
+        next(false)
+      }
     } else {
-      next(false)
+      next()
     }
   },
   methods:{
     moveOption(event) {
       // validate reseve options
       this.errorMessage = ""
+      this.changesMade = true
       if (event.to.id == "reserveOptions") {
         if (this.reserveOptions.length >= this.maximumReserveOptions){
           this.errorMessage = "Too many reserve options"
@@ -314,10 +326,14 @@ export default defineComponent({
       return option
     },
     removeChosenOption(index){
+      this.changesMade = true
+
       this.errorMessage = ""
       this.chosenOptions.splice(index, 1)
     },
     removeReserveOption(index){
+      this.changesMade = true
+
       this.errorMessage = ""
       this.reserveOptions.splice(index, 1)
     },
@@ -366,8 +382,12 @@ export default defineComponent({
       }
       ).then(response=>{
         if (response.status == "200"){
+          this.errorMessage = ""
           this.successMessage = "saved successfully"
+          this.changesMade = false
+
         } else if (response.status == "400") {
+          this.successMessage = ""
           this.errorMessage = response.data.detail
         }
 

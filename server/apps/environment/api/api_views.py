@@ -122,6 +122,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
         )
         queryset = room.options_using.options.order_by("title").all()
         serialized = OptionSerializer(queryset, many=True)
+        
         return response.Response(serialized.data)
             
 class AvailableOptionViewset(viewsets.ModelViewSet):

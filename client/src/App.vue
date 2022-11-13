@@ -30,7 +30,7 @@
       <q-ajax-bar
       ref="bar"
       position="bottom"
-      color="orange-8"
+      color="red-8"
       size="10px"
       />
 
