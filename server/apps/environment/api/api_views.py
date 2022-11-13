@@ -41,9 +41,9 @@ class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
 
-    def retrieve(self, request, code, *args, **kwargs):
+    def retrieve(self, request, pk, *args, **kwargs):
         room = get_object_or_404(
-            Room, code=code, domain=get_domain(request))
+            Room, code=pk, domain=get_domain(request))
         self.check_object_permissions(self.request, room)
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
@@ -57,10 +57,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         if serialized.is_valid():
             cleaned_get = serialized.data.get
             # deny access if the current room is not public
-            if cleaned_get("public") is False:
-                return response.Response(
-                    {"detail":"room is currently unavailable"}, status=status.HTTP_403_FORBIDDEN
-                    )
+            
             code = cleaned_get("code")
             # get the room we need to work with if the domain and code match
             room = get_object_or_404(
@@ -68,6 +65,10 @@ class RoomViewSet(viewsets.ModelViewSet):
                 code=code,
                 domain=cleaned_get("domain")
                 )
+            if room.public is False:
+                return response.Response(
+                    {"detail":"room is currently unavailable"}, status=status.HTTP_403_FORBIDDEN
+                    )
             email = cleaned_get("email")
             # validate the email domain matches requirement
             if room.email_domain:
