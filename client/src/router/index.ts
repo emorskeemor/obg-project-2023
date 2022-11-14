@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/main/HomeView.vue'
+import HomeView from '../views/dashboard/HomeView.vue'
 // errors
 import PermissionDeniedView from '@/views/error/PermissionDeniedView.vue'
 import ResourceNotFound from '@/views/error/ResourceNotFound.vue'
@@ -12,7 +12,7 @@ import RoomJoinView from '@/views/room/RoomJoinView.vue'
 import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
 import ChoicesView from '@/views/room/ChoicesView.vue'
 // teacher
-import TeacherDashboardView from '@/views/main/TeacherDashboardView.vue'
+import TeacherDashboardView from '@/views/dashboard/TeacherDashboardView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
 

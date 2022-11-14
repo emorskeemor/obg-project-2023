@@ -12,11 +12,30 @@ from apps.students.api.serializers import OptionSerializer
 class RoomSerializer(serializers.ModelSerializer):
     '''
     serialize room objects
-    '''
+    '''    
     class Meta:
         model = Room
-        fields = "__all__"
-    
+        fields = ["code","domain","title", "admin", "public"]
+        
+    def create(self, validated_data):
+        settings_title = validated_data.pop("settings_title")
+        new_room = Room(**validated_data)
+        new_room.save()
+        GenerationSettings.objects.create(
+            room=new_room, 
+            title=settings_title
+            )
+        return new_room
+        
+        
+        
+        
+class RoomCreateSerializer(serializers.Serializer):
+    domain = serializers.CharField()
+    settings = serializers.CharField()
+    title = serializers.CharField()
+    user_id = serializers.UUIDField()
+        
 class RoomJoinSerializer(serializers.Serializer):
     '''
     serializer for validating a student joining a room

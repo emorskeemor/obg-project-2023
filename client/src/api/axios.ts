@@ -28,13 +28,13 @@ axiosInstance.interceptors.response.use(
 
 const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promise<IAuthTokens | string> => {
   // a refresh token will be requested if the access token has expired
-  const response = await axios.post(`${BASE_URL}/token/refresh`, { refresh: refreshToken })
+  const response = await axios.post(`${BASE_URL}api/token/refresh`, { refresh: refreshToken })
 
   return response.data.access
 }
 
 applyAuthTokenInterceptor(axiosInstance, {
   requestRefresh,
-  header:"Authorization",  
-  headerPrefix:"Bearer", 
+  // header:"Authorization",  
+  // headerPrefix:"Bearer", 
 })

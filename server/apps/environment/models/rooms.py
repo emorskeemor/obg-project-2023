@@ -22,6 +22,7 @@ class Room(models.Model):
     '''
     code = models.CharField(_("room code"), default=generate_room_code, max_length=ROOM_CODE_LENGTH)
     domain = models.CharField(_("domain name"), max_length=40)
+    title = models.CharField(_("name of the room"), max_length=30, blank=True, null=True)
     slug = models.SlugField(max_length=250, blank=True)
     admin = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -44,6 +45,7 @@ class Room(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="room",
+        blank=True,
     )
     
     class Meta:

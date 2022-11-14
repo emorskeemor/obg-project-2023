@@ -8,6 +8,7 @@ from apps.environment.models import (
 from apps.students.models import Student
 
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework import (
     exceptions, permissions, 
@@ -18,6 +19,7 @@ from rest_framework.decorators import action
 from .serializers import (
     RoomSerializer,
     RoomJoinSerializer,
+    RoomCreateSerializer,
     SettingsSerializer,
     AvailableOptionChoiceSerializer,
     AvailableOptionSerializer,
@@ -40,6 +42,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     '''
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
+    permission_classes = []
 
     def retrieve(self, request, pk, *args, **kwargs):
         room = get_object_or_404(
@@ -47,7 +50,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, room)
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
-
+    
     @action(detail=False, methods=["post"])
     def join(self, request):
         '''
@@ -102,18 +105,16 @@ class RoomViewSet(viewsets.ModelViewSet):
             {"detail": first_error}, status=status.HTTP_400_BAD_REQUEST
             )    
     
-    def perform_create(self, serializer):
-        # we also need to create settings that will be attached to this
-        # room when it is created
-        new_room = serializer.save(admin=self.request.user)
-        settings_title = self.request.data.get("settings_title", "my_settings")
-        new_settings = GenerationSettings(
-            room=new_room,
-            title=settings_title
-        )
-        new_settings.save()
         
-    
+    def create(self, request, *args, **kwargs):
+        
+        serialized = self.serializer_class(data=request.data)
+        serialized.is_valid(raise_exception=True)
+        settings_title = request.data.get("settings_title")
+        if settings_title is None:
+            raise exceptions.ValidationError({"detail":"settings title is required"})
+        serialized.save(admin=request.user, settings_title=settings_title)
+        return response.Response({"detail":"success"}, status=status.HTTP_200_OK)
         
         
         

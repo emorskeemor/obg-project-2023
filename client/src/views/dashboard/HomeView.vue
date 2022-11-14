@@ -37,7 +37,7 @@
     </q-page>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { defineComponent } from 'vue';
 import { isLoggedIn } from 'axios-jwt';
 
