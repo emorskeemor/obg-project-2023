@@ -18,8 +18,14 @@ from core.utils import valid_uuid_or_error
 class UserViewSet(ModelViewSet):
     
     serializer_class = UserSerializer
-    queryset = User.objects.all()
-
+    queryset = User.objects.all()        
+    
+    def create(self, request, *args, **kwargs):
+        serialized = self.serializer_class(data=request.data)
+        serialized.is_valid(raise_exception=True)
+        serialized.save()
+        return Response(serialized.data, status=status.HTTP_200_OK)
+        
     @action(detail=True, methods=["get"])
     def rooms(self, request, pk):
         valid_uuid_or_error(pk)
