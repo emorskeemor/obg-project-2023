@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from apps.students.models import Student, Choice, Option, Requirement
 
-
 class ChoiceSerializer(serializers.ModelSerializer):
     '''serialize choice objects'''
     class Meta:
@@ -28,8 +27,19 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class StudentDumpSerializer(serializers.Serializer):
     
-    options_using = serializers.CharField()
-    room_code = serializers.CharField()
-    generate_dummy_names = serializers.BooleanField(default=False)
-    max_opts_per_student = serializers.IntegerField(default=4, required=False)
-    data = serializers.FileField(read_only=True)
+    options_using = serializers.CharField(
+        help_text="the title of the options that is to be used"
+        )
+    room_code = serializers.CharField(
+        help_text="code of the room where the students' data will be dumped"
+    )
+    generate_dummy_names = serializers.BooleanField(
+        default=True,
+        help_text="defines if each line in the csv will be given dummy names"
+    )
+    max_opts_per_student = serializers.IntegerField(
+        default=4, required=False,
+        label="max options that a student can take"
+        )
+    data = serializers.FileField(write_only=True, required=False)
+    

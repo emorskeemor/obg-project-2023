@@ -40,13 +40,7 @@ class Room(models.Model):
         blank=True,
         null=True
     )
-    options_using = models.OneToOneField(
-        "AvalilableOptionChoices",
-        on_delete=models.CASCADE,
-        null=True,
-        related_name="room",
-        blank=True,
-    )
+    
     
     class Meta:
         unique_together = ("code", "domain")

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core import validators
 
 from apps.students.models import Option
+from apps.environment.models import Room
 
 
 class AvalilableOptionChoices(models.Model):
@@ -17,6 +18,13 @@ class AvalilableOptionChoices(models.Model):
         verbose_name=_("available options"),
         related_name="available_option_choices"
         )
+    room = models.OneToOneField(
+        Room,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="available_option_choices",
+        blank=True,
+    )
     
     class Meta:
         verbose_name_plural = "Available Option Choices"

@@ -1,8 +1,10 @@
 from rest_framework import permissions
 
-class RoomAccessPermission(permissions.BasePermission):
-    message = 'Access denied'
+from apps.environment.models import Room
 
-    def has_object_permission(self, request, view, obj, *args, **kwargs):
-        user = getattr(obj, "admin", None)
-        return user == request.user
+class RoomAccessPermission(permissions.BasePermission):
+    message = 'You do not have access to this Room'
+
+    def has_object_permission(self, request, view, obj):
+        assert isinstance(obj, Room), "object to check must be an instance of a room"
+        return obj.admin == request.user

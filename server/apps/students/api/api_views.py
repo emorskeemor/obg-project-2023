@@ -4,13 +4,18 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status, exceptions
 from rest_framework.decorators import action
+from rest_framework import permissions
 
 from django.shortcuts import get_object_or_404
 from copy import deepcopy
 
 from apps.students.models import Student, Choice, Option, Requirement
 from apps.generator.models import InsertTogether
-from apps.environment.api.serializers import RoomSerializer
+
+from apps.environment.api import (
+    serializers as env_serializers,
+    permissions as env_permissions,
+)
 from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings
 
 from core.utils import csv_file_to_list, valid_uuid_or_error
@@ -25,7 +30,6 @@ from .pagination import StudentPaginator
 
 from drf_yasg.utils import swagger_auto_schema
 
-
 from blocks.core.pregenerate.clean import clean_options
 
 import names
@@ -35,7 +39,7 @@ class RequirementSerializer(ModelSerializer):
     '''
     serialize requirement 
     '''
-    room = RoomSerializer(read_only=True)
+    room = env_serializers.RoomSerializer(read_only=True)
     option = OptionSerializer(read_only=True)
     
     class Meta:
@@ -46,13 +50,11 @@ class StudentViewset(ModelViewSet):
     '''
     views to access students
     '''
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, env_permissions.RoomAccessPermission]
     serializer_class = StudentSerializer
     queryset = Student.objects.all().order_by("first_name")
     pagination_class = StudentPaginator
     
-    lookup_field = "uuid"
-
     @swagger_auto_schema(request_body=StudentDumpSerializer)
     @action(detail=False, methods=["post"], url_path="dump-students")
     def dump_students(self, request):
@@ -62,49 +64,49 @@ class StudentViewset(ModelViewSet):
         '''
         data = csv_file_to_list(request, "data", slice(4))
         serialized = StudentDumpSerializer(data=request.data)
-        if serialized.is_valid():
-            get = serialized.data.get
-            room_code = get("room_code")
-            room = get_object_or_404(Room, code=room_code)
-            
-            options_using = get("options_using")
-            
-            choices = get_object_or_404(
-                AvalilableOptionChoices,
-                title=options_using,
-                room=room
-                )
-            available_options = choices.options.all()
-            for options in data:
-                options = clean_options(options, max_opts=get("max_opts_per_student"))
-                first_name = None
-                last_name = None
-                if get("generate_dummy_names"):
-                    first_name = names.get_first_name()
-                    last_name = names.get_last_name()
-                student = Student.objects.create(
-                    first_name=first_name,
-                    last_name=last_name,
-                    room=room,
-                    email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
-                )
-                student.save()
-                
-                student_choices = []
-                for option_code in options:
-                    # warning: ambiguous 404
-                    option = get_object_or_404(available_options, subject_code=option_code)
-                    new_choice = Choice(
-                        option=option,
-                        student =student
-                    )
-                    student_choices.append(new_choice)
-                Choice.objects.bulk_create(student_choices)
-                
-                
-            return Response({"message":"successful"}, status=status.HTTP_200_OK)
+        serialized.is_valid(raise_exception=True)
+        get = serialized.data.get
         
-    def retrieve(self, request, uuid=None, *args, **kwargs):
+        room_code = get("room_code")
+        room = get_object_or_404(Room, code=room_code)
+        self.check_object_permissions(request, room)
+        options_using = get("options_using")
+        
+        choices = get_object_or_404(
+            AvalilableOptionChoices,
+            title=options_using,
+            room=room
+            )
+        available_options = choices.options.all()
+        for options in data:
+            options = clean_options(options, max_opts=get("max_opts_per_student"))
+            first_name = None
+            last_name = None
+            if get("generate_dummy_names"):
+                first_name = names.get_first_name()
+                last_name = names.get_last_name()
+            student = Student.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                room=room,
+                email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
+            )
+            student.save()
+            
+            student_choices = []
+            for option_code in options:
+                # warning: ambiguous 404
+                option = get_object_or_404(available_options, subject_code=option_code)
+                new_choice = Choice(
+                    option=option,
+                    student =student
+                )
+                student_choices.append(new_choice)
+            Choice.objects.bulk_create(student_choices)
+            
+        return Response({"message":"successful"}, status=status.HTTP_200_OK)
+        
+    def retrieve(self, request, uuid=None):
         '''
         return a student with their ordered options and their reserve options
         '''
@@ -132,7 +134,6 @@ class ChoiceViewset(ModelViewSet):
     views to access choices
     '''
     permission_classes = [AllowAny]
-
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
     
@@ -161,14 +162,12 @@ class ChoiceViewset(ModelViewSet):
         student = get_object_or_404(Student, pk=pk)
         options = student.options.all()
         
-        # first serialize the incoming data to ensure if conforms to our
-        # formatting standards
-        # handle main options
+        # first serialize the incoming data to ensure if conforms to our formatting standards
         main_options = request.data.get("main_options")
         serialized_main_options = OptionSerializer(data=main_options, many=True)
         serialized_main_options.is_valid(raise_exception=True)
         
-        # handle the serve options
+        # handle the reserve options
         reserve_options = request.data.get("reserve_options")
         serialized_reserves = OptionSerializer(data=reserve_options, many=True)
         serialized_reserves.is_valid(raise_exception=True)
@@ -230,7 +229,7 @@ class OptionViewset(ModelViewSet):
     '''
     views to access options
     '''
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     serializer_class = OptionSerializer
     queryset = Option.objects.all()
@@ -259,7 +258,7 @@ class RequirementViewSet(ModelViewSet):
     '''
     views to access requirements that are linked to options
     '''
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     serializer_class = RequirementSerializer
     queryset = Requirement.objects.all()

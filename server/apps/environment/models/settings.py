@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core import validators, exceptions
+from django.core import validators
 from django.conf import settings
 
 from .rooms import Room
@@ -49,7 +49,6 @@ class GenerationSettings(models.Model):
                 )
             ]
         )
-    
     lesson_cost = models.FloatField(
         verbose_name=_("cost per lesson"),
         default=5000
