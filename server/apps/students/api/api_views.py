@@ -106,11 +106,11 @@ class StudentViewset(ModelViewSet):
             
         return Response({"message":"successful"}, status=status.HTTP_200_OK)
         
-    def retrieve(self, request, uuid=None):
+    def retrieve(self, request, pk):
         '''
         return a student with their ordered options and their reserve options
         '''
-        student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=uuid)
+        student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=pk)
         # order the students' choices by priority and get the reserve options
         choices = Choice.objects.filter(student=student).order_by("priority")
         reserved = choices.filter(reserve=True)

@@ -39,14 +39,10 @@ class RoomViewSet(viewsets.ModelViewSet):
     '''
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, RoomAccessPermission]
+    permission_classes = [RoomAccessPermission]
 
     def retrieve(self, request, pk):
-        # TODO: fix this
-        room = get_object_or_404(
-            Room, pk=pk, domain=get_domain(request)
-            )
-        self.check_object_permissions(self.request, room)
+        room = get_object_or_404(Room, pk=pk)
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
     
@@ -65,7 +61,6 @@ class RoomViewSet(viewsets.ModelViewSet):
             domain=cleaned_get("domain")
             )
         # check permissions and ensure room is public for joining
-        self.check_object_permissions(request, room)
         if room.public is False:
             return response.Response(
                 {"detail":"room is currently unavailable"}, status=status.HTTP_403_FORBIDDEN
@@ -97,9 +92,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["get"])
     def room_available(self, request, pk): 
-        # TODO : fix this
-        room = get_object_or_404(Room, pk=pk)
-        self.check_object_permissions(request, room)
+        room = get_object_or_404(Room, code=pk, domain=get_domain(request))
         if room.public:
             return response.Response({"detail":"room is public and can be accessed"}, status=status.HTTP_200_OK)
         return response.Response({"detail":"room is private and cannot be accessed"}, status=status.HTTP_403_FORBIDDEN)
@@ -109,7 +102,6 @@ class RoomViewSet(viewsets.ModelViewSet):
         room = get_object_or_404(
             Room, pk=pk, domain=get_domain(request)
             )
-        self.check_object_permissions(self.request, room)
         room_serialized = self.serializer_class(room)
         # add the settings of the room as well
         settings = get_object_or_404(GenerationSettings, room=room)
@@ -120,6 +112,16 @@ class RoomViewSet(viewsets.ModelViewSet):
         payload["room"] = room_serialized.data
         payload["settings"] = settings_data
         return response.Response(payload, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=["get"])
+    def retrieve_using_domain_and_code(self, request):
+        serialized = self.serializer_class(data=request.data)
+        serialized.is_valid(raise_exception=True)
+        get = serialized.data.get
+        room = get_object_or_404(Room, domain=get("domain"), code=get("code"))
+        return response.Response(serialized.data, status=status.HTTP_200_OK)
+        
+        
         
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room
@@ -147,7 +149,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     serializer_class = AvailableOptionChoiceSerializer
     queryset = AvalilableOptionChoices.objects.all()
     pagination_class = AvailableOptionPagination
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     @action(detail=False, methods=["get"], url_path="room-choices")
     def available_room_choices(self, request):
@@ -157,7 +159,9 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             domain=get("domain"),
             code=get("code")
         )
-        queryset = room.options_using.options.order_by("title").all()
+        # queryset = room.options_using.options.order_by("title").all()
+        available_option_choices = get_object_or_404(AvalilableOptionChoices, room=room)
+        queryset = available_option_choices.options.order_by("title").all()
         serialized = OptionSerializer(queryset, many=True)
         
         return response.Response(serialized.data)
