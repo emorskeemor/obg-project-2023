@@ -13,7 +13,7 @@
                         </template>
                     </q-input>
                 </q-card-section>
-                <RoomItem v-for="room in currentRooms" :key='room' :room='room' @onDelete="deleteRoom" />
+                <RoomItem v-for="room in currentRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
             </q-card>
         </div>
         <!-- middle column -->
@@ -119,7 +119,7 @@ export default defineComponent({
         fetchRooms() {
             // fetch the rooms created by the user and update the array of rooms
             axiosInstance.get(`api-users/users/${this.$route.params.user_id}/rooms`).then(
-                response => {
+                (response) => {
                     this.currentRooms = response.data
                 })
         },
@@ -130,6 +130,16 @@ export default defineComponent({
                 title: this.newRoomName,
             }).then(response => {
                 this.fetchRooms()
+            })
+        },
+        editRoom(room) {
+            this.$router.push({
+                "name": "room-edit",
+                params: {
+                    user_id: this.$route.params.user_id,
+                    room_id: room.pk,
+                    domain: room.domain,
+                }
             })
         }
     }

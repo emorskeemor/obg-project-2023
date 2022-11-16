@@ -10,14 +10,11 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class OptionSerializer(serializers.ModelSerializer):
     '''serialize option objects'''
+    
     class Meta:
         model = Option
         fields = "__all__"
         
-    def update(self, instance, validated_data):
-        print(validated_data)
-        return super().update(instance, validated_data)
-
 class StudentSerializer(serializers.ModelSerializer):
     '''serialize student objects'''
     options = OptionSerializer(many=True, read_only=True)
@@ -26,7 +23,9 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class StudentDumpSerializer(serializers.Serializer):
-    
+    '''
+    serialize data to dump student options via csv
+    '''
     options_using = serializers.CharField(
         help_text="the title of the options that is to be used"
         )

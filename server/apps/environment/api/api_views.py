@@ -42,8 +42,9 @@ class RoomViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, RoomAccessPermission]
 
     def retrieve(self, request, pk):
+        # TODO: fix this
         room = get_object_or_404(
-            Room, code=pk, domain=get_domain(request)
+            Room, pk=pk, domain=get_domain(request)
             )
         self.check_object_permissions(self.request, room)
         serialized = self.serializer_class(room)
@@ -92,7 +93,33 @@ class RoomViewSet(viewsets.ModelViewSet):
             last_name=cleaned_get("last_name")
             )
         new_student.save()
-        return response.Response({"student_uuid":new_student.uuid}, status=status.HTTP_200_OK)    
+        return response.Response({"student_uuid":new_student.uuid}, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["get"])
+    def room_available(self, request, pk): 
+        # TODO : fix this
+        room = get_object_or_404(Room, pk=pk)
+        self.check_object_permissions(request, room)
+        if room.public:
+            return response.Response({"detail":"room is public and can be accessed"}, status=status.HTTP_200_OK)
+        return response.Response({"detail":"room is private and cannot be accessed"}, status=status.HTTP_403_FORBIDDEN)
+    
+    @action(detail=True, methods=["get"])
+    def room_with_settings(self, request, pk):
+        room = get_object_or_404(
+            Room, pk=pk, domain=get_domain(request)
+            )
+        self.check_object_permissions(self.request, room)
+        room_serialized = self.serializer_class(room)
+        # add the settings of the room as well
+        settings = get_object_or_404(GenerationSettings, room=room)
+        payload = {}
+        settings_serialized = SettingsSerializer(settings)
+        settings_data = settings_serialized.data.copy()
+        settings_data.pop("room")
+        payload["room"] = room_serialized.data
+        payload["settings"] = settings_data
+        return response.Response(payload, status=status.HTTP_200_OK)
         
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room

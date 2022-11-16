@@ -38,7 +38,7 @@ class InsertTogetherSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = InsertTogether
-        fields = ["target", "settings", "targets"]
+        fields = ["target", "settings", "targets", "pk"]
         
 class GenerationSerializer(serializers.Serializer):
     '''

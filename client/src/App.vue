@@ -68,6 +68,11 @@
         loggedIn: false
       }
     },
+    beforeMount(){
+      if (this.loggedIn){
+        this.returnHome()
+      }
+    },
     methods:{
       handleLogout(){
         // logout the user by removing the access and refresh tokens from local

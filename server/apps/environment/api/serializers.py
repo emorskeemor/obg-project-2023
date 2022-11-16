@@ -16,12 +16,12 @@ class RoomSerializer(serializers.ModelSerializer):
     code = serializers.CharField(max_length=8, help_text="room code", read_only=True)
     domain = serializers.CharField(max_length=50, help_text="room domain name")
     title = serializers.CharField()
-    admin = UserSerializer()
-    public = serializers.BooleanField(help_text="determines if the room can be accessed")
+    admin = UserSerializer(required=False)
+    public = serializers.BooleanField(help_text="determines if the room can be accessed", required=False)
     
     class Meta:
         model = Room
-        fields = ["code","domain","title", "admin", "public"]
+        fields = ["code","domain","title", "admin", "public", "pk"]
         
     def create(self, validated_data):
         settings_title = validated_data.pop("settings_title")
@@ -55,7 +55,7 @@ class AvailableOptionChoiceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = AvalilableOptionChoices
-        fields = ["title", "options"]    
+        fields = ["title", "options", "pk"]    
         
 class AvailableOptionSerializer(serializers.ModelSerializer):
     '''
@@ -66,7 +66,7 @@ class AvailableOptionSerializer(serializers.ModelSerializer):
     classes = serializers.IntegerField(help_text="classes delegated to this subject")
     class Meta:
         model = AvailableOption
-        fields = ["option", "option_choices", "classes"]
+        fields = ["option", "option_choices", "classes", "pk"]
         
 class SettingsSerializer(serializers.ModelSerializer):
     '''

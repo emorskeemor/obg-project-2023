@@ -15,6 +15,7 @@ import ChoicesView from '@/views/room/ChoicesView.vue'
 import TeacherDashboardView from '@/views/dashboard/TeacherDashboardView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
+import RoomEditView from '@/views/room/RoomEditView.vue'
 
 // http://localhost:8080/user/352a7ee2-b55d-4096-a0c7-77a4e482f91d/dashboard
 
@@ -58,7 +59,7 @@ const routes: Array<RouteRecordRaw> = [
     component: RoomJoinView
   },
   {
-    path: '/user/:user_id/dashboard',
+    path: '/u/:user_id/dashboard',
     name: 'user-dashboard',
     component: TeacherDashboardView,
     beforeEnter: (to, from) => {
@@ -69,12 +70,22 @@ const routes: Array<RouteRecordRaw> = [
     
   },
   {
-    path: '/room/join/:domain/:code/verify',
+    path: '/u/:user_id/r/:domain/:room_id/edit',
+    name: 'room-edit',
+    component: RoomEditView,
+    beforeEnter: (to, from) => {
+      if (!isLoggedIn()){
+        return {name:"E404"}
+      }
+    },
+  },
+  {
+    path: '/u/join/:domain/:code/verify',
     name: 'room-verification',
     component: StudentCredentialsView
   },
   {
-    path: '/room/:domain/:code/s/:id',
+    path: '/u/:domain/:code/s/:id',
     name: 'student-choice',
     component: ChoicesView
   },
