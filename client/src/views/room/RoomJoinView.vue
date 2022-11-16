@@ -87,7 +87,6 @@ export default defineComponent({
                         } else {
                             // display default error that was raised by the server            
                             // this.errorMessage = "Room with given domain and room code not found"
-
                             this.errorMessage = response.data.detail
                             this.error = true
                         }

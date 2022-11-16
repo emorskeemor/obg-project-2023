@@ -4,7 +4,7 @@
         <q-card style="width:100vh" class="absolute-center bg-grey-3">
           <q-card-section>
             <div class="main-font text-h1 text-weight-medium">
-            Are you a...
+            Are you a
             </div>
           </q-card-section>
           <div class="q-pa-md q-gutter-lg row justify-center">

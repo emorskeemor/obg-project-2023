@@ -70,7 +70,7 @@ const routes: Array<RouteRecordRaw> = [
     
   },
   {
-    path: '/u/:user_id/r/:domain/:room_id/edit',
+    path: '/u/:user_id/r/:room_id/edit',
     name: 'room-edit',
     component: RoomEditView,
     beforeEnter: (to, from) => {

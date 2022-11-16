@@ -42,7 +42,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     permission_classes = [RoomAccessPermission]
 
     def retrieve(self, request, pk):
-        room = get_object_or_404(Room, pk=pk)
+        room = get_object_or_404(Room, code=pk)
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
     
@@ -67,7 +67,7 @@ class RoomViewSet(viewsets.ModelViewSet):
                 )
         email = cleaned_get("email")
         # validate the email domain matches requirement
-        if room.email_domain:
+        if room.email_domain and room.check_email_domain:
             _, domain = email.split("@")
             if domain != room.email_domain:
                 raise exceptions.ValidationError(
@@ -100,7 +100,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def room_with_settings(self, request, pk):
         room = get_object_or_404(
-            Room, pk=pk, domain=get_domain(request)
+            Room, code=pk
             )
         room_serialized = self.serializer_class(room)
         # add the settings of the room as well
@@ -115,14 +115,11 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=["get"])
     def retrieve_using_domain_and_code(self, request):
-        serialized = self.serializer_class(data=request.data)
-        serialized.is_valid(raise_exception=True)
-        get = serialized.data.get
+        get = request.data.get
         room = get_object_or_404(Room, domain=get("domain"), code=get("code"))
+        serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
-        
-        
-        
+         
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room
         serialized = self.serializer_class(data=request.data)

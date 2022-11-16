@@ -20,7 +20,7 @@ class Room(models.Model):
     '''
     represents a centralised model for getting data and for processing
     '''
-    code = models.CharField(_("room code"), default=generate_room_code, max_length=ROOM_CODE_LENGTH)
+    code = models.CharField(_("room code"), default=generate_room_code, max_length=ROOM_CODE_LENGTH, primary_key=True)
     domain = models.CharField(_("domain name"), max_length=40)
     title = models.CharField(_("name of the room"), max_length=30, blank=True, null=True)
     slug = models.SlugField(max_length=250, blank=True)
@@ -40,6 +40,7 @@ class Room(models.Model):
         blank=True,
         null=True
     )
+    check_email_domain = models.BooleanField(_("check email domain"), default=False)
     
     
     class Meta:

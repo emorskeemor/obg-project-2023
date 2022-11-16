@@ -21,7 +21,7 @@ class RoomSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Room
-        fields = ["code","domain","title", "admin", "public", "pk"]
+        fields = ["code","domain","title", "admin", "public", "pk", "email_domain", "check_email_domain"]
         
     def create(self, validated_data):
         settings_title = validated_data.pop("settings_title")
