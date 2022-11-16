@@ -110,8 +110,6 @@ class StudentViewset(ModelViewSet):
         '''
         return a student with their ordered options and their reserve options
         '''
-        import time
-        time.sleep(3)
         student = get_object_or_404(Student.objects.prefetch_related("options"), uuid=pk)
         # order the students' choices by priority and get the reserve options
         choices = Choice.objects.filter(student=student).order_by("priority")

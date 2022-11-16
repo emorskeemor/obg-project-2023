@@ -138,7 +138,6 @@ export default defineComponent({
                 params: {
                     user_id: this.$route.params.user_id,
                     room_id: room.pk,
-                    domain: room.domain,
                 }
             })
         }
