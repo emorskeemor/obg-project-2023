@@ -4,7 +4,8 @@ from apps.environment.models import (
     Room, 
     AvalilableOptionChoices, 
     GenerationSettings, 
-    AvailableOption
+    AvailableOption,
+
     )
 from apps.users.api.serializers import UserSerializer
 from apps.students.api.serializers import OptionSerializer
@@ -26,8 +27,11 @@ class RoomSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         settings_title = validated_data.pop("settings_title")
         assert settings_title, "'settings_title' must be passed to save() method for settings model"
-        new_room = Room(**validated_data)
-        new_room.save()
+        new_room = Room.objects.create(**validated_data)
+        AvalilableOptionChoices.objects.create(
+            title="default-available-opts",
+            room=new_room
+        )
         GenerationSettings.objects.create(
             room=new_room, 
             title=settings_title

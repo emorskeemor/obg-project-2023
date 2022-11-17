@@ -28,6 +28,7 @@ class AvalilableOptionChoices(models.Model):
     
     class Meta:
         verbose_name_plural = "Available Option Choices"
+        unique_together = ["room","title"]
         
     def __str__(self) -> str:
         return "%s <opts>" % (self.title)

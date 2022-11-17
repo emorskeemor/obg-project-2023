@@ -30,7 +30,8 @@ import {
     defineComponent
 } from 'vue';
 import {
-    login, logout
+    login,
+    logout
 } from '@/api/auth'
 import jwt_decode from 'jwt-decode'
 import {
@@ -80,17 +81,18 @@ export default defineComponent({
         }
     },
     beforeRouteEnter(to, from, next) {
-      
         if (isLoggedIn()) {
             const answer = window.confirm('You are already logged in! Returning to the login page will log you out')
             if (answer) {
-                logout()
                 next()
+                logout()
             } else {
                 next(false)
             }
+        } else {
+            next()
+
         }
-      next()
     }
 })
 </script>

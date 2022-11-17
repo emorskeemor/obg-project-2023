@@ -69,6 +69,8 @@
 
                     <q-card-section class="bg-grey-4 absolute-bottom">
                         <div class="text-h4 main-font"></div>
+                        <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="large" />
+
                     </q-card-section>
 
                 </q-card>
@@ -144,7 +146,7 @@ import BannerComponent from '@/components/misc/BannerComponent.vue';
 export default defineComponent({
         name: "RoomEditView",
         components: {
-            BannerComponent
+            BannerComponent,
         },
         data() {
             return {
@@ -167,6 +169,8 @@ export default defineComponent({
                 fetching: true,
                 errorMessage: "",
                 successMessage: "",
+
+                optionsId: 0
             }
         },
         beforeMount() {
@@ -177,22 +181,28 @@ export default defineComponent({
                 this.fetching = true
                 axiosInstance.get(`api-rooms/rooms/${this.$route.params.room_id}/room_with_settings/`).then(
                     (response) => {
-                        let data = response.data;
-                        this.title = data.room.title
-                        this.code = data.room.code;
-                        this.domain = data.room.domain;
-                        this.public = data.room.public;
-                        this.emailMatch = data.room.email_domain
-                        this.CheckEmailDomain = data.room.check_email_domain
+                        if (response.status == "200") {
+                            let data = response.data;
+                            this.title = data.room.title
+                            this.code = data.room.code;
+                            this.domain = data.room.domain;
+                            this.public = data.room.public;
+                            this.emailMatch = data.room.email_domain
+                            this.CheckEmailDomain = data.room.check_email_domain
 
-                        this.blocks = data.settings.blocks;
-                        this.blocksMustAlign = data.settings.blocks_must_align
-                        this.classSize = data.settings.class_size
-                        this.lessonCost = data.settings.lesson_cost
-                        this.maxSubjectsPerBlock = data.settings.max_subjects_per_block
-                        this.settingsTitle = data.settings.title
-                        this.settingsId = data.settings.id
-                        this.fetching = false
+                            this.blocks = data.settings.blocks;
+                            this.blocksMustAlign = data.settings.blocks_must_align
+                            this.classSize = data.settings.class_size
+                            this.lessonCost = data.settings.lesson_cost
+                            this.maxSubjectsPerBlock = data.settings.max_subjects_per_block
+                            this.settingsTitle = data.settings.title
+                            this.settingsId = data.settings.id
+                            this.optionsId = data.opts_id
+
+                            this.fetching = false
+                        } else {
+                            this.$router.push({name:"E404"})
+                        }
                     }
                 )
             },
@@ -228,6 +238,16 @@ export default defineComponent({
                     } else {
                         this.errorMessage = "save unsuccessful"
                         this.successMessage = ""
+                    }
+                })
+            },
+            editAvailableChoices() {
+                this.$router.push({
+                    name: "available-opts-edit",
+                    params: {
+                        user_id: this.$route.params.user_id,
+                        room_id: this.$route.params.room_id,
+                        opts_id: this.optionsId
                     }
                 })
             }

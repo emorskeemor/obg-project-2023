@@ -1,6 +1,6 @@
 <template>
     <q-page padding>
-      <div v-if="!loggedIn">
+      <div>
         <q-card style="width:100vh" class="absolute-center bg-grey-3">
           <q-card-section>
             <div class="main-font text-h1 text-weight-medium">

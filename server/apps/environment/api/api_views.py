@@ -3,7 +3,7 @@ from apps.environment.models import (
     Room, 
     GenerationSettings, 
     AvalilableOptionChoices,
-    AvailableOption
+    AvailableOption,
     )
 from apps.students.models import Student
 
@@ -24,6 +24,7 @@ from .serializers import (
     AvailableOptionSerializer,
     OptionSerializer
 )
+from apps.students.models import Option
 
 from .pagination import AvailableOptionPagination
 
@@ -99,18 +100,18 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["get"])
     def room_with_settings(self, request, pk):
-        room = get_object_or_404(
-            Room, code=pk
-            )
+        room = get_object_or_404(Room, code=pk)
         room_serialized = self.serializer_class(room)
         # add the settings of the room as well
         settings = get_object_or_404(GenerationSettings, room=room)
+        available_opts = get_object_or_404(AvalilableOptionChoices, room=room)
         payload = {}
         settings_serialized = SettingsSerializer(settings)
         settings_data = settings_serialized.data.copy()
         settings_data.pop("room")
         payload["room"] = room_serialized.data
         payload["settings"] = settings_data
+        payload["opts_id"] = available_opts.pk
         return response.Response(payload, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=["get"])
@@ -119,6 +120,18 @@ class RoomViewSet(viewsets.ModelViewSet):
         room = get_object_or_404(Room, domain=get("domain"), code=get("code"))
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["get"], url_path="available-options")
+    def available_options(self, request, pk):
+        room_opts = get_object_or_404(AvalilableOptionChoices, code=pk)
+        all_opts = Option.objects.all()
+        opts = room_opts.options.all().order_by("title")
+        payload = {}
+        room_opts_serialized = OptionSerializer(opts, many=True)
+        all_opts_serializeed = OptionSerializer(all_opts, many=True)
+        payload["room"] = room_opts_serialized.data
+        payload["all"] = all_opts_serializeed.data 
+        return response.Response(payload, status=status.HTTP_200_OK)
          
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room
