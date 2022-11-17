@@ -123,7 +123,8 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["get"], url_path="available-options")
     def available_options(self, request, pk):
-        room_opts = get_object_or_404(AvalilableOptionChoices, code=pk)
+        room = get_object_or_404(Room, code=pk)
+        room_opts = get_object_or_404(AvalilableOptionChoices, room=room)
         all_opts = Option.objects.all()
         opts = room_opts.options.all().order_by("title")
         payload = {}

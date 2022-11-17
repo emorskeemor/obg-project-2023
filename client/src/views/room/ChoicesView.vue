@@ -339,15 +339,12 @@ export default defineComponent({
                     this.errorMessage = ""
                     this.successMessage = "saved successfully"
                     this.changesMade = false
-
                 } else if (response.status == "400") {
                     this.successMessage = ""
                     this.errorMessage = response.data.detail
                 }
-
             })
         }
-
     }
 
 });

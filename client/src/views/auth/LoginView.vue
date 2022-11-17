@@ -1,27 +1,33 @@
 <template>
-<q-page class="q-pa-xl absolute-center" style="width:500px" padding>
-    <h1 class="text-h2">Teacher login</h1>
-    <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
-        <q-input filled v-model="email" label="Your email *" hint="email" lazy-rules type="email" :error="error">
-            <template v-slot:prepend>
-                <q-icon name="mail" />
-            </template>
-        </q-input>
+<q-page class="q-pa-xl" padding>
+    <q-card style="width:90vh;padding:5vh" class="absolute-center bg-grey-3">
 
-        <q-input filled v-model="password" label="Your password *" hint="password" lazy-rules type="password" autocomplete="on" error-message="Password or username was invalid" :error="error">
-            <template v-slot:prepend>
-                <q-icon name="password" />
-            </template>
-        </q-input>
-        <div class="q-gutter-md">
-            <q-btn class="bg-green-13 text-white" push size="20px" @click="handleLogin">
-                Login
-            </q-btn>
-            <q-btn class="bg-red-13 text-white" push size="20px" @click="handleReset">
-                Reset
-            </q-btn>
+        <div class="text-h1 text-center">
+            Teacher login
         </div>
-    </q-form>
+        <div class="text-h5 text-center q-pb-xl">Enter your credentials bellow</div>
+        <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
+            <q-input filled v-model="email" label="Your email *" hint="email" lazy-rules type="email" :error="error">
+                <template v-slot:prepend>
+                    <q-icon name="mail" />
+                </template>
+            </q-input>
+
+            <q-input filled v-model="password" label="Your password *" hint="password" lazy-rules type="password" autocomplete="on" error-message="Password or username was invalid" :error="error">
+                <template v-slot:prepend>
+                    <q-icon name="password" />
+                </template>
+            </q-input>
+            <div class="q-gutter-md">
+                <q-btn class="bg-teal-4 text-white" push size="20px" @click="handleLogin" icon-right="login">
+                    Login
+                </q-btn>
+                <q-btn class="bg-red-13 text-white" push size="20px" @click="handleReset" icon-right="restart_alt">
+                    Reset
+                </q-btn>
+            </div>
+        </q-form>
+    </q-card>
 </q-page>
 </template>
 
@@ -37,10 +43,6 @@ import jwt_decode from 'jwt-decode'
 import {
     DecodedTokenObject
 } from '@/api/interfaces'
-import {
-    isLoggedIn
-} from 'axios-jwt';
-
 export default defineComponent({
     name: "LoginView",
     data() {
@@ -78,20 +80,6 @@ export default defineComponent({
             this.password = ""
             this.email = ""
             this.error = false
-        }
-    },
-    beforeRouteEnter(to, from, next) {
-        if (isLoggedIn()) {
-            const answer = window.confirm('You are already logged in! Returning to the login page will log you out')
-            if (answer) {
-                next()
-                logout()
-            } else {
-                next(false)
-            }
-        } else {
-            next()
-
         }
     }
 })

@@ -68,10 +68,20 @@
                     </q-card-section>
 
                     <q-card-section class="bg-grey-4 absolute-bottom">
+                        <div class="text-h5 q-pa-xs">Available options</div>
+                        <div class="text-body2 q-mb-md">Edit the available options for the room</div>
                         <div class="text-h4 main-font"></div>
                         <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="large" />
 
                     </q-card-section>
+
+                </q-card>
+                <q-card class="bg-grey-3 q-mt-sm" style="max-height:10vh">
+                    <q-card-section class="bg-grey-4">
+                        <q-btn label="Generator" color="red-5" size="large" />
+
+                    </q-card-section>
+                   
 
                 </q-card>
             </div>

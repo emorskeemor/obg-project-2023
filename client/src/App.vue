@@ -68,11 +68,6 @@
         loggedIn: false
       }
     },
-    beforeMount(){
-      if (this.loggedIn){
-        this.returnHome()
-      }
-    },
     methods:{
       handleLogout(){
         // logout the user by removing the access and refresh tokens from local
@@ -84,15 +79,16 @@
       returnHome(){
         // check that the user is still logged in. We do this by gettings the access token if
         // it is still present. If not, we know the user is no longer logged in
-        const accessToken = getAccessToken()
-        if (accessToken){
-          const decoded: DecodedTokenObject = jwtDecode(accessToken)
-          this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
-        }
-        else {
+        // const accessToken = getAccessToken()
+        // if (accessToken){
+        //   const decoded: DecodedTokenObject = jwtDecode(accessToken)
+          
+        //   this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
+        // }
+        // else {
           this.$router.push({name:"home"})
 
-        }
+        // }
       }
     }
   });
