@@ -3,12 +3,13 @@
     <div class="row q-gutter-xl q-pa-md">
 
         <!-- available options that the student can choose from -->
+
         <div class="col-4 q-gutter-md">
             <q-card class="bg-grey-3" style="min-height:77vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 text-black main-font q-pa-md">Available options</div>
                     <!-- search bar -->
-                    <q-input filled v-model="availableOptionsSearch" label="Search available options" lazy-rules type="text">
+                    <q-input filled v-model="availableOptionsSearch" label="Search available options" lazy-rules type="text" :disable="availableOptions.length==0">
                         <template v-slot:prepend>
                             <q-icon name="search" />
                         </template>
@@ -61,16 +62,16 @@
                 <div class="text-body1 q-mt-md">
                     <div class="text-weight-bold">Use all</div> will make all the possible option choices available to the students
                 </div>
-                <q-btn class="bg-teal-4 text-white" size="md" label="use all" @click="useAllSubjects" icon-right="arrow_forwards"/>
+                <q-btn class="bg-teal-4 text-white" size="md" label="use all" @click="useAllSubjects" icon-right="arrow_forwards" :disable="availableOptions.length==0" />
 
                 <div class="text-body1 q-mt-md">
                     <div class="text-weight-bold">Remove all</div> will make remove all the possible option choices available to the students
                 </div>
-                <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" icon="arrow_backwards"/>
+                <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" icon="arrow_backwards" :disable="chosenOptions.length==0" />
 
-                <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
+                <div class="absolute-bottom justify-center bg-blue-grey" style="padding:10px">
                     <q-btn-group>
-                        <q-btn class="bg-blue text-white" size="md" label="Save" @click="saveChoices" />
+                        <q-btn class="bg-teal-4 text-white" size="md" label="Save" @click="saveChoices" :disable="chosenOptions.length==0" />
                     </q-btn-group>
                 </div>
             </q-card>
@@ -181,11 +182,8 @@ export default defineComponent({
             changesMade: false,
         }
     },
-
     beforeMount() {
-        // we need to fetch some information before the data is rendered
         this.getData()
-
     },
     computed: {
         getFilteredAOptions() {
@@ -225,7 +223,6 @@ export default defineComponent({
                 `api-rooms/rooms/${this.$route.params.room_id}/available-options`
             ).then(
                 response => {
-                    console.log(response);
                     this.availableOptions = response.data.all
                     this.availableOptionsCount = response.data.all.length
 
@@ -265,7 +262,7 @@ export default defineComponent({
         removeChosenOption(element) {
             this.changesMade = true
             this.errorMessage = ""
-            this.chosenOptions = [...this.chosenOptions].filter(e=>e.id!=element.id)
+            this.chosenOptions = [...this.chosenOptions].filter(e => e.id != element.id)
             this.availableOptions = [...this.availableOptions, element]
         },
         // subject info

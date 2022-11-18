@@ -7,7 +7,7 @@
             </q-card-section>
             <q-card-actions>
                 <q-btn class="bg-blue-grey text-white" @click="$emit('removeOption', element)" icon="highlight_off"/>
-                <q-btn class="bg-blue text-white" @click="showInfo('showInfo', element)" icon="info"/>
+                <q-btn class="bg-blue text-white" @click="$emit('showInfo', element)" icon="info"/>
             </q-card-actions>
         </q-card>
     </div>

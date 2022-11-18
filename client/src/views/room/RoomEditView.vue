@@ -1,5 +1,5 @@
 <template>
-<q-page class="q-pa-xs no-scroll" padding style="width:100%">
+<q-page class="q-pa-xs no-scroll" padding>
     <!-- current rooms  -->
     <div class="q-pa-md" style="width:100%">
         <div class="row q-gutter-xl">
@@ -42,7 +42,7 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveRoom" size="large" />
+                        <q-btn label="Save" color="teal-4" @click="saveRoom" size="large" icon="done" />
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -71,17 +71,15 @@
                         <div class="text-h5 q-pa-xs">Available options</div>
                         <div class="text-body2 q-mb-md">Edit the available options for the room</div>
                         <div class="text-h4 main-font"></div>
-                        <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="large" />
+                        <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="md" icon="edit" />
 
                     </q-card-section>
 
                 </q-card>
-                <q-card class="bg-grey-3 q-mt-sm" style="max-height:10vh">
-                    <q-card-section class="bg-grey-4">
-                        <q-btn label="Generator" color="red-5" size="large" />
-
+                <q-card class="bg-grey-5 q-ma-md" style="max-height:5vh">
+                    <q-card-section class="bg-blue-grey">
+                        <q-btn label="Generator" color="teal-4" size="md" icon="computer" @click="generatorView"/>
                     </q-card-section>
-                   
 
                 </q-card>
             </div>
@@ -130,7 +128,7 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="large" />
+                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="large" icon="done"/>
                     </q-card-section>
                 </q-card>
             </div>
@@ -211,7 +209,9 @@ export default defineComponent({
 
                             this.fetching = false
                         } else {
-                            this.$router.push({name:"E404"})
+                            this.$router.push({
+                                name: "E404"
+                            })
                         }
                     }
                 )
@@ -258,6 +258,15 @@ export default defineComponent({
                         user_id: this.$route.params.user_id,
                         room_id: this.$route.params.room_id,
                         opts_id: this.optionsId
+                    }
+                })
+            },
+            generatorView() {
+                this.$router.push({
+                    name:"options-generator",
+                    params:{
+                        user_id: this.$route.params.user_id,
+                        room_id: this.$route.params.room_id,
                     }
                 })
             }

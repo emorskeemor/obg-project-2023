@@ -30,7 +30,7 @@
       <q-ajax-bar
       ref="bar"
       position="bottom"
-      color="red-8"
+      color="green-8"
       size="10px"
       />
 
@@ -79,16 +79,14 @@
       returnHome(){
         // check that the user is still logged in. We do this by gettings the access token if
         // it is still present. If not, we know the user is no longer logged in
-        // const accessToken = getAccessToken()
-        // if (accessToken){
-        //   const decoded: DecodedTokenObject = jwtDecode(accessToken)
-          
-        //   this.$router.push({name:"user-dashboard", params:{user_id:decoded.user_id}})
-        // }
-        // else {
+        const accessToken = getAccessToken()
+        if (accessToken){
+          logout()
+        }
+        else {
           this.$router.push({name:"home"})
 
-        // }
+        }
       }
     }
   });

@@ -17,6 +17,7 @@ import TeacherDashboardView from '@/views/dashboard/TeacherDashboardView.vue'
 import { isLoggedIn } from 'axios-jwt'
 import RoomEditView from '@/views/room/RoomEditView.vue'
 import AvailableOptionsView from '@/views/room/AvailableOptionsView.vue'
+import GeneratorView from '@/views/gen/GeneratorView.vue'
 
 // http://localhost:8080/user/352a7ee2-b55d-4096-a0c7-77a4e482f91d/dashboard
 
@@ -81,9 +82,19 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/u/:user_id/r/:room_id/o/:opts_id/edit',
+    path: '/u/:user_id/r/:room_id/o/:opts_id/e',
     name: 'available-opts-edit',
     component: AvailableOptionsView,
+    beforeEnter: (to, from) => {
+      if (!isLoggedIn()){
+        return {name:"E404"}
+      }
+    },
+  },
+  {
+    path: '/u/:user_id/r/:room_id/g',
+    name: 'options-generator',
+    component: GeneratorView,
     beforeEnter: (to, from) => {
       if (!isLoggedIn()){
         return {name:"E404"}
