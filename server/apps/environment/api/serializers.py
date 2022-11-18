@@ -59,8 +59,8 @@ class AvailableOptionChoiceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = AvalilableOptionChoices
-        fields = ["title", "options", "pk"]    
-        
+        fields = ["title", "options", "pk"]        
+
 class AvailableOptionSerializer(serializers.ModelSerializer):
     '''
     serialize a single available option

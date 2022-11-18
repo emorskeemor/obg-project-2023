@@ -120,13 +120,18 @@ class RoomViewSet(viewsets.ModelViewSet):
         room = get_object_or_404(Room, domain=get("domain"), code=get("code"))
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
+
     
     @action(detail=True, methods=["get"], url_path="available-options")
     def available_options(self, request, pk):
         room = get_object_or_404(Room, code=pk)
         room_opts = get_object_or_404(AvalilableOptionChoices, room=room)
-        all_opts = Option.objects.all()
         opts = room_opts.options.all().order_by("title")
+        all_opts = []
+        all_available_opts = Option.objects.all().order_by("title")
+        for available in all_available_opts:
+            if not opts.filter(pk=available.pk).exists():
+                all_opts.append(available)
         payload = {}
         room_opts_serialized = OptionSerializer(opts, many=True)
         all_opts_serializeed = OptionSerializer(all_opts, many=True)
@@ -176,6 +181,31 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
         serialized = OptionSerializer(queryset, many=True)
         
         return response.Response(serialized.data)
+    
+    @action(detail=True, methods=["put"])
+    def batch_update(self, request, pk):
+        
+        current = get_object_or_404(AvalilableOptionChoices.objects.prefetch_related("options"), pk=pk)
+        all_options = Option.objects.all()
+        options = request.data.get("options")
+        
+        new_options = []
+        for option in options:
+            pk = option.get("id")
+            individual = current.options.filter(pk=pk)
+            if not individual.exists():
+                new_options.append(AvailableOption(option=all_options.get(pk=pk), option_choices=current))
+        for current_option in AvailableOption.objects.filter(option_choices=current):
+            found = False
+            for option in options:
+                if option.get("id") == current_option.option.pk:
+                    found = True
+                    break
+            if not found:
+                current_option.delete()
+                
+        AvailableOption.objects.bulk_create(new_options)
+        return response.Response(status=status.HTTP_200_OK)
             
 class AvailableOptionViewset(viewsets.ModelViewSet):
     '''

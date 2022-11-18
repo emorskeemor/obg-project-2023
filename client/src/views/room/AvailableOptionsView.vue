@@ -6,16 +6,16 @@
         <div class="col-4 q-gutter-md">
             <q-card class="bg-grey-3" style="min-height:77vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 text-black main-font" style="padding-bottom:1vh">Choices</div>
+                    <div class="text-h4 text-black main-font q-pa-md">Available options</div>
                     <!-- search bar -->
-                    <q-input filled v-model="availableOptionsSearch" label="Search" lazy-rules type="text">
+                    <q-input filled v-model="availableOptionsSearch" label="Search available options" lazy-rules type="text">
                         <template v-slot:prepend>
                             <q-icon name="search" />
                         </template>
                     </q-input>
                 </q-card-section>
                 <!-- available options draggable zone -->
-                <draggable v-if="!fetching" class="list-group" :list="getFilteredAOptions" :group="{name:'availableOptions', pull:'clone', put:false}" :clone="cloneOption" itemKey="title" :move="moveOption" id="availableOptions">
+                <draggable v-if="!fetching" class="list-group" :list="getFilteredAOptions" :group="{name:'availableOptions', pull:true, put:false}" itemKey="title" :move="checkMoveOption" id="availableOptions" @change="changeAvailableOptions">
                     <!-- iterate over all available options in pagination -->
                     <template #item="{element}">
                         <AvailableOptionItem :element="element" @showInfo="loadSubjectInfo" />
@@ -23,10 +23,16 @@
                 </draggable>
 
                 <!-- display a message to display if no searched pages are found -->
-                <div v-if="getFilteredAOptions.length <= 0 && !fetching">
+                <div v-if="getFilteredAOptions.length <= 0 && !fetching && availableOptions.length != 0">
                     <q-card class="bg-grey-5 rounded-borders" style="padding:5vh;margin:3vh">
                         <div class="text-h4 text-black main-font">Whoopsie!</div>
                         <div class="text-h6">We could not find the subject you are looking for.</div>
+                    </q-card>
+                </div>
+                <div v-if="getFilteredAOptions.length <= 0 && !fetching && availableOptions.length == 0">
+                    <q-card class="bg-grey-5 rounded-borders" style="padding:5vh;margin:3vh">
+                        <div class="text-h4 text-black main-font">There is no more!</div>
+                        <div class="text-h6">There are no more subjects which you can choose</div>
                     </q-card>
                 </div>
 
@@ -46,20 +52,25 @@
         <div class="col">
             <q-card class="bg-grey-3" style="padding:20px;min-height:75vh">
                 <!-- details about how to choose the options -->
-                <div class="text-h4">Available options</div>
+                <div class="text-h4">Room Options</div>
                 <q-separator color="black" spaced />
 
                 <div class="text-body1"><b>Drag</b> the subjects you would like to take into the chosen subjects section to the <b>right</b></div>
 
                 <div class="text-body1 q-mt-md">These subjects on the right will be available to the students and will be used during generation</div>
-                <div class="text-body1 q-mt-md"><div class="text-weight-bold">'Use all'</div> will make all the possible option choices available to the students</div>
-                <div class="text-body1 q-mt-md"><div class="text-weight-bold">'Remove all'</div> will make remove all the possible option choices available to the students</div>
+                <div class="text-body1 q-mt-md">
+                    <div class="text-weight-bold">Use all</div> will make all the possible option choices available to the students
+                </div>
+                <q-btn class="bg-teal-4 text-white" size="md" label="use all" @click="useAllSubjects" icon-right="arrow_forwards"/>
+
+                <div class="text-body1 q-mt-md">
+                    <div class="text-weight-bold">Remove all</div> will make remove all the possible option choices available to the students
+                </div>
+                <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" icon="arrow_backwards"/>
 
                 <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
                     <q-btn-group>
-                        <q-btn class="bg-teal-4 text-white" size="md" label="use all" @click="useAllSubjects" />
-                        <q-btn class="bg-teal-3 text-white" size="xl" label="Save" />
-                        <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" />
+                        <q-btn class="bg-blue text-white" size="md" label="Save" @click="saveChoices" />
                     </q-btn-group>
                 </div>
             </q-card>
@@ -73,15 +84,15 @@
                         <div class="text-h5 text-white">{{chosenOptions.length}}</div>
                     </q-badge>
                     <div class="text-h4 text-black main-font q-pa-md">Chosen options</div>
-                    <q-input filled v-model="chosenOptionsSearch" label="Search" lazy-rules type="text">
+                    <q-input filled v-model="chosenOptionsSearch" label="Search chosen options" lazy-rules type="text">
                         <template v-slot:prepend>
                             <q-icon name="search" />
                         </template>
                     </q-input>
                 </q-card-section>
                 <draggable class="list-group" :list="getFilteredCOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
-                    <template #item="{element}">
-                        <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeChosenOption" v-if="!fetching" itemStyle="width:55vh;margin:1vh;max-height:15vh;" />
+                    <template #item="{element, index}">
+                        <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeChosenOption" v-if="!fetching" itemStyle="width:55vh;margin:1vh;max-height:15vh;" :index="index" />
                     </template>
 
                 </draggable>
@@ -173,25 +184,12 @@ export default defineComponent({
 
     beforeMount() {
         // we need to fetch some information before the data is rendered
-        this.fetching = true
-        // get the student
-        axiosInstance.get(
-            `api-rooms/rooms/${this.$route.params.room_id}/available-options`
-        ).then(
-            response => {
-                console.log(response);
-                this.availableOptions = response.data.all
-                this.availableOptionsCount = response.data.all.length
+        this.getData()
 
-                this.chosenOptions = response.data.room
-                this.chosenOptionsCount = response.data.room.length
-                this.fetching = false
-            }
-
-        )
     },
     computed: {
         getFilteredAOptions() {
+            // filter available options through the search
             if (this.fetching) {
                 return []
             } else {
@@ -206,11 +204,11 @@ export default defineComponent({
 
         },
         getFilteredCOptions() {
+            // get chosen options through the search
             if (this.fetching) {
                 return []
             } else {
                 let startingPage = (this.chosenOptionsPage - 1) * CHOSEN_OPTIONS_PER_PAGE
-                // console.log(startingPage, startingPage + OPTIONSPERPAGE);
                 return [...[...this.chosenOptions].filter(
                     option => option.title.toLowerCase().includes(this.chosenOptionsSearch)
                 )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
@@ -220,21 +218,41 @@ export default defineComponent({
             return Math.floor(this.availableOptions.length / AVAILABLE_OPTIONS_PER_PAGE)
 
         },
-        filterBySearch(iterable, searchName) {
-            return [...iterable].filter(option => option.contains(searchName))
-        }
     },
     methods: {
+        getData() {
+            axiosInstance.get(
+                `api-rooms/rooms/${this.$route.params.room_id}/available-options`
+            ).then(
+                response => {
+                    console.log(response);
+                    this.availableOptions = response.data.all
+                    this.availableOptionsCount = response.data.all.length
+
+                    this.chosenOptions = response.data.room
+                    this.chosenOptionsCount = response.data.room.length
+                    this.fetching = false
+                }
+
+            )
+        },
         appendToChosenOptions({
             added
         }) {
-            this.chosenOptions = [...this.chosenOptions, added.element]
+
+            this.chosenOptions = [added.element, ...this.chosenOptions]
         },
-        moveOption(event) {
-            // validate reseve options
+        changeAvailableOptions({
+            removed
+        }) {
+            let copied = [...this.availableOptions]
+            copied.splice(removed.oldIndex, 1)
+            this.availableOptions = copied
+        },
+        // dragging validation
+        checkMoveOption(event) {
             this.errorMessage = ""
             this.changesMade = true
-            // validate chosen options
             if (event.to.id == "chosenOptions") {
                 for (let i = 0; i < this.chosenOptions.length; i++) {
                     if (event.draggedContext.element.uuid === this.chosenOptions[i].uuid) {
@@ -243,17 +261,14 @@ export default defineComponent({
                     }
                 }
             }
-            return true
         },
-        cloneOption(option) {
-            return option
-        },
-        removeChosenOption(index) {
+        removeChosenOption(element) {
             this.changesMade = true
-
             this.errorMessage = ""
-            this.chosenOptions.splice(index, 1)
+            this.chosenOptions = [...this.chosenOptions].filter(e=>e.id!=element.id)
+            this.availableOptions = [...this.availableOptions, element]
         },
+        // subject info
         loadSubjectInfo(subject) {
             this.displaySubjectInfo = true
             this.displaySubjectDetails = subject
@@ -261,24 +276,27 @@ export default defineComponent({
         closeSubjectInfo() {
             this.displaySubjectInfo = false
         },
+        // moving and removing all subjects
         useAllSubjects() {
-            this.chosenOptions = [...this.availableOptions]
+            this.chosenOptions = [...this.chosenOptions, ...this.availableOptions]
+            this.availableOptions = []
         },
         removeAllSubjects() {
+            this.availableOptions = [...this.availableOptions, ...this.chosenOptions]
             this.chosenOptions = []
         },
 
         saveChoices() {
-            axiosInstance.put(`api-students/choices/${this.studentData.id}/update_student_options/`, {
-                "main_options": this.chosenOptions,
-                "code": this.$route.params.code,
-                "domain": this.$route.params.domain,
-                "reserve_options": this.reserveOptions,
+            this.fetching = true
+
+            axiosInstance.put(`api-rooms/available-option-choices/${this.$route.params.opts_id}/batch_update/`, {
+                "options": this.chosenOptions,
             }).then(response => {
                 if (response.status == "200") {
                     this.errorMessage = ""
                     this.successMessage = "saved successfully"
                     this.changesMade = false
+                    this.getData()
 
                 } else if (response.status == "400") {
                     this.successMessage = ""
