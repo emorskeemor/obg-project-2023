@@ -1,6 +1,6 @@
 <template>
-<div style="min-height:56vh">
-    <q-card class="absolute-center bg-grey-3" style="width:100%;height:75%;" square>
+<div style="min-height:63vh">
+    <q-card class="absolute-center bg-grey-3" style="width:100%;height:80%;" square>
         <div class="absolute-center">
             <q-card-section>
                 <div class="main-font text-h3 text-weight-medium">
@@ -57,15 +57,5 @@ export default defineComponent({
             usingDatabase: false,
         }
     },
-    methods:{
-        // changeOpt(){
-        //     if (this.usingDatabase === true){
-        //         this.usingDatabase = false
-        //     } else {
-        //         this.usingDatabase = true
-        //     }
-        // }
-    }
-
 });
 </script>
