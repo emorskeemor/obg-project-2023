@@ -76,9 +76,9 @@
                     </q-card-section>
 
                 </q-card>
-                <q-card class="bg-grey-5 q-ma-md" style="max-height:5vh">
-                    <q-card-section class="bg-blue-grey">
-                        <q-btn label="Generator" color="teal-4" size="md" icon="computer" @click="generatorView"/>
+                <q-card class="q-mt-md bg-grey-4" style="max-height:12vh" >
+                    <q-card-section>
+                        <q-btn label="Generate" color="purple-7" size="lg" @click="generatorView" glossy/>
                     </q-card-section>
 
                 </q-card>

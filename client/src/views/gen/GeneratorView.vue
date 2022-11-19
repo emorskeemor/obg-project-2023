@@ -2,11 +2,13 @@
 <div class="q-pa-xl">
     <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4">
         <q-step :name="1" title="Define data to be used" icon="settings" :done="step > 1">
-            <OptionProvisionView />
+            <OptionProvisionView @choose="handleOptions" @back="$refs.stepper.back()" />
+
         </q-step>
 
         <q-step :name="2" title="Settings" caption="Optional" icon="create_new_folder" :done="step > 2">
-            An ad group contains one or more ads which target a shared set of keywords.
+            <SettingsView @back="$refs.stepper.previous()" />
+
         </q-step>
 
         <q-step :name="3" title="Ad template" icon="assignment" :done="step > 3">
@@ -18,19 +20,13 @@
             enhance your ads using features like ad extensions. If you run into any problems with
             your ads, find out how to tell if they're running and how to resolve approval issues.
         </q-step>
-
-        <template v-slot:navigation>
-            <q-stepper-navigation>
-                <q-btn @click="$refs.stepper.next()" color="primary" :label="step === 4 ? 'Finish' : 'Continue'" />
-                <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
-            </q-stepper-navigation>
-        </template>
     </q-stepper>
 </div>
 </template>
 
 <script lang="js">
 import OptionProvisionView from '@/components/generator/OptionProvisionView.vue';
+import SettingsView from '@/components/generator/SettingsView.vue';
 import {
     defineComponent
 } from 'vue';
@@ -41,11 +37,20 @@ import {
 export default defineComponent({
     name: "GeneratorView",
     components: {
-        OptionProvisionView
+        OptionProvisionView,
+        SettingsView
     },
     data() {
         return {
-            step: ref(1)
+            step: ref(1),
+            // providing the data
+            dataProvisionType: "csv",
+        }
+    },
+    methods: {
+        handleOptions() {
+            console.log("uo");
+            this.$refs.stepper.next()
         }
     }
 })
