@@ -1,37 +1,45 @@
 <template>
-<div style="min-height:63vh">
-    <q-card class="absolute-center bg-grey-3" style="width:100%;height:80%;" square>
+<div style="min-height:68vh">
+    <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="q-pa-md">
             <q-card-section>
-                <div class="text-h3">
-                    Ensure your settings are go to go
+                <div class="text-h4">
+                    Ensure your settings are good to go
                 </div>
             </q-card-section>
-            <div class="row q-gutter-xl">
-                <div class="col">
-                    <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div v-if="!fetching">
-                            <q-card class="q-pa-md bg-white">
+            <q-card-section>
+                <div class="row q-gutter-xl">
+                    <div class="col">
+
+                        <q-card class="q-pa-md bg-white" style="min-height:50vh">
+                            <div class="text-h3 text-center">Generation Settings</div>
+
+                            <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                                 <div class="row q-gutter-md">
                                     <div class="col q-gutter-md">
-                                        <q-input v-model="blocks" autofocus outlined label="blocks" type="number">
+                                        <q-input v-model="settingsTitle" autofocus outlined label="title" type="text" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="grid_view" />
                                             </template>
                                         </q-input>
-                                        <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number">
+                                        <q-input v-model="blocks" autofocus outlined label="blocks" type="number" readonly>
+                                            <template v-slot:prepend>
+                                                <q-icon name="grid_view" />
+                                            </template>
+                                        </q-input>
+                                        <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="currency_pound" />
                                             </template>
                                         </q-input>
                                     </div>
                                     <div class="col q-gutter-md">
-                                        <q-input v-model="classSize" autofocus outlined label="class size" type="number">
+                                        <q-input v-model="classSize" autofocus outlined label="class size" type="number" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="school" />
                                             </template>
                                         </q-input>
-                                        <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number">
+                                        <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="subject" />
                                             </template>
@@ -39,54 +47,41 @@
 
                                     </div>
                                 </div>
-                            </q-card>
-                        </div>
-                    </transition>
-                </div>
+                            </transition>
+                            <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
+                        </q-card>
+                    </div>
 
-                <div class="col">
-                    <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div v-if="!fetching">
-                            <q-card class="q-pa-md bg-white">
+                    <div class="col">
+                        <q-card class="q-pa-md bg-white" style="min-height:50vh">
+                            <div class="text-h3 text-center">Rules</div>
+
+                            <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                                 <div class="row q-gutter-md">
-                                    <div class="col q-gutter-md">
-                                        <q-input v-model="blocks" autofocus outlined label="blocks" type="number">
-                                            <template v-slot:prepend>
-                                                <q-icon name="grid_view" />
-                                            </template>
-                                        </q-input>
-                                        <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number">
-                                            <template v-slot:prepend>
-                                                <q-icon name="currency_pound" />
-                                            </template>
-                                        </q-input>
-                                    </div>
-                                    <div class="col q-gutter-md">
-                                        <q-input v-model="classSize" autofocus outlined label="class size" type="number">
-                                            <template v-slot:prepend>
-                                                <q-icon name="school" />
-                                            </template>
-                                        </q-input>
-                                        <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number">
-                                            <template v-slot:prepend>
-                                                <q-icon name="subject" />
-                                            </template>
-                                        </q-input>
-
-                                    </div>
                                 </div>
-                            </q-card>
-                        </div>
-                    </transition>
+                            </transition>
+                            <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
+
+                        </q-card>
+                    </div>
                 </div>
-            </div>
+            </q-card-section>
 
         </div>
 
     </q-card>
-    <div class="absolute-bottom-left q-pa-sm">
-        <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
+    <div class="absolute-bottom q-pa-sm">
+        <q-btn-group>
+            <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
+            <q-btn push class="bg-teal-3 text-white" size="md" label="change settings" icon="edit" @click="editRoom" />
+            <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
+        </q-btn-group>
     </div>
+    <!-- <div class="absolute-bottom q-pa-md">
+    </div>
+
+    <div class="absolute-bottom-right q-pa-sm">
+    </div> -->
 </div>
 </template>
 
@@ -100,21 +95,14 @@ import {
 } from 'vue';
 
 export default defineComponent({
-    name: 'OptionsProivsionsView',
-    emits: ["choose", "back"],
-    watch: {
-        file() {
-            this.$emit("choose", this.file)
-        }
-    },
+    name: 'SettingsView',
+    emits: ["back", "next"],
     beforeMount() {
         this.fetching = true
         this.getSettings()
     },
     data() {
         return {
-            label: ref("hello"),
-            file: ref(null),
             usingDatabase: false,
 
             blocks: 0,
@@ -122,7 +110,7 @@ export default defineComponent({
             classSize: 0,
             lessonCost: 0,
             maxSubjectsPerBlock: 0,
-            settingsTitle: 0,
+            settingsTitle: "",
             settingsId: 0,
             optionsId: 0,
 
@@ -157,7 +145,16 @@ export default defineComponent({
                 }
             )
         },
-    }
+        editRoom() {
+            this.$router.push({
+                "name": "room-edit",
+                params: {
+                    user_id: this.$route.params.user_id,
+                    room_id: this.$route.params.room_id,
+                }
+            })
+        }
+    },
 
 });
 </script>

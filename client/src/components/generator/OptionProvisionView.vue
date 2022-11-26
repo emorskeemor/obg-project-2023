@@ -1,6 +1,6 @@
 <template>
-<div style="min-height:63vh">
-    <q-card class="absolute-center bg-grey-3" style="width:100%;height:80%;" square>
+<div style="min-height:68vh">
+    <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="absolute-center">
             <q-card-section>
                 <div class="main-font text-h3 text-weight-medium">
@@ -10,9 +10,9 @@
             <q-card-section>
                 <div class="q-pa-md q-gutter-lg row justify-center items-center">
                     <div class="col-4">
-                        <q-btn push icon="folder_open" class="bg-cyan-4 text-white" label="CSV" size="xl" style="width:100%;height:10vh;" />
+                        <q-btn push icon="folder_open" class="bg-cyan-4 text-white" label="CSV" size="xl" style="width:100%;height:10vh;"/>
                         <q-popup-edit v-model="label" auto-save class="q-pa-lg">
-                            <q-file color="cyan-4" v-model="file" label="click to upload csv">
+                            <q-file color="cyan-4" v-model="file" label="click to upload csv" style="width:30vh">
                                 <template v-slot:prepend>
                                     <q-icon name="attach_file" />
                                 </template>
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <q-btn push class="bg-cyan-4 text-white" size="xl" label="Database" icon="storage" style="width:100%;height:10vh;" @click="$emit('choose', true)"/>
+                        <q-btn push class="bg-cyan-4 text-white" size="xl" label="Database" icon="storage" style="width:100%;height:10vh;" @click="$emit('choose', true, null)"/>
                     </div>
 
                 </div>
@@ -47,7 +47,8 @@ export default defineComponent({
     emits: ["choose", "back"],
     watch:{
         file(){
-            this.$emit("choose", this.file)            
+                        
+            this.$emit("choose", false, this.file)            
         }
     },
     data() {

@@ -4,7 +4,7 @@
     <div class="q-pa-md" style="width:100%">
         <div class="row q-gutter-xl">
             <div class="col-4">
-                <q-card class="bg-grey-3 q-mt-md" style="min-height:75vh">
+                <q-card class="bg-grey-3 q-mt-md" style="min-height:78vh">
                     <q-card-section class="bg-grey-4">
                         <div class="text-h4 main-font">Room Settings</div>
                     </q-card-section>
@@ -42,7 +42,7 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveRoom" size="large" icon="done" />
+                        <q-btn label="Save" color="teal-4" @click="saveRoom" size="md" icon="done" />
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -67,7 +67,11 @@
                         </div>
                     </q-card-section>
 
-                    <q-card-section class="bg-grey-4 absolute-bottom">
+                    
+                    <q-card-section class="bg-grey-4 absolute-bottom" >
+                        <q-btn label="Generate" color="purple-7" size="lg" @click="generatorView" glossy/>
+                    </q-card-section>
+                    <q-card-section class="bg-grey-4">
                         <div class="text-h5 q-pa-xs">Available options</div>
                         <div class="text-body2 q-mb-md">Edit the available options for the room</div>
                         <div class="text-h4 main-font"></div>
@@ -76,16 +80,11 @@
                     </q-card-section>
 
                 </q-card>
-                <q-card class="q-mt-md bg-grey-4" style="max-height:12vh" >
-                    <q-card-section>
-                        <q-btn label="Generate" color="purple-7" size="lg" @click="generatorView" glossy/>
-                    </q-card-section>
 
-                </q-card>
             </div>
             <!-- generated blocks -->
             <div class="col-4">
-                <q-card class="bg-grey-3 q-mt-md" style="min-height:75vh">
+                <q-card class="bg-grey-3 q-mt-md" style="min-height:78vh">
                     <q-card-section class="bg-grey-4">
                         <div class="text-h4 main-font">Generation Settings</div>
                     </q-card-section>
@@ -128,8 +127,10 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="large" icon="done"/>
+                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done"/>
                     </q-card-section>
+                    <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
+
                 </q-card>
             </div>
         </div>

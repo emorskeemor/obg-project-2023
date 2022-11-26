@@ -127,8 +127,8 @@ class Generator:
             util.execute()
             # we need to check if the set of blocks matches are given criteria. The check() method
             # will tell us if we can discard this set of options as it does not follow the rules provided
-            if not util.check():
-                continue
+            # if not util.check():
+            #     continue
             if best is None or (util.evaluation.success_percentage > best.success_percentage):
                 best = util.evaluation
                 self.__best_savepoint = sp

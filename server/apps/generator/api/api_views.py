@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework import response, status, exceptions, permissions
 
 from functools import partial
+import json
 
 from typing import Dict
 # serializers
@@ -24,7 +25,10 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 # option block api
 from blocks.core.pregenerate.clean import populate_with_id, clean_options
+from blocks.core.pregenerate.statistics import subject_counts
+from blocks.core.postgenerate.pathway import DEFAULT_PATHWAYS
 from blocks.core.generate.utility import Generator
+from blocks.core.exceptions import PathwayFailed
 
 from drf_yasg.utils import swagger_auto_schema
 
@@ -44,20 +48,20 @@ class GerneratorViewset(ViewSet):
         '''
         Runs the option block generation process
         '''
-        serialized = GenerationSerializer(data=request.data)
+        # serialized = GenerationSerializer(data=request.data)
         file_to_list = partial(csv_file_to_list, request)
         
-        serialized.is_valid(raise_exception=True)
-        cleaned_get = serialized.data.get
+        # serialized.is_valid(raise_exception=True)
+        cleaned_get = json.loads(request.data.get("payload")).get
         room = get_object_or_404(
             Room, 
             code=cleaned_get("code"),
-            domain=cleaned_get("domain"),
+            # domain=cleaned_get("domain"),
             )
         room_settings = get_object_or_404(
             GenerationSettings, 
             room=room,
-            title=cleaned_get("settings_title")
+            # title=cleaned_get("settings_title")
             )
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
@@ -87,7 +91,7 @@ class GerneratorViewset(ViewSet):
             choices = get_object_or_404(
                 AvalilableOptionChoices,
                 room=room, 
-                title=cleaned_get("options_title")
+                # title=cleaned_get("options_title")
                 )
             options = []
             for available_option in choices.options.through.objects.all():
@@ -132,7 +136,6 @@ class GerneratorViewset(ViewSet):
                 "vocational":["Co","Bs","Eg","Cb"]
             }
         )
-
         
         gen_info = {
             "blocks": generator.best_evaluation.blocks,
@@ -152,6 +155,69 @@ class GerneratorViewset(ViewSet):
                 options.append(option.subject_code)
             data[student.uuid] = options
         return data
+    
+    @action(methods=["post"], detail=False, url_path="pre-generate-statistics")
+    def pre_generate_statitics(self, request):
+        # print(request.data)
+        payload: dict = json.loads(request.data.get("payload"))
+        file_to_list = partial(csv_file_to_list, request)
+
+        room = get_object_or_404(Room, code=payload.get("room_id"))
+        choices = get_object_or_404(
+                AvalilableOptionChoices,
+                room=room, 
+                # title=cleaned_get("options_title")
+                )
+        options = {}
+        for available_option in choices.options.through.objects.all():
+            code = available_option.option.subject_code
+            # options.append(code)
+            options[code] = available_option.option.title
+            # if available_option.classes is not None:
+            #     override[code] = available_option.classes 
+        if payload.get("using_database") is False:
+            data_opts = file_to_list(
+                name=settings.DATA_CSV_LOOKUP, 
+                slice_func=slice(4),
+                hints="each line requires n items of 'subject_codes'"
+            )
+            data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
+        else:
+            data = self.students_from_room(room)
+        popularity = subject_counts(data=data, option_codes=options.keys())
+        actual = {options.get(code):count for code, count in popularity.items()}
+        student_pathways = self.get_student_pathways(data)
+        payload = {
+            "subjects": list(actual.keys()),
+            "counts": list(actual.values()),
+            "pathways": list(student_pathways.keys()),
+            "pathway_counts": list(student_pathways.values())
+        }
+        return response.Response(payload)
+    
+    @staticmethod
+    def get_student_pathways(data):
+        '''
+        returns the pathway a set of options follow
+        '''
+        pathways = DEFAULT_PATHWAYS.copy()
+        counts = dict.fromkeys(tuple(map(lambda x:x.__name__, pathways)), 0)
+        ebacc = settings.EBACC_SUBJECTS
+        for student, options in data.items():
+            path = None
+            for possible_path in pathways:
+                try:
+                    path = possible_path(ebacc)
+                    path(*options)
+                    break
+                except PathwayFailed:
+                    pass
+            current = counts[path.__class__.__name__]
+            counts[path.__class__.__name__] = current + 1
+                
+        return counts
+        # raise an error meaning that the path ways we provided resulted in no
+        # fallback pathway to be found
 
       
 class OptionBlockViewset(ModelViewSet):

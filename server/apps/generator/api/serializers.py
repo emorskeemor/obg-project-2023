@@ -44,20 +44,20 @@ class GenerationSerializer(serializers.Serializer):
     '''
     serialize post data before running generator
     '''
-    settings_title = serializers.CharField(
-        help_text= (
-            "name of the settings that is to be used. This needs to point to "
-            "a set of settings that is linked to the given room code"
-            )
-    )
-    code = serializers.CharField(max_length=8, help_text="room code", read_only=True)
-    domain = serializers.CharField(max_length=50, help_text="room domain name")
-    options_title = serializers.CharField(
-        help_text=(
-            "the name of the set of available options. This needs to point to "
-            "a set of 'availalble_option_choices' that have exist in the database"
-        )
-    )
+    # settings_title = serializers.CharField(
+    #     help_text= (
+    #         "name of the settings that is to be used. This needs to point to "
+    #         "a set of settings that is linked to the given room code"
+    #         )
+    # )
+    code = serializers.CharField(max_length=8, help_text="room code")
+    # domain = serializers.CharField(max_length=50, help_text="room domain name")
+    # options_title = serializers.CharField(
+    #     help_text=(
+    #         "the name of the set of available options. This needs to point to "
+    #         "a set of 'availalble_option_choices' that have exist in the database"
+    #     )
+    # )
     
     data_using_csv = serializers.BooleanField(default=False, required=False)
     subjects_using_csv = serializers.BooleanField(default=False, required=False)
