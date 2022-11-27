@@ -69,7 +69,7 @@
 
                     
                     <q-card-section class="bg-grey-4 absolute-bottom" >
-                        <q-btn label="Generate" color="purple-7" size="lg" @click="generatorView" glossy/>
+                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy/>
                     </q-card-section>
                     <q-card-section class="bg-grey-4">
                         <div class="text-h5 q-pa-xs">Available options</div>

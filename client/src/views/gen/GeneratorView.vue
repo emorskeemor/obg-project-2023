@@ -7,27 +7,32 @@
         </q-step>
 
         <q-step :name="2" title="Settings" icon="settings" :done="step > 2">
-            <SettingsView @back="backStep" @next="nextStep" />
+            <SettingsView @back="previousStep" @next="nextStep" />
         </q-step>
 
         <q-step :name="3" title="Pre-statistics" icon="assignment" :done="step > 3">
-            <PreStatisticsView @back="backStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" />
+            <PreStatisticsView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" />
         </q-step>
 
         <q-step :name="4" title="Generate" icon="add_comment" :done="step > 4">
-            <GenerationView @back="backStep" @next="nextStep"  :usingDatabase="usingDatabase" :optionsFile="optionsFile" />
+            <GenerationView @back="previousStep" @next="nextStep"  
+            :usingDatabase="usingDatabase"
+            :optionsFile="optionsFile" 
+            :run="!finishedGeneration"
+            @finished="generateCompleted"
+            />
 
         </q-step>
         <q-step :name="5" title="Post-statistics" icon="assignment">
-            <PostStatisticsView @back="backStep" @next="nextStep" />
+            <PostStatisticsView @back="previousStep" @next="nextStep" />
 
         </q-step>
         <q-step :name="6" title="Live update" icon="add_comment">
-            <LiveUpdateView @back="backStep" @next="nextStep" />
+            <LiveUpdateView @back="previousStep" @next="nextStep" />
 
         </q-step>
         <q-step :name="7" title="Save" icon="add_comment">
-            <SaveView @back="backStep" @next="nextStep" />
+            <SaveView @back="previousStep" @next="nextStep" />
 
         </q-step>
 
@@ -74,6 +79,8 @@ export default defineComponent({
             usingDatabase: true,
             optionsFile: ref(null),
             errorMessage: "",
+            generatedData: {},
+            finishedGeneration: false,
         }
     },
     methods: {
@@ -102,8 +109,13 @@ export default defineComponent({
         nextStep() {
             this.$refs.stepper.next()
         },
-        backStep() {
+        previousStep() {
             this.$refs.stepper.previous()
+        },
+        generateCompleted(data) {
+            this.finishedGeneration = true
+            this.generatedData = data
+            this.nextStep()
         }
     },
 })

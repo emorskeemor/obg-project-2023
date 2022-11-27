@@ -1,32 +1,45 @@
 <template>
-<div style="min-height:68vh">
+<div style="min-height:70vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-7 q-ma-lg">
-                <q-card>
-                    <q-card-section>
-                        <div class="text-h4">Subject popularity</div>
-                    </q-card-section>
-                    <q-card-section>
-                        <apexchart width="800" height="450" type="bar" :options="options" :series="series" v-if="!fetching"></apexchart>
-                    </q-card-section>
+                <q-card style="min-height:60vh">
+                    <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+
+                        <div>
+                            <q-card-section>
+                                <div class="text-h4">Subject popularity</div>
+                            </q-card-section>
+                            <q-card-section>
+                                <apexchart width="800" height="410" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
+                            </q-card-section>
+                        </div>
+                    </transition>
+                    <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
                 </q-card>
             </div>
             <div class="col-4 q-ma-lg">
-                <q-card>
-                    <div class="text-h4 q-pa-md">Student pathways</div>
+                <q-card style="min-height:60vh">
+                    <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+                        <div>
+                            <div class="text-h4 q-pa-md">Student pathways</div>
 
-                    <apexchart width="500" type="pie" :options="pathOptions" :series="pathSeries" v-if="!fetching"></apexchart>
+                            <apexchart width="500" type="pie" :options="pieOptions" :series="pieSeries" v-if="!fetching"></apexchart>
+                        </div>
+                    </transition>
+                    <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
+
                 </q-card>
             </div>
         </div>
     </q-card>
-    <div class="absolute-bottom q-pa-sm">
-        <q-btn-group>
+    <div class="absolute-bottom-right q-pa-md">
+        <div class="q-gutter-lg q-pa-md">
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
-        </q-btn-group>
+            <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" />
+        </div>
+
     </div>
 
 </div>
@@ -47,7 +60,6 @@ export default defineComponent({
     props: ["optionsFile", "usingDatabase"],
 
     beforeMount() {
-        console.log(this.optionsFile);
         var formData = new FormData()
         formData.append("data", this.optionsFile)
         const payload = {
@@ -64,13 +76,11 @@ export default defineComponent({
                 }
             }).then(
             response => {
-                console.log(response);
+                this.barChartOptions.xaxis.categories = response.data.subjects
+                this.barChartSeries[0].data = response.data.counts
 
-                this.options.xaxis.categories = response.data.subjects
-                this.series[0].data = response.data.counts
-
-                this.pathSeries = response.data.pathway_counts
-                this.pathOptions.labels = response.data.pathways
+                this.pieSeries = response.data.pathway_counts
+                this.pieOptions.labels = response.data.pathways
                 this.fetching = false
 
             }
@@ -80,7 +90,7 @@ export default defineComponent({
     data() {
         return {
             // options for bar chart
-            options: {
+            barChartOptions: {
                 chart: {
                     type: 'bar',
                     height: 600
@@ -100,18 +110,18 @@ export default defineComponent({
                 },
 
             },
-            series: [{
-                name: 'series-1',
+            barChartSeries: [{
+                name: 'subjects',
                 data: []
             }],
             // options for pie chart
-            pathSeries: [44, 55, 13, 43, 22],
-            pathOptions: {
+            pieSeries: [],
+            pieOptions: {
                 chart: {
                     width: 380,
                     type: 'pie',
                 },
-                labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+                labels: [],
                 responsive: [{
                     breakpoint: 480,
                     options: {

@@ -232,8 +232,8 @@ DATA_CSV_LOOKUP = "data"
 OPTIONS_CSV_LOOKUP = "options"
 
 # generator settings (DEBUG ONLY)
-NODE_DEBUG = True
-GENERATOR_DEBUG = True
+NODE_DEBUG = False
+GENERATOR_DEBUG = False
 
 EBACC_SUBJECTS = {
     "humanities":["Hi","Ge"],
