@@ -30,7 +30,7 @@ from .pagination import StudentPaginator
 
 from drf_yasg.utils import swagger_auto_schema
 
-from blocks.core.pregenerate.clean import clean_options
+from bloc.core.pre_generate.validate import clean_options
 
 import names
 

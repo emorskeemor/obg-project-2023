@@ -24,12 +24,20 @@ from apps.students.models import Student
 from django.shortcuts import get_object_or_404  
 from django.conf import settings
 # option block api
-from blocks.core.pregenerate.clean import populate_with_id, clean_options
-from blocks.core.pregenerate.statistics import subject_counts
-from blocks.core.postgenerate.pathway import DEFAULT_PATHWAYS
-from blocks.core.generate.utility import Generator
-from blocks.core.exceptions import PathwayFailed
+# from blocks.core.pregenerate.clean import populate_with_id, clean_options
+# from blocks.core.pregenerate.statistics import subject_counts
+# from blocks.core.postgenerate.pathway import DEFAULT_PATHWAYS
+# from blocks.core.generate.utility import Generator
+# from blocks.core.exceptions import PathwayFailed
 
+from bloc.core.pre_generate.validate import populate_with_id, clean_options
+from bloc.core.pre_generate.statistics import subject_counts
+from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS
+from bloc.core.generate.utility import Generator
+from bloc.core.exceptions import PathwayFailed
+from bloc.core.post_generate.validators import MaxOptionsValidator
+
+from bloc.static.dummy import DUMMY_DATA
 from drf_yasg.utils import swagger_auto_schema
 
 from core.utils import csv_file_to_list
@@ -56,12 +64,10 @@ class GerneratorViewset(ViewSet):
         room = get_object_or_404(
             Room, 
             code=cleaned_get("code"),
-            # domain=cleaned_get("domain"),
             )
         room_settings = get_object_or_404(
             GenerationSettings, 
             room=room,
-            # title=cleaned_get("settings_title")
             )
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
@@ -94,25 +100,30 @@ class GerneratorViewset(ViewSet):
                 # title=cleaned_get("options_title")
                 )
             options = []
-            for available_option in choices.options.through.objects.all():
+            for available_option in choices.options.through.objects.filter(option_choices=choices):
                 code = available_option.option.subject_code
                 options.append(code)
                 if available_option.classes is not None:
                     override[code] = available_option.classes
-                    
         if options == []:
             raise exceptions.ValidationError({
                 "error":"cannot generate option blocks with no option codes"
             })
         # give the generator the initial variables and prepare it
+        
+        options = tuple(sorted(options))
         generator = Generator(
             data=data,
-            options_codes=options,
-            num_blocks=room_settings.blocks,
-            class_size=room_settings.class_size
+            options=options,
+            blocks=room_settings.blocks,
+            max_class_size=room_settings.class_size,
+            ebacc=settings.EBACC_SUBJECTS,
+            protocol=1,
+            debug=settings.GENERATOR_DEBUG
         )          
-        generator.prepare_generation()     
-        generator.update_classes_per_subject(**override)
+        generator.setup()  
+        generator.classes_per_subject.update(**override)
+        
         # handle double inserts
         double_inserts = InsertTogether.objects.filter(settings=room_settings)
         for double_insert in double_inserts:
@@ -121,26 +132,22 @@ class GerneratorViewset(ViewSet):
                 opt["subject_code"] for opt in double_insert.targets.values("subject_code")
                 ]
             generator.insert_together(target,*targets)
-        # debug which is defined in project settings module
-        if settings.GENERATOR_DEBUG:
-            generator.debug()
-        if settings.NODE_DEBUG:
-            generator.node.debug = True
-        
-        generator.run_generation()
-        generator.evaluate_generation(
-            ebacc={
-                "humanities":["Hi","Ge"],
-                "languages":["Fr","Sn"],
-                "sciences":["Sc","Co"],
-                "vocational":["Co","Bs","Eg","Cb"]
-            }
+
+        generator.execute()
+        generator.evaluate(
+            validators=[
+                # MaxOptionsValidator(12)
+            ],
+            check=True,
+            debug=False
         )
         
         gen_info = {
-            "blocks": generator.best_evaluation.blocks,
-            "success": generator.best_evaluation.success_percentage
+            "blocks": generator.evaluation.blocks,
+            "success": generator.evaluation.success_percentage
         }
+        
+        generator.evaluation.pprint()
         
         return response.Response(gen_info, status=status.HTTP_200_OK)
 

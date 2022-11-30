@@ -221,6 +221,10 @@ BLOCK_GENERATOR_OPTIONS = {
     "data_and_options_use_static":False,
 }
 
+OBG_SETTINGS = {
+    "DEBUG":True
+}
+
 # option block options
 MAX_BLOCKS = 15
 DEFAULT_CLASS_SIZE = 24
@@ -236,8 +240,8 @@ NODE_DEBUG = False
 GENERATOR_DEBUG = False
 
 EBACC_SUBJECTS = {
-    "humanities":["Hi","Ge"],
-    "languages":["Fr","Sn"],
-    "sciences":["Sc","Co"],
-    "vocational":["Co","Bs","Eg","Cb"]
-}
+        "humanities":["Hi","Ge"],
+        "languages":["Fr","Sn"],
+        "sciences":["Sc","Co"],
+        "vocational":["Co","Bs","Eg","Cb", "Hc", "Bb", "Mu", "Pb", "Sb", "Hb", "Mu"]
+    }
