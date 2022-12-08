@@ -50,7 +50,8 @@ export default defineComponent({
         return {
             time: 0,
             isRunning: false,
-            interval: 0
+            interval: 0,
+
         }
     },
 

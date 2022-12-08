@@ -16,26 +16,20 @@ from apps.generator.models import (
     OptionBlocks,Block,InsertTogether
     )
 from apps.environment.models import (
-    GenerationSettings,Room, AvalilableOptionChoices
+    GenerationSettings,Room, AvalilableOptionChoices, AvailableOption
     )
 from apps.environment.api.permissions import RoomAccessPermission
 from apps.students.models import Student
 # django
 from django.shortcuts import get_object_or_404  
 from django.conf import settings
-# option block api
-# from blocks.core.pregenerate.clean import populate_with_id, clean_options
-# from blocks.core.pregenerate.statistics import subject_counts
-# from blocks.core.postgenerate.pathway import DEFAULT_PATHWAYS
-# from blocks.core.generate.utility import Generator
-# from blocks.core.exceptions import PathwayFailed
 
 from bloc.core.pre_generate.validate import populate_with_id, clean_options
 from bloc.core.pre_generate.statistics import subject_counts
-from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS
+from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS, Pathways
 from bloc.core.generate.utility import Generator
 from bloc.core.exceptions import PathwayFailed
-from bloc.core.post_generate.validators import MaxOptionsValidator
+from bloc.core import protocols
 
 from bloc.static.dummy import DUMMY_DATA
 from drf_yasg.utils import swagger_auto_schema
@@ -49,6 +43,10 @@ class GerneratorViewset(ViewSet):
     core viewset for running the option block generator
     '''
     permission_classes = [permissions.IsAuthenticated, RoomAccessPermission]
+    
+    #############################################
+    # CORE VIEWS
+    #############################################
     
     @swagger_auto_schema(request_body=GenerationSerializer)
     @action(detail=False, methods=["post"])
@@ -80,7 +78,7 @@ class GerneratorViewset(ViewSet):
             )
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
-            data = self.students_from_room(room)
+            data = self._students_from_room(room)
         if data == {}:
             raise exceptions.ValidationError({
                 "error":"cannot generate option block with no students"
@@ -94,35 +92,33 @@ class GerneratorViewset(ViewSet):
                 hints="each line requires two items 'subject_name','subject_code'"
             )
         else:
-            choices = get_object_or_404(
-                AvalilableOptionChoices,
-                room=room, 
-                # title=cleaned_get("options_title")
-                )
-            options = []
-            for available_option in choices.options.through.objects.filter(option_choices=choices):
-                code = available_option.option.subject_code
-                options.append(code)
-                if available_option.classes is not None:
-                    override[code] = available_option.classes
+            # choices = get_object_or_404(
+            #     AvalilableOptionChoices,
+            #     room=room, 
+            #     )
+            # options = []
+            # for available_option in AvailableOption.objects.filter(option_choices=choices):
+            #     code = available_option.option.subject_code
+            #     options.append(code)
+            #     if available_option.classes is not None:
+            #         override[code] = available_option.classes
+            options, override = self._get_room_subjects(room)
         if options == []:
             raise exceptions.ValidationError({
                 "error":"cannot generate option blocks with no option codes"
             })
         # give the generator the initial variables and prepare it
-        
-        options = tuple(sorted(options))
         generator = Generator(
             data=data,
             options=options,
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=1,
+            protocol=protocols.ProtocolD(target_percentage=95),
             debug=settings.GENERATOR_DEBUG
         )          
         generator.setup()  
-        generator.classes_per_subject.update(**override)
+        generator.classes.update(**override)
         
         # handle double inserts
         double_inserts = InsertTogether.objects.filter(settings=room_settings)
@@ -134,54 +130,32 @@ class GerneratorViewset(ViewSet):
             generator.insert_together(target,*targets)
 
         generator.execute()
-        generator.evaluate(
-            validators=[
-                # MaxOptionsValidator(12)
-            ],
-            check=True,
-            debug=False
-        )
+        generator.evaluate()
         
-        gen_info = {
+        generator_data = {
             "blocks": generator.evaluation.blocks,
-            "success": generator.evaluation.success_percentage
+            "students": generator.evaluation.serialize(include_paths=True)
         }
         
         generator.evaluation.pprint()
-        
-        return response.Response(gen_info, status=status.HTTP_200_OK)
+       
+        return response.Response(generator_data, status=status.HTTP_200_OK)
 
-    @staticmethod
-    def students_from_room(room) -> Dict:
-        '''gets the students from a given room in the database and return it as a dict'''
-        data = {}
-        students = Student.objects.prefetch_related("options").filter(room=room)
-        for student in students:
-            options = []
-            for option in student.options.all():
-                options.append(option.subject_code)
-            data[student.uuid] = options
-        return data
-    
     @action(methods=["post"], detail=False, url_path="pre-generate-statistics")
     def pre_generate_statitics(self, request):
-        # print(request.data)
+        '''
+        return pre-generate statistics e.g. popularity of each subjects and pathways
+        '''
+        # get some initial data
         payload: dict = json.loads(request.data.get("payload"))
         file_to_list = partial(csv_file_to_list, request)
-
         room = get_object_or_404(Room, code=payload.get("room_id"))
-        choices = get_object_or_404(
-                AvalilableOptionChoices,
-                room=room, 
-                # title=cleaned_get("options_title")
-                )
         options = {}
-        for available_option in choices.options.through.objects.all():
+        for available_option in AvailableOption.objects.all():
             code = available_option.option.subject_code
-            # options.append(code)
             options[code] = available_option.option.title
-            # if available_option.classes is not None:
-            #     override[code] = available_option.classes 
+            
+        # get the data
         if payload.get("using_database") is False:
             data_opts = file_to_list(
                 name=settings.DATA_CSV_LOOKUP, 
@@ -190,10 +164,10 @@ class GerneratorViewset(ViewSet):
             )
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
-            data = self.students_from_room(room)
+            data = self._students_from_room(room)
         popularity = subject_counts(data=data, option_codes=options.keys())
         actual = {options.get(code):count for code, count in popularity.items()}
-        student_pathways = self.get_student_pathways(data)
+        student_pathways = self._get_student_pathways(data)
         payload = {
             "subjects": list(actual.keys()),
             "counts": list(actual.values()),
@@ -202,15 +176,32 @@ class GerneratorViewset(ViewSet):
         }
         return response.Response(payload)
     
+    @action(methods=["post"], detail=False, url_path="validate-data-file")
+    def validate_data_file(self, request):
+        hint = "each line requires n items of 'subject_codes'"
+        students = csv_file_to_list(
+            request,  
+            name=settings.DATA_CSV_LOOKUP, 
+            slice_func=slice(4),
+            hints=hint
+            )
+        subjects = self._get_room_subjects()
+        
+        return response.Response({}, status=status.HTTP_200_OK)
+    
+    ##############################################
+    # PRVIVATE METHODS
+    ##############################################
+    
     @staticmethod
-    def get_student_pathways(data):
+    def _get_student_pathways(data):
         '''
         returns the pathway a set of options follow
         '''
         pathways = DEFAULT_PATHWAYS.copy()
         counts = dict.fromkeys(tuple(map(lambda x:x.__name__, pathways)), 0)
         ebacc = settings.EBACC_SUBJECTS
-        for student, options in data.items():
+        for options in data.values():
             path = None
             for possible_path in pathways:
                 try:
@@ -221,12 +212,33 @@ class GerneratorViewset(ViewSet):
                     pass
             current = counts[path.__class__.__name__]
             counts[path.__class__.__name__] = current + 1
-                
         return counts
-        # raise an error meaning that the path ways we provided resulted in no
-        # fallback pathway to be found
 
+    @staticmethod
+    def _students_from_room(room) -> Dict:
+        '''gets the students from a given room in the database and return it as a dict'''
+        data = {}
+        students = Student.objects.prefetch_related("options").filter(room=room)
+        for student in students:
+            options = []
+            for option in student.options.all():
+                options.append(option.subject_code)
+            data[str(student.uuid)] = options
+        return data
       
+    def _get_room_subjects(self, room):
+        override = {}
+        choices = get_object_or_404(
+            AvalilableOptionChoices,
+            room=room, 
+            )
+        options = []
+        for available_option in AvailableOption.objects.filter(option_choices=choices):
+            code = available_option.option.subject_code
+            options.append(code)
+            if available_option.classes is not None:
+                override[code] = available_option.classes
+        return options, override
 class OptionBlockViewset(ModelViewSet):
     
     permission_classes = [permissions.IsAuthenticated]

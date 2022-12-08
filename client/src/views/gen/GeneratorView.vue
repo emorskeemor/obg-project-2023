@@ -15,12 +15,7 @@
         </q-step>
 
         <q-step :name="4" title="Generate" icon="add_comment" :done="step > 4">
-            <GenerationView @back="previousStep" @next="nextStep"  
-            :usingDatabase="usingDatabase"
-            :optionsFile="optionsFile" 
-            :run="!finishedGeneration"
-            @finished="generateCompleted"
-            />
+            <GenerationView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :run="!finishedGeneration" @finished="generateCompleted" />
 
         </q-step>
         <q-step :name="5" title="Post-statistics" icon="assignment">
@@ -59,6 +54,9 @@ import {
 import {
     ref
 } from 'vue'
+import {
+    axiosInstance
+} from '@/api/axios';
 
 export default defineComponent({
     name: "GeneratorView",
@@ -95,7 +93,21 @@ export default defineComponent({
                     this.usingDatabase = false
                     this.optionsFile = structuredClone(file)
                     console.log(this.optionsFile);
-                    this.$refs.stepper.next()
+                    var formData = new FormData()
+                    formData.append("data", this.optionsFile)
+                    axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        }
+                    }).then(
+                        response => {
+                            if (response.status == 200) {
+                                this.$refs.stepper.next()
+                            } else {
+                                this.errorMessage = response.data
+                            }
+                        }
+                    )
                 }
             } else {
                 this.usingDatabase = true
