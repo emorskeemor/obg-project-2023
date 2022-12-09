@@ -73,9 +73,9 @@ export default defineComponent({
                 }
             }).then(
                 response => {
-                    console.log(response);
                     this.toggleTimer()
-                    this.$emit("finished")
+                    this.$store.commit("setEvaluation", response.data)
+                    this.$emit("finished", response.data)
                 }
             )
         }

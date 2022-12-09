@@ -2,12 +2,12 @@
 <div>
     <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4">
         <q-step :name="1" title="Define data" icon="settings" :done="step > 1" :error="errorMessage.length !== 0">
-            <OptionProvisionView @choose="handleOptions" @back="$refs.stepper.back()" />
+            <OptionProvisionView  @back="previousStep" @next="nextStep" @error="onError"/>
 
         </q-step>
 
         <q-step :name="2" title="Settings" icon="settings" :done="step > 2">
-            <SettingsView @back="previousStep" @next="nextStep" />
+            <SettingsView @back="previousStep" @next="nextStep"/>
         </q-step>
 
         <q-step :name="3" title="Pre-statistics" icon="assignment" :done="step > 3">
@@ -82,57 +82,28 @@ export default defineComponent({
         }
     },
     methods: {
-        handleOptions(usingDb, file) {
-            console.log("hello!");
-            if (usingDb === false) {
-                if (file.type !== "text/csv") {
-                    console.log("error raised");
-                    this.errorMessage = "The file provided is not a CSV file."
-                } else {
-                    console.log("using csv");
-                    this.usingDatabase = false
-                    this.optionsFile = structuredClone(file)
-                    // send file validation data
-                    var formData = new FormData()
-                    formData.append("data", this.optionsFile)
-                    const payload = {
-                        "data_using_csv": !this.usingDatabase,
-                        "code": this.$route.params.room_id,
-                    }
-                    formData.append("payload", JSON.stringify(payload))
-                    this.errorMessage = ""
-                    axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        }
-                    }).then(
-                        response => {
-                            if (response.status == 200) {
-                                this.$refs.stepper.next()
-                            } else {
-                                this.errorMessage = response.data.detail
-                            }
-                        }
-                    )
-                }
-            } else {
-                this.usingDatabase = true
-                this.$refs.stepper.next()
-
-            }
-        },
+        
         dismissError() {
             this.errorMessage = ""
         },
         nextStep() {
+            this.dismissError()
             this.$refs.stepper.next()
         },
         previousStep() {
+            this.dismissError()
             this.$refs.stepper.previous()
         },
+        onError(message){
+            this.errorMessage = message
+        },
+
+
+
         generateCompleted(data) {
             this.finishedGeneration = true
             this.generatedData = data
+            console.log(this.generatedData);
             this.nextStep()
         }
     },

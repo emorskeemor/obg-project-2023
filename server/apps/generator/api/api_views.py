@@ -124,7 +124,7 @@ class GerneratorViewset(ViewSet):
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=protocols.ProtocolD(target_percentage=95),
+            protocol=protocols.ProtocolD(target_percentage=95.8),
             debug=settings.GENERATOR_DEBUG
         )          
         generator.setup()  
@@ -181,7 +181,6 @@ class GerneratorViewset(ViewSet):
                 data=data, option_codes=options.keys()
                 ).items()
             }
-        print(popularity)
         student_pathways = self._get_student_pathways(data)
         # print(student_pathways)
         payload = {

@@ -10,7 +10,7 @@
             <q-card-section>
                 <div class="q-pa-md q-gutter-lg row justify-center items-center">
                     <div class="col-4">
-                        <q-btn push icon="folder_open" class="bg-cyan-4 text-white" label="CSV" size="xl" style="width:100%;height:10vh;"/>
+                        <q-btn push icon="folder_open" class="bg-cyan-4 text-white" label="CSV" size="xl" style="width:100%;height:10vh;" />
                         <q-popup-edit v-model="label" auto-save class="q-pa-lg">
                             <q-file color="cyan-4" v-model="file" label="click to upload csv" style="width:30vh">
                                 <template v-slot:prepend>
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <q-btn push class="bg-cyan-4 text-white" size="xl" label="Database" icon="storage" style="width:100%;height:10vh;" @click="$emit('choose', true, null)"/>
+                        <q-btn push class="bg-cyan-4 text-white" size="xl" label="Database" icon="storage" style="width:100%;height:10vh;" @click="handleChoice" />
                     </div>
 
                 </div>
@@ -36,7 +36,10 @@
 </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
+import {
+    axiosInstance
+} from '@/api/axios';
 import {
     defineComponent,
     ref
@@ -44,11 +47,11 @@ import {
 
 export default defineComponent({
     name: 'OptionsProivsionsView',
-    emits: ["choose", "back"],
-    watch:{
-        file(){
-                        
-            this.$emit("choose", false, this.file)            
+    emits: ["next", "back", "error"],
+    watch: {
+        file() {
+            // this.$emit("choose", false, this.file)
+            this.handleChoice(false)
         }
     },
     data() {
@@ -58,5 +61,47 @@ export default defineComponent({
             usingDatabase: false,
         }
     },
+    methods: {
+        handleChoice(usingDatabase) {
+            if (!usingDatabase) {
+                if (this.file.type !== "text/csv") {
+                    this.$emit('error', "The file provided is not a CSV file.")
+                } else {
+                    var formData = new FormData()
+                    formData.append("data", this.file)
+                    const payload = {
+                        "data_using_csv": !this.usingDatabase,
+                        "code": this.$route.params.room_id,
+                    }
+                    formData.append("payload", JSON.stringify(payload))
+                    axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        }
+                    }).then(
+                        response => {
+                            if (response.status == 200) {
+                                this.$store.commit(
+                                    "setDataProvision",
+                                    usingDatabase,
+                                    this.file
+                                )
+                                this.$emit("next")
+                            } else {
+                                this.$emit('error', response.data.detail)
+                            }
+                        }
+                    )
+                }
+            } else {
+                this.$store.commit(
+                    "setDataProvision",
+                    usingDatabase,
+                    this.file
+                ) 
+                this.$emit("next")
+            }
+        }
+    }
 });
 </script>

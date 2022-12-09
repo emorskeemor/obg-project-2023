@@ -85,7 +85,7 @@
 </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import {
     axiosInstance
 } from '@/api/axios';
@@ -135,6 +135,8 @@ export default defineComponent({
                         this.settingsTitle = data.settings.title
                         this.settingsId = data.settings.id
                         this.optionsId = data.opts_id
+
+                        this.$store.commit("setSettingsData", data)
 
                         this.fetching = false
                     } else {

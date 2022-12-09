@@ -5,7 +5,6 @@
             <div class="col-7 q-ma-lg">
                 <q-card style="min-height:60vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-
                         <div>
                             <q-card-section>
                                 <div class="text-h4">Subject popularity</div>
@@ -45,7 +44,7 @@
 </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import {
     axiosInstance
 } from '@/api/axios';
