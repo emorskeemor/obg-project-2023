@@ -92,9 +92,15 @@ export default defineComponent({
                     console.log("using csv");
                     this.usingDatabase = false
                     this.optionsFile = structuredClone(file)
-                    console.log(this.optionsFile);
+                    // send file validation data
                     var formData = new FormData()
                     formData.append("data", this.optionsFile)
+                    const payload = {
+                        "data_using_csv": !this.usingDatabase,
+                        "code": this.$route.params.room_id,
+                    }
+                    formData.append("payload", JSON.stringify(payload))
+                    this.errorMessage = ""
                     axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
                         headers: {
                             "Content-Type": "multipart/form-data",
@@ -104,7 +110,7 @@ export default defineComponent({
                             if (response.status == 200) {
                                 this.$refs.stepper.next()
                             } else {
-                                this.errorMessage = response.data
+                                this.errorMessage = response.data.detail
                             }
                         }
                     )

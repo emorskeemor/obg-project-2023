@@ -38,6 +38,22 @@ from core.utils import csv_file_to_list
 
 # views in the generator module should only be accessed by authorised users.
 
+def get_data_from_csv(request):
+    return csv_file_to_list(
+        request,
+        name=settings.DATA_CSV_LOOKUP, 
+        slice_func=slice(4),
+        hints="each line requires n items of 'subject_codes'"
+    )
+    
+def get_options_from_csv(request):
+    return csv_file_to_list(
+        request,
+        name=settings.OPTIONS_CSV_LOOKUP, 
+        slice_func=1,
+        hints="each line requires two items 'subject_name','subject_code'"
+    )
+
 class GerneratorViewset(ViewSet):
     '''
     core viewset for running the option block generator
@@ -58,10 +74,11 @@ class GerneratorViewset(ViewSet):
         file_to_list = partial(csv_file_to_list, request)
         
         # serialized.is_valid(raise_exception=True)
-        cleaned_get = json.loads(request.data.get("payload")).get
+        # cleaned_get = json.loads(request.data.get("payload")).get
+        get = self.load_form_data(request).get
         room = get_object_or_404(
             Room, 
-            code=cleaned_get("code"),
+            code=get("code"),
             )
         room_settings = get_object_or_404(
             GenerationSettings, 
@@ -70,12 +87,13 @@ class GerneratorViewset(ViewSet):
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
         # and converting it to a dictionary
-        if cleaned_get("data_using_csv") is True:
-            options = file_to_list(
-                name=settings.DATA_CSV_LOOKUP, 
-                slice_func=slice(4),
-                hints="each line requires n items of 'subject_codes'"
-            )
+        if get("data_using_csv") is True:
+            # options = file_to_list(
+            #     name=settings.DATA_CSV_LOOKUP, 
+            #     slice_func=slice(4),
+            #     hints="each line requires n items of 'subject_codes'"
+            # )
+            options = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
             data = self._students_from_room(room)
@@ -85,23 +103,15 @@ class GerneratorViewset(ViewSet):
             })
         # get the subject codes 
         override = {}
-        if cleaned_get("subjects_using_csv"):
-            options = file_to_list(
-                name=settings.OPTIONS_CSV_LOOKUP, 
-                slice_func=1,
-                hints="each line requires two items 'subject_name','subject_code'"
-            )
+        if get("subjects_using_csv"):
+            # options = file_to_list(
+            #     name=settings.OPTIONS_CSV_LOOKUP, 
+            #     slice_func=1,
+            #     hints="each line requires two items 'subject_name','subject_code'"
+            # )
+            options = get_options_from_csv(request)
         else:
-            # choices = get_object_or_404(
-            #     AvalilableOptionChoices,
-            #     room=room, 
-            #     )
-            # options = []
-            # for available_option in AvailableOption.objects.filter(option_choices=choices):
-            #     code = available_option.option.subject_code
-            #     options.append(code)
-            #     if available_option.classes is not None:
-            #         override[code] = available_option.classes
+          
             options, override = self._get_room_subjects(room)
         if options == []:
             raise exceptions.ValidationError({
@@ -147,16 +157,16 @@ class GerneratorViewset(ViewSet):
         return pre-generate statistics e.g. popularity of each subjects and pathways
         '''
         # get some initial data
-        payload: dict = json.loads(request.data.get("payload"))
+        get = self.load_form_data(request).get
         file_to_list = partial(csv_file_to_list, request)
-        room = get_object_or_404(Room, code=payload.get("room_id"))
+        room = get_object_or_404(Room, code=get("room_id"))
         options = {}
         for available_option in AvailableOption.objects.all():
             code = available_option.option.subject_code
             options[code] = available_option.option.title
             
         # get the data
-        if payload.get("using_database") is False:
+        if get("using_database") is False:
             data_opts = file_to_list(
                 name=settings.DATA_CSV_LOOKUP, 
                 slice_func=slice(4),
@@ -165,12 +175,18 @@ class GerneratorViewset(ViewSet):
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
             data = self._students_from_room(room)
-        popularity = subject_counts(data=data, option_codes=options.keys())
-        actual = {options.get(code):count for code, count in popularity.items()}
+        # get the subjects and their popularity
+        popularity = {
+            options.get(code):count for code, count in subject_counts(
+                data=data, option_codes=options.keys()
+                ).items()
+            }
+        print(popularity)
         student_pathways = self._get_student_pathways(data)
+        # print(student_pathways)
         payload = {
-            "subjects": list(actual.keys()),
-            "counts": list(actual.values()),
+            "subjects": list(popularity.keys()),
+            "counts": list(popularity.values()),
             "pathways": list(student_pathways.keys()),
             "pathway_counts": list(student_pathways.values())
         }
@@ -178,16 +194,17 @@ class GerneratorViewset(ViewSet):
     
     @action(methods=["post"], detail=False, url_path="validate-data-file")
     def validate_data_file(self, request):
-        hint = "each line requires n items of 'subject_codes'"
-        students = csv_file_to_list(
-            request,  
-            name=settings.DATA_CSV_LOOKUP, 
-            slice_func=slice(4),
-            hints=hint
+        get = self.load_form_data(request).get
+        opts, _ = self._get_room_subjects(
+            room=get_object_or_404(Room, code=get("code"))
             )
-        subjects = self._get_room_subjects()
-        
-        return response.Response({}, status=status.HTTP_200_OK)
+        for student_opts in get_data_from_csv(request):
+            for subject in student_opts:
+                if subject not in opts and subject:
+                    raise exceptions.ValidationError(
+                        {"detail":f"subject '{subject}' does not exist in the available options for this room"}
+                    )
+        return response.Response(status=status.HTTP_200_OK)
     
     ##############################################
     # PRVIVATE METHODS
@@ -239,6 +256,16 @@ class GerneratorViewset(ViewSet):
             if available_option.classes is not None:
                 override[code] = available_option.classes
         return options, override
+    
+    @staticmethod
+    def load_form_data(request) -> dict:
+        payload = request.data.get("payload")
+        if payload is None:
+            raise exceptions.ValidationError({"detail":"payload required as form data"})
+        return json.loads(payload)
+    
+    
+    
 class OptionBlockViewset(ModelViewSet):
     
     permission_classes = [permissions.IsAuthenticated]
