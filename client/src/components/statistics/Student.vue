@@ -1,15 +1,17 @@
 <template>
-<q-card class="bg-teal-3" style="width:100vh" square>
-    <div class="row">
+<q-card class="bg-grey-3" style="width:100vh" square>
+    <div class="row justify-center">
         <q-separator />
-        <div class="col-1">
-            {{index}}
+        <div class="col-1 q-pa-sm bg-grey-4">
+            <!-- <div class="row absolute-center bg-red"> -->
+                {{index}}
+            <!-- </div> -->
         </div>
 
-        <div class="col-5">
+        <div class="col-5 q-pa-sm">
             {{student.id}}
         </div>
-        <div class="col-3">
+        <div class="col-3 q-pa-sm">
             {{student.pathway}}
         </div>
 

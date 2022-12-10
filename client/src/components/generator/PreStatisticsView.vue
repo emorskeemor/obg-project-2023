@@ -3,7 +3,7 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-7 q-ma-lg">
-                <q-card style="min-height:60vh">
+                <q-card style="min-height:70vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div>
                             <q-card-section>

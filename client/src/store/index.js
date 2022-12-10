@@ -12,13 +12,13 @@ export default createStore({
     data_file: ref(null),
     // settings data
     blocks: 0,
-    blocksMustAlign: false,
-    classSize: 0,
-    lessonCost: 0,
-    maxSubjectsPerBlock: 0,
-    settingsTitle: "",
-    settingsId: 0,
-    optionsId: 0,
+    blocks_must_align: false,
+    class_size: 0,
+    lesson_cost: 0,
+    max_subjects_per_block: 0,
+    settings_title: "",
+    settings_id: 0,
+    options_id: 0,
   },
   getters: {
   },
@@ -37,13 +37,13 @@ export default createStore({
     },
     setSettingsData(state, data) {
       state.blocks = data.settings.blocks;
-      state.blocksMustAlign = data.settings.blocks_must_align
+      state.blocks_must_align = data.settings.blocks_must_align
       state.classSize = data.settings.class_size
-      state.lessonCost = data.settings.lesson_cost
-      state.maxSubjectsPerBlock = data.settings.max_subjects_per_block
-      state.settingsTitle = data.settings.title
-      state.settingsId = data.settings.id
-      state.optionsId = data.opts_id
+      state.lesson_cost = data.settings.lesson_cost
+      state.max_subjects_per_block = data.settings.max_subjects_per_block
+      state.settings_title = data.settings.title
+      state.settings_id = data.settings.id
+      state.options_id = data.opts_id
     }
   },
   actions: {

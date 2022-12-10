@@ -1,33 +1,38 @@
 <template>
-    <div class="row q-ma-sm" style="width:12vh">
-        <q-card :class="colours[index]">
-            <q-card-section >
-                <div class="text-h6">Block {{index+1}}</div>
-            </q-card-section>
-            <div v-for="code in block" :key="code">
-                <Subject :code="code"/>
+<q-card :class="colours[index]" style="width:65vh">
+
+    <div class="row">
+        <div class="col bg-grey-3">
+            <div class="text-h6 text-black q-pa-sm">Block {{index+1}}</div>
+        </div>
+        <div class="col-10">
+            <div class="row">
+                <div v-for="code in block" :key="code" class="q-pa-sm">
+                    <Subject :code="code" />
+                </div>
             </div>
-        </q-card>
+        </div>
     </div>
+</q-card>
 </template>
+
 <script lang="js">
-import { defineComponent } from 'vue';
+import {
+    defineComponent
+} from 'vue';
 import Subject from './Subject.vue';
 
-
-
 export default defineComponent({
-    name: 'OptionItem',  
+    name: 'OptionItem',
     props: ["block", "index"],
     components: {
         Subject
     },
-    data(){
+    data() {
         return {
-            colours : ["bg-red", "bg-orange", "bg-yellow", "bg-green"]
+            colours: ["bg-red", "bg-orange", "bg-yellow", "bg-green"]
         }
     }
 
 });
-
 </script>
