@@ -21,6 +21,7 @@ axiosInstance.interceptors.response.use(
           router.push({name:"E500"})
           return Promise.reject(error);
       }
+      return Promise.reject(error);
       return error.response
 
   }
@@ -28,7 +29,7 @@ axiosInstance.interceptors.response.use(
 
 const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promise<IAuthTokens | string> => {
   // a refresh token will be requested if the access token has expired
-  const response = await axios.post(`${BASE_URL}api/token/refresh`, { refresh: refreshToken })
+  const response = await axios.post(`${BASE_URL}/api/token/refresh`, { refresh: refreshToken })
 
   return response.data.access
 }
