@@ -1,5 +1,5 @@
 <template>
-<q-card>
+<q-card square>
     <q-card-section class="row justify-center">
         <div class="bg-grey-3" style="width:100vh">
             <div class="row justify-center items-center">

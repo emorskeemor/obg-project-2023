@@ -3,7 +3,7 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-5">
-                <q-card>
+                <q-card square>
                     <q-card-section>
                         <div class="text-h4">Generated option blocks</div>
 
