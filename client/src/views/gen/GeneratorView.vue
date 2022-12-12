@@ -1,6 +1,6 @@
 <template>
 <div>
-    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4">
+    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4" style="height:10vh">
         <q-step :name="1" title="Define data" icon="settings" :done="step > 1" :error="errorMessage.length !== 0">
             <OptionProvisionView  @back="previousStep" @next="nextStep" @error="onError"/>
 
@@ -23,7 +23,7 @@
 
         </q-step>
         <q-step :name="6" title="Live update" icon="add_comment">
-            <LiveUpdateView @back="previousStep" @next="nextStep" />
+            <LiveUpdateView @back="previousStep" @next="nextStep" @error="onError" @dismissError="dismissError"/>
 
         </q-step>
         <q-step :name="7" title="Save" icon="add_comment">

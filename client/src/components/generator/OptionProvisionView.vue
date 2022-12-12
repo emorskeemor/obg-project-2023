@@ -1,5 +1,5 @@
 <template>
-<div style="min-height:68vh">
+<div style="height:70vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="absolute-center">
             <q-card-section>

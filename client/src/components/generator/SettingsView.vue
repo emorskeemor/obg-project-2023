@@ -1,5 +1,5 @@
 <template>
-<div style="min-height:68vh">
+<div style="min-height:70vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="q-pa-md">
             <q-card-section>
@@ -70,7 +70,7 @@
         </div>
 
     </q-card>
-    <div class="absolute-bottom q-pa-sm">
+    <div class="absolute-bottom q-pa-sm q-mb-md">
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
             <q-btn push class="bg-teal-3 text-white" size="md" label="change settings" icon="edit" @click="editRoom" />
