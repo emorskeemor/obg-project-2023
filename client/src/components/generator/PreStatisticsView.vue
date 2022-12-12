@@ -5,12 +5,12 @@
             <div class="col-7 q-ma-lg">
                 <q-card style="min-height:70vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div>
+                        <div class="absolute-center">
                             <q-card-section>
                                 <div class="text-h4">Subject popularity</div>
                             </q-card-section>
                             <q-card-section>
-                                <apexchart width="800" height="410" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
+                                <apexchart :width="810" height="410" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
                             </q-card-section>
                         </div>
                     </transition>
@@ -59,6 +59,7 @@ export default defineComponent({
     props: ["optionsFile", "usingDatabase"],
 
     beforeMount() {
+        console.log(window.innerHeight);
         var formData = new FormData()
         formData.append("data", this.optionsFile)
         const payload = {
@@ -85,9 +86,19 @@ export default defineComponent({
             }
         )
     },
+    mounted() {
+        this.$nextTick(() => {
+            window.addEventListener('resize', this.onResize);
+        })
+    },
+
+    beforeUnmount() {
+        window.removeEventListener('resize', this.onResize);
+    },
 
     data() {
         return {
+            windowHeight: window.innerHeight,
             // options for bar chart
             barChartOptions: {
                 chart: {
@@ -138,7 +149,9 @@ export default defineComponent({
         }
     },
     methods: {
-
+        onResize() {
+            this.windowHeight = window.innerHeight
+        }
     }
 
 });

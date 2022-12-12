@@ -19,12 +19,12 @@ export default createStore({
     settings_title: "",
     settings_id: 0,
     options_id: 0,
+    // evluation details
   },
   getters: {
   },
   mutations: {
     setEvaluation(state, evaluation){
-      console.log(evaluation);
       state.generated_blocks = evaluation.blocks
       state.successful_students = evaluation.students.success
       state.failed_students = evaluation.students.failed

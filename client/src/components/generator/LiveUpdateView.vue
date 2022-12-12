@@ -1,36 +1,35 @@
 <template>
-<div style="min-height:68vh">
+<div style="min-height:70vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-8">
-                <q-card square>
-                    <q-card-section>
-                        <div class="text-h4">Manipulate blocks</div>
-                    </q-card-section>
-                    <q-card-section>
-                        <div class="row">
-                            <div v-for="(i, index) in items" :key="i[0]" class="col q-ma-md">
-                                <draggable class="list-group" :list="items[index]" :id=i item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject">
-                                    <!-- iterate over all available options in pagination -->
-                                    <template #item="{element}">
-                                        <q-card class="bg-grey-4 q-pa-sm" square>
-
+                <q-card square style="height:80vh">
+                    <div class="row">
+                        <div v-for="(i, index) in items" :key="i[0]" class="col q-ma-md">
+                            <div class="text-h4">block {{index+1}}</div>
+                            <draggable class="list-group" :list="items[index]" :id=i item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="tagSubject">
+                                <!-- iterate over all available options in pagination -->
+                                <template #item="{element}">
+                                    <div>
+                                        <q-card :class="current == element ? 'bg-red-6 q-pa-sm' : 'bg-grey-4 q-pa-sm'" @click="current=element">
                                             {{element}}
                                         </q-card>
-                                    </template>
-                                </draggable>
-                            </div>
-                        </div>
+                                        
+                                    </div>
 
-                    </q-card-section>
+                                </template>
+                            </draggable>
+                        </div>
+                    </div>
+
                 </q-card>
 
             </div>
             <div class="col-4">
-                <q-card square>
+                <q-card square style="height:80vh">
                     <q-card-section>
                         <div class="text-h4">statistics</div>
-
+                        {{current}}
                     </q-card-section>
                     <q-card-section>
 
@@ -79,17 +78,22 @@ export default defineComponent({
     },
     data() {
         return {
-            items: [...this.$store.state.generated_blocks]
+            items: [...this.$store.state.generated_blocks],
+            current: "",
         }
     },
     methods: {
         moveSubject(event, og) {
-            console.log(event);
+            console.log("hello");
             if (event.relatedContext.list.includes(event.draggedContext.element) && event.from !== event.to) {
                 this.$emit("error", `'${event.draggedContext.element}' already exists in this block`)
                 return false
             }
-        }
+        },
+        tagSubject(arg) {
+            this.current = arg.item.innerText
+        },
+    
     },
 
 });
