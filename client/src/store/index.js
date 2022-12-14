@@ -7,6 +7,7 @@ export default createStore({
     generated_blocks: [],
     successful_students: [],
     failed_students:[],
+    all_students:[],
     // provision type
     using_database:false,
     data_file: ref(null),
@@ -28,6 +29,7 @@ export default createStore({
       state.generated_blocks = evaluation.blocks
       state.successful_students = evaluation.students.success
       state.failed_students = evaluation.students.failed
+      state.all_students = evaluation.all
     },
     setDataProvision(state, usingDatabase, file){
       state.using_database = usingDatabase

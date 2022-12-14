@@ -23,13 +23,15 @@ from apps.students.models import Student
 # django
 from django.shortcuts import get_object_or_404  
 from django.conf import settings
-
+# generator
 from bloc.core.pre_generate.validate import populate_with_id, clean_options
 from bloc.core.pre_generate.statistics import subject_counts
 from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS, Pathways
+from bloc.core.post_generate.evaluation import EvaluationUtility
 from bloc.core.generate.utility import Generator
 from bloc.core.exceptions import PathwayFailed
 from bloc.core import protocols
+from bloc.core.post_generate.operations import BaseOperation
 
 from bloc.static.dummy import DUMMY_DATA
 from drf_yasg.utils import swagger_auto_schema
@@ -75,7 +77,7 @@ class GerneratorViewset(ViewSet):
         
         # serialized.is_valid(raise_exception=True)
         # cleaned_get = json.loads(request.data.get("payload")).get
-        get = self.load_form_data(request).get
+        get = self._load_form_data(request).get
         room = get_object_or_404(
             Room, 
             code=get("code"),
@@ -88,11 +90,6 @@ class GerneratorViewset(ViewSet):
         # we are either get the data from a csv or we are reading from a database
         # and converting it to a dictionary
         if get("data_using_csv") is True:
-            # options = file_to_list(
-            #     name=settings.DATA_CSV_LOOKUP, 
-            #     slice_func=slice(4),
-            #     hints="each line requires n items of 'subject_codes'"
-            # )
             options = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
@@ -104,14 +101,8 @@ class GerneratorViewset(ViewSet):
         # get the subject codes 
         override = {}
         if get("subjects_using_csv"):
-            # options = file_to_list(
-            #     name=settings.OPTIONS_CSV_LOOKUP, 
-            #     slice_func=1,
-            #     hints="each line requires two items 'subject_name','subject_code'"
-            # )
             options = get_options_from_csv(request)
         else:
-          
             options, override = self._get_room_subjects(room)
         if options == []:
             raise exceptions.ValidationError({
@@ -138,13 +129,14 @@ class GerneratorViewset(ViewSet):
                 opt["subject_code"] for opt in double_insert.targets.values("subject_code")
                 ]
             generator.insert_together(target,*targets)
-
+        generator.freeze()
         generator.execute()
         generator.evaluate()
         
         generator_data = {
             "blocks": generator.evaluation.blocks,
-            "students": generator.evaluation.serialize(include_paths=True)
+            "students": generator.evaluation.serialize(include_paths=True),
+            "all": generator.data
         }
         
         generator.evaluation.pprint()
@@ -157,7 +149,7 @@ class GerneratorViewset(ViewSet):
         return pre-generate statistics e.g. popularity of each subjects and pathways
         '''
         # get some initial data
-        get = self.load_form_data(request).get
+        get = self._load_form_data(request).get
         file_to_list = partial(csv_file_to_list, request)
         room = get_object_or_404(Room, code=get("room_id"))
         options = {}
@@ -167,11 +159,12 @@ class GerneratorViewset(ViewSet):
             
         # get the data
         if get("using_database") is False:
-            data_opts = file_to_list(
-                name=settings.DATA_CSV_LOOKUP, 
-                slice_func=slice(4),
-                hints="each line requires n items of 'subject_codes'"
-            )
+            # data_opts = file_to_list(
+            #     name=settings.DATA_CSV_LOOKUP, 
+            #     slice_func=slice(4),
+            #     hints="each line requires n items of 'subject_codes'"
+            # )
+            data_opts = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
             data = self._students_from_room(room)
@@ -189,11 +182,11 @@ class GerneratorViewset(ViewSet):
             "pathways": list(student_pathways.keys()),
             "pathway_counts": list(student_pathways.values())
         }
-        return response.Response(payload)
+        return response.Response(payload, status=status.HTTP_200_OK)
     
     @action(methods=["post"], detail=False, url_path="validate-data-file")
     def validate_data_file(self, request):
-        get = self.load_form_data(request).get
+        get = self._load_form_data(request).get
         opts, _ = self._get_room_subjects(
             room=get_object_or_404(Room, code=get("code"))
             )
@@ -204,6 +197,22 @@ class GerneratorViewset(ViewSet):
                         {"detail":f"subject '{subject}' does not exist in the available options for this room"}
                     )
         return response.Response(status=status.HTTP_200_OK)
+    
+    @action(methods=["post"], detail=False)
+    def evaluate(self, request):
+
+        get = request.data.get
+        EvaluationUtility._data = get("all_students")
+        initial = EvaluationUtility(blocks=get("initial"))
+        initial.pathways = False
+        initial.execute()
+        initial.evaluation.pprint()
+        new = EvaluationUtility(blocks=get("new"))
+        new.pathways = False
+        new.execute()
+        print(initial.evaluation.compare(new.evaluation))
+        new.evaluation.pprint()
+        return response.Response()
     
     ##############################################
     # PRVIVATE METHODS
@@ -257,7 +266,7 @@ class GerneratorViewset(ViewSet):
         return options, override
     
     @staticmethod
-    def load_form_data(request) -> dict:
+    def _load_form_data(request) -> dict:
         payload = request.data.get("payload")
         if payload is None:
             raise exceptions.ValidationError({"detail":"payload required as form data"})

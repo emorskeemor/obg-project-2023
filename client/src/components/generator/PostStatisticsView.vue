@@ -43,6 +43,7 @@ import {
     defineComponent,
 } from 'vue';
 
+
 import Block from '../statistics/Block.vue';
 import FailedStudents from '../statistics/FailedStudents.vue';
 import SuccessfulStudents from '../statistics/SuccessfulStudents.vue';
@@ -61,7 +62,7 @@ export default defineComponent({
         return {
             toggle: false
         }
-    }
-
+    },
+    
 });
 </script>

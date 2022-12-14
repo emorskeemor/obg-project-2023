@@ -5,31 +5,34 @@
             <div class="col-8">
                 <q-card square style="height:80vh">
                     <div class="row">
-                        <div v-for="(i, index) in items" :key="i[0]" class="col q-ma-md">
+                        <div v-for="(i, index) in blocks" :key="i[0]" class="col q-ma-md">
                             <div class="text-h4">block {{index+1}}</div>
-                            <draggable class="list-group" :list="items[index]" :id=i item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="tagSubject">
+                            <draggable 
+                            class="list-group" 
+                            :list="blocks[index]" 
+                            :id=index item-key="id" 
+                            :group="{ name: 'people', pull: true, put: true }" 
+                            :move="moveSubject" 
+                            @start="startMove" @change="changeSubject" @end="finishedMove">
                                 <!-- iterate over all available options in pagination -->
                                 <template #item="{element}">
                                     <div>
                                         <q-card :class="current == element ? 'bg-red-6 q-pa-sm' : 'bg-grey-4 q-pa-sm'" @click="current=element">
                                             {{element}}
-                                        </q-card>
-                                        
+                                        </q-card> 
                                     </div>
-
                                 </template>
                             </draggable>
                         </div>
                     </div>
-
                 </q-card>
-
             </div>
             <div class="col-4">
                 <q-card square style="height:80vh">
                     <q-card-section>
                         <div class="text-h4">statistics</div>
-                        {{current}}
+                        <!-- {{this.$store.state.all_students}} -->
+                        {{this.operations}}
                     </q-card-section>
                     <q-card-section>
 
@@ -40,7 +43,7 @@
                     </q-card-section>
                     <q-card-actions>
                         <q-btn-group>
-                            <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" />
+                            <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
                         </q-btn-group>
                     </q-card-actions>
                 </q-card>
@@ -69,6 +72,7 @@ import {
     defineComponent,
     ref
 } from 'vue';
+import { axiosInstance } from "@/api/axios";
 
 export default defineComponent({
     name: 'PreStatisticsView',
@@ -78,8 +82,9 @@ export default defineComponent({
     },
     data() {
         return {
-            items: [...this.$store.state.generated_blocks],
+            blocks: this.$store.state.generated_blocks.map(function(arr) {return arr.slice();}),     
             current: "",
+            operations: []
         }
     },
     methods: {
@@ -90,10 +95,27 @@ export default defineComponent({
                 return false
             }
         },
-        tagSubject(arg) {
+        changeSubject(event){
+            console.log(event);
+        },
+        startMove(arg) {
             this.current = arg.item.innerText
         },
-    
+        finishedMove(event){
+            console.log(event);
+            this.operations.push({from:event.from.id, subject:event.item.innerText, to:event.to.id})
+        },
+        evaluate(){
+            axiosInstance.post("api-generate/generator/evaluate/", {
+                initial:this.$store.state.generated_blocks,
+                // successful_students:this.$store.state.successful_students,
+                // failed_students:this.$store.state.failed_students,
+                all_students:this.$store.state.all_students,
+                new:this.blocks
+            }).then(response=>{
+                console.log(response);
+            })
+        }
     },
 
 });
