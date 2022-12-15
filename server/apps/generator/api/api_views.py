@@ -31,7 +31,7 @@ from bloc.core.post_generate.evaluation import EvaluationUtility
 from bloc.core.generate.utility import Generator
 from bloc.core.exceptions import PathwayFailed
 from bloc.core import protocols
-from bloc.core.post_generate.operations import BaseOperation
+from bloc.core.post_generate.operations import execute_operation
 
 from bloc.static.dummy import DUMMY_DATA
 from drf_yasg.utils import swagger_auto_schema
@@ -204,15 +204,27 @@ class GerneratorViewset(ViewSet):
 
         get = request.data.get
         EvaluationUtility._data = get("all_students")
+        EvaluationUtility.EBACC = settings.EBACC_SUBJECTS
         initial = EvaluationUtility(blocks=get("initial"))
-        initial.pathways = False
-        initial.execute()
-        initial.evaluation.pprint()
-        new = EvaluationUtility(blocks=get("new"))
-        new.pathways = False
-        new.execute()
-        print(initial.evaluation.compare(new.evaluation))
-        new.evaluation.pprint()
+        # initial.pathways = False
+        # initial.execute()
+        # initial.evaluation.pprint()
+        # new = EvaluationUtility(blocks=get("new"))
+        # new.pathways = False
+        # new.execute()
+        # print(initial.evaluation.compare(new.evaluation))
+        # new.evaluation.pprint()
+        
+        operations = request.data.get("operations")
+        for operation in operations:
+            operation.pop("id")
+            ttype = operation.pop("type")
+            print("EXECUTING OPERATION : ", operation)
+            op = execute_operation(operation=ttype.lower(), blocks=initial.blocks, **operation)
+            result = op.compare()
+            # print("\n", result)
+            # for block in op.blocks:
+            #     print(block)
         return response.Response()
     
     ##############################################

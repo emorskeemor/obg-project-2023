@@ -6,7 +6,7 @@
                 <q-card square style="height:80vh">
                     <div class="row">
                         <div v-for="(i, index) in blocks" :key="i[0]" class="col q-pa-sm bg-grey-3">
-                            <div class="text-h5 q-ma-sm">Option Block <div class="text-bold">[{{index+1}}]</div>
+                            <div class="text-h5 q-ma-sm">Option Block <div class="text-bold">[{{index+1}}] {{blocks[index].length}}</div>
                             </div>
                             <q-scroll-area style="height:63vh">
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
@@ -15,7 +15,7 @@
                                         <div :id="element">
                                             <q-card :class="current == element ? 'bg-red-6 q-pa-sm' : 'bg-grey-4 q-pa-sm'" @click="current=element" square>
                                                 <div class="row">
-                                                    
+
                                                     <div class="col-2">
                                                         <div class="text-bold">{{element}}</div>
                                                     </div>
@@ -92,14 +92,14 @@
                                     <div class="col-1 q-pa-sm text-bold justify-center items-center bg-grey-4">
                                         ID
                                     </div>
-                                    <div class="col-2 q-pa-sm text-bold justify-center items-center bg-grey-5" >
+                                    <div class="col-2 q-pa-sm text-bold justify-center items-center bg-grey-5">
                                         Type
                                     </div>
-                                    <div class="col-6 q-pa-sm text-bold justify-center items-center">
+                                    <div class="col-5 q-pa-sm text-bold justify-center items-center">
                                         Details
                                     </div>
                                     <div class="col q-pa-sm text-bold justify-center items-center">
-                                        
+
                                     </div>
                                 </div>
                                 <q-separator />
@@ -114,24 +114,27 @@
                                                     <div class="col-2 justify-center items-center">
                                                         {{op.type}}
                                                     </div>
-                                                    <div class="col-6 justify-center items-center">
+                                                    <div class="col-5 justify-center items-center">
                                                         <div v-if="op.type==='MOVE'">
-                                                            <div class="text-body1 text-center">Moving '{{op.subject}}' Block [{{op.from+1}}] to [{{op.to+1}}]</div>
+                                                            <div class="text-body1 text-center">Moving '{{op.subject}}' Block [{{op.target+1}}] to [{{op.to+1}}]</div>
 
                                                         </div>
                                                         <div v-else-if="op.type==='ADD'">
-                                                            <div class="text-body1 text-center">Adding '{{op.subject}}' to Block [{{op.to+1}}]</div>
+                                                            <div class="text-body1 text-center">Adding '{{op.subject}}' to Block [{{op.block+1}}]</div>
 
                                                         </div>
                                                         <div v-else-if="op.type==='REMOVE'">
-                                                            <div class="text-body1 text-center">Removing '{{op.subject}}' from Block [{{op.from+1}}]</div>
+                                                            <div class="text-body1 text-center">Removing '{{op.subject}}' from Block [{{op.block+1}}]</div>
 
                                                         </div>
-                                                        
+
                                                     </div>
                                                     <div class="col justify-center items-center">
-                                                        <q-btn flat class="bg-red-6 text-white" size="sm" label="delete" @click="removeOperation(op.id)" />
+                                                        <q-btn-group>
+                                                            <q-btn flat class="bg-red-6 text-white" size="sm" label="delete" @click="removeOperation(op)" />
+                                                            <q-btn flat class="bg-blue-6 text-white" size="sm" label="undo" @click="undoOperation(op)" />
 
+                                                        </q-btn-group>
                                                     </div>
                                                 </div>
                                             </q-card>
@@ -227,13 +230,12 @@ export default defineComponent({
             this.current = arg.item.id
         },
         finishedMove(event) {
-            console.log(event);
             if (event.to !== event.from) {
                 if (event.to.id === 'trash') {
                     this.operations.push({
                         id: this.operations.length + 1,
                         type: "REMOVE",
-                        from: Number(event.from.id),
+                        block: Number(event.from.id),
                         subject: event.clone.id,
                     })
                 } else {
@@ -241,7 +243,7 @@ export default defineComponent({
                     this.operations.push({
                         id: this.operations.length + 1,
                         type: "MOVE",
-                        from: Number(event.from.id),
+                        target: Number(event.from.id),
                         subject: event.clone.id,
                         to: Number(event.to.id)
                     })
@@ -249,18 +251,102 @@ export default defineComponent({
             }
         },
         addSubject(event) {
-            console.log(event.item);
             if (event.to !== event.from) {
                 this.operations.push({
                     id: this.operations.length + 1,
                     type: "ADD",
                     subject: event.item.id,
-                    to: Number(event.to.id)
+                    block: Number(event.to.id)
                 })
             }
         },
-        removeOperation(id) {
-            this.operations = this.operations.filter(op=>op.id !== id)
+        removeOperation(operation) {
+            this.operations = this.operations.filter(op => op.id !== operation.id)
+        },
+        undoOperation(operation) {
+            let type = operation.type
+            let success = false
+            // undo add operation by doing a remove operation
+            if (type === "ADD") {
+                let newBlocks = []
+                let found = false
+                this.blocks.forEach((block, index) => {
+                    if (index == operation.block) {
+                        newBlocks.push(block.filter(subject => {
+                            if (subject === operation.subject && found === false) {
+                                found = true
+                            }
+                            console.log(found);
+                            return subject !== operation.subject
+                        }))
+                    } else {
+                        newBlocks.push(block)
+                    }
+                })
+                if (found === false) {
+                    this.errorMessage = "Could not undo [ADD] operation as the subject no longer exists in the block"
+                } else {
+
+                    this.blocks = newBlocks
+                    success = true
+                }
+                // undo a REMOVE operation by doing an add operation
+            } else if (type === "REMOVE") {
+                let found = false
+                this.blocks[operation.block].forEach(
+                    subject => {
+                        if (subject === operation.subject) {
+                            found = true
+                        }
+                    }
+                )
+                if (found === true) {
+                    this.errorMessage = "Could not undo [REMOVE] operation as the subject already exists within this block"
+                } else {
+                    this.blocks[operation.block].push(operation.subject)
+                    success = true
+                }
+            }
+            // undo MOVE operation by reversing the move
+            else if (type === "MOVE") {
+                console.log(operation);
+                if (this.subjectInBlock(operation.target, operation.subject)) {
+                    this.errorMessage = `Cannot undo [MOVE] operation as '${operation.subject}' already exists in the original block [${operation.target+1}]`
+                } else {
+                    let found = false
+                    let newBlocks = []
+                    this.blocks.forEach((block, index) => {
+                        // pop from the current block
+                        if (index == operation.to) {
+                            newBlocks.push(block.filter(subject => {
+                                if (subject === operation.subject && found === false) {
+                                    found = true
+                                }
+                                return subject !== operation.subject
+                            }))
+                            // add to the original block
+                        } else if (index == operation.target) {
+                            block.push(operation.subject)
+                            newBlocks.push(block)
+                        } else {
+                            newBlocks.push(block)
+                        }
+                    })
+                    console.log(newBlocks);
+                    if (found === false) {
+                        this.errorMessage = "Could not undo [ADD] operation as the subject no longer exists in the block"
+                    } else {
+                        this.blocks = newBlocks
+                        success = true
+                    }
+                }
+            }
+
+            if (success === true) {
+
+                this.removeOperation(operation)
+            }
+
         },
         dismissError() {
             this.errorMessage = ""
@@ -277,10 +363,22 @@ export default defineComponent({
             axiosInstance.post("api-generate/generator/evaluate/", {
                 initial: this.$store.state.generated_blocks,
                 all_students: this.$store.state.all_students,
-                new: this.blocks
+                new: this.blocks,
+                operations: this.operations,
             }).then(response => {
                 console.log(response);
             })
+        },
+        subjectInBlock(block, target) {
+            let found = false
+            this.blocks[block].forEach(
+                subject => {
+                    console.log(subject);
+                    if (subject == target) {
+                        found = true
+                    }
+                })
+            return found
         }
     },
 
