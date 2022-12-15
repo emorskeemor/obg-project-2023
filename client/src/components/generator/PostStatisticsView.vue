@@ -4,17 +4,14 @@
         <div class="row">
             <div class="col-5">
                 <q-card square>
-                    <q-card-section>
-                        <div class="text-h4">Generated option blocks</div>
-
-                    </q-card-section>
-                    <q-card-section>
-                        <div class="row justify-center">
-                            <div v-for="(block, index) in $store.state.generated_blocks" :key="index">
-                                <Block :block="block" :index="index" />
-                            </div>
+                    <div class="text-h4">
+                        Generated blocks
+                    </div>
+                    <div class="row justify-center">
+                        <div v-for="(block, index) in $store.state.generated_blocks" :key="index">
+                            <Block :block="block" :index="index" />
                         </div>
-                    </q-card-section>
+                    </div>
                     <q-card-actions class="float-right ">
                         <q-btn push class="bg-teal-4 text-white" size="md" label="toggle" @click="toggle=!toggle" />
                     </q-card-actions>
@@ -22,9 +19,9 @@
 
             </div>
             <div class="col-7">
-                
-                <FailedStudents v-if="toggle"/>
-                <SuccessfulStudents v-if="!toggle"/>
+
+                <FailedStudents v-if="toggle" />
+                <SuccessfulStudents v-if="!toggle" />
             </div>
         </div>
     </q-card>
@@ -34,7 +31,7 @@
             <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
         </q-btn-group>
     </div>
-    
+
 </div>
 </template>
 
@@ -42,7 +39,6 @@
 import {
     defineComponent,
 } from 'vue';
-
 
 import Block from '../statistics/Block.vue';
 import FailedStudents from '../statistics/FailedStudents.vue';
@@ -63,6 +59,6 @@ export default defineComponent({
             toggle: false
         }
     },
-    
+
 });
 </script>

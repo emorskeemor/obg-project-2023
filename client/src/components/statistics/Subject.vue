@@ -1,10 +1,7 @@
 <template>
-<!-- <div style="width:5vh" class="bg-red">
-    <div class="text-h6 text-white">{{code}}</div>
 
-</div> -->
-<q-card class="bg-grey-2" style="width:5vh">
-    <div class="text-h6 text-black">{{code}}</div>
+<q-card class="bg-grey-2" style="padding:3px">
+    <div class="text-black">{{code}}, {{this.$store.state.options[code]}}</div>
 
 </q-card>
 </template>

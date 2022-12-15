@@ -136,7 +136,7 @@ class GerneratorViewset(ViewSet):
         generator_data = {
             "blocks": generator.evaluation.blocks,
             "students": generator.evaluation.serialize(include_paths=True),
-            "all": generator.data
+            "all": generator.data,
         }
         
         generator.evaluation.pprint()
@@ -169,18 +169,19 @@ class GerneratorViewset(ViewSet):
         else:
             data = self._students_from_room(room)
         # get the subjects and their popularity
+        counts = subject_counts(data=data, option_codes=options.keys())
         popularity = {
-            options.get(code):count for code, count in subject_counts(
-                data=data, option_codes=options.keys()
-                ).items()
+            options.get(code):count for code, count in counts.items()
             }
         student_pathways = self._get_student_pathways(data)
         # print(student_pathways)
         payload = {
             "subjects": list(popularity.keys()),
+            "subject_codes": list(counts.keys()),
             "counts": list(popularity.values()),
             "pathways": list(student_pathways.keys()),
-            "pathway_counts": list(student_pathways.values())
+            "pathway_counts": list(student_pathways.values()),
+            "options": options,
         }
         return response.Response(payload, status=status.HTTP_200_OK)
     

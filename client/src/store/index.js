@@ -5,6 +5,7 @@ export default createStore({
   state: {
     // evaluation
     generated_blocks: [],
+    initial_blocks: [],
     successful_students: [],
     failed_students:[],
     all_students:[],
@@ -21,6 +22,10 @@ export default createStore({
     settings_id: 0,
     options_id: 0,
     // evluation details
+
+    // subjects
+    subjects:[],
+    options:{}
   },
   getters: {
   },
@@ -30,6 +35,9 @@ export default createStore({
       state.successful_students = evaluation.students.success
       state.failed_students = evaluation.students.failed
       state.all_students = evaluation.all
+      state.initial_blocks = state.generated_blocks.map(function (arr) {
+        return arr.slice();
+    })
     },
     setDataProvision(state, usingDatabase, file){
       state.using_database = usingDatabase
@@ -46,6 +54,10 @@ export default createStore({
       state.settings_title = data.settings.title
       state.settings_id = data.settings.id
       state.options_id = data.opts_id
+    },
+    setPreStatistics(state, data){
+      state.subjects = data.subjects
+      state.options = data.options
     }
   },
   actions: {

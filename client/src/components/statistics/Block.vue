@@ -1,5 +1,5 @@
 <template>
-<q-card :class="colours[index]" style="width:65vh">
+<q-card :class="colours[index]" style="width:80vh">
 
     <div class="row">
         <div class="col bg-grey-3">
@@ -7,7 +7,7 @@
         </div>
         <div class="col-10">
             <div class="row">
-                <div v-for="code in block" :key="code" class="q-pa-sm">
+                <div v-for="code in block" :key="code" style="padding:5px">
                     <Subject :code="code" />
                 </div>
             </div>

@@ -76,6 +76,7 @@ export default defineComponent({
                 }
             }).then(
             response => {
+                this.$store.commit("setPreStatistics", response.data)
                 this.barChartOptions.xaxis.categories = response.data.subjects
                 this.barChartSeries[0].data = response.data.counts
 
