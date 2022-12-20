@@ -77,7 +77,7 @@
                             <div class="text-body1">Total subjects in blocks: {{totalSubjects}}</div>
                         </div>
                         <div class="row">
-                            <div class="text-body1">Total available subjects: {{this.$store.state.subjects.length}}</div>
+                            <!-- <div class="text-body1">Total available subjects: {{this.$store.state.subjects.length}}</div> -->
                         </div>
                     </q-card-section>
                     <q-separator />

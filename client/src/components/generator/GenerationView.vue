@@ -59,9 +59,9 @@ export default defineComponent({
         if (this.run === true) {
             this.toggleTimer()
             var formData = new FormData()
-            formData.append("data", this.optionsFile)
+            formData.append("data", this.$store.state.data_file)
             const payload = {
-                "data_using_csv": !this.usingDatabase,
+                "data_using_csv": this.$store.state.usingDatabase,
                 "code": this.$route.params.room_id,
 
             }

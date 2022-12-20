@@ -70,9 +70,10 @@ export default defineComponent({
                     var formData = new FormData()
                     formData.append("data", this.file)
                     const payload = {
-                        "data_using_csv": !this.usingDatabase,
+                        "data_using_csv": true,
                         "code": this.$route.params.room_id,
                     }
+                    // console.log(this.file);
                     formData.append("payload", JSON.stringify(payload))
                     axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
                         headers: {
@@ -81,10 +82,12 @@ export default defineComponent({
                     }).then(
                         response => {
                             if (response.status == 200) {
+                                console.log(this.file);
                                 this.$store.commit(
-                                    "setDataProvision",
-                                    usingDatabase,
-                                    this.file
+                                    "setDataProvision", {
+                                        "usingDatabase": false,
+                                        "file": this.file
+                                    }
                                 )
                                 this.$emit("next")
                             } else {
@@ -95,10 +98,11 @@ export default defineComponent({
                 }
             } else {
                 this.$store.commit(
-                    "setDataProvision",
-                    usingDatabase,
-                    this.file
-                ) 
+                    "setDataProvision", {
+                        "usingDatabase": true,
+                        "file": this.file
+                    }
+                )
                 this.$emit("next")
             }
         }

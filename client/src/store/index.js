@@ -39,10 +39,10 @@ export default createStore({
         return arr.slice();
     })
     },
-    setDataProvision(state, usingDatabase, file){
-      state.using_database = usingDatabase
-      if (!usingDatabase){
-        state.data_file = file
+    setDataProvision(state, data){
+      state.using_database = data.usingDatabase
+      if (!data.usingDatabase){
+        state.data_file = data.file
       }
     },
     setSettingsData(state, data) {

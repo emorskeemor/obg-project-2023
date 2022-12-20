@@ -23,21 +23,23 @@ from apps.students.models import Student
 # django
 from django.shortcuts import get_object_or_404  
 from django.conf import settings
+
 # generator
 from bloc.core.pre_generate.validate import populate_with_id, clean_options
-from bloc.core.pre_generate.statistics import subject_counts
-from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS, Pathways
+from bloc.core.pre_generate.statistics import subject_counts, group_by_class, filter_grouped_by
+from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS
 from bloc.core.post_generate.evaluation import EvaluationUtility
 from bloc.core.generate.utility import Generator
 from bloc.core.exceptions import PathwayFailed
 from bloc.core import protocols
-from bloc.core.post_generate.operations import execute_operation
+from bloc.core.post_generate.operations import get_operation_report
+from bloc.core.post_generate import graphs
 
-from bloc.static.dummy import DUMMY_DATA
 from drf_yasg.utils import swagger_auto_schema
 
 from core.utils import csv_file_to_list
 
+import operator
 # views in the generator module should only be accessed by authorised users.
 
 def get_data_from_csv(request):
@@ -156,34 +158,43 @@ class GerneratorViewset(ViewSet):
         for available_option in AvailableOption.objects.all():
             code = available_option.option.subject_code
             options[code] = available_option.option.title
-            
         # get the data
         if get("using_database") is False:
-            # data_opts = file_to_list(
-            #     name=settings.DATA_CSV_LOOKUP, 
-            #     slice_func=slice(4),
-            #     hints="each line requires n items of 'subject_codes'"
-            # )
             data_opts = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
             data = self._students_from_room(room)
-        # get the subjects and their popularity
-        counts = subject_counts(data=data, option_codes=options.keys())
-        popularity = {
-            options.get(code):count for code, count in counts.items()
-            }
-        student_pathways = self._get_student_pathways(data)
-        # print(student_pathways)
-        payload = {
-            "subjects": list(popularity.keys()),
+        classes = int(get("classes"))
+        counts = subject_counts(data=data, option_codes=list(sorted(tuple(options.keys()))))
+        # CLASH HEAT MAP GRAPH
+        grouped = group_by_class(counts, class_size=24, maximum=4)
+        clash_heat_map = graphs.ClashMatrixGraph(
+            option_codes=filter_grouped_by(grouped, value=classes, operation=operator.eq).keys(),
+            data=data
+        )
+        clash_heat_map.ignore(*get("ignore_subjects", []))
+        clash_heat_map.level = int(get("max_clashes"))
+        clash_heat_map.serialize()
+        # SUBJECT POPULARITY BAR CHART
+        popularity_bar_chart = graphs.SubjectPopularityBarChart(
+            data=data,
+            option_codes=options
+        )
+        popularity_bar_chart.serialize()
+        # PATHWAY PIE CHART
+        pathway_pie_chart = graphs.PathwayPieChart(data=data, ebacc=settings.EBACC_SUBJECTS)
+        pathway_pie_chart.serialize()
+        
+        context = {
+            # heat map
+            "clash_heat_map": clash_heat_map.as_dict(),
+            "popularity_bar_chart": popularity_bar_chart.as_dict(),
+            "pathway_pie_chart": pathway_pie_chart.as_dict(),          
+            # extra statistics
             "subject_codes": list(counts.keys()),
-            "counts": list(popularity.values()),
-            "pathways": list(student_pathways.keys()),
-            "pathway_counts": list(student_pathways.values()),
             "options": options,
         }
-        return response.Response(payload, status=status.HTTP_200_OK)
+        return response.Response(context, status=status.HTTP_200_OK)
     
     @action(methods=["post"], detail=False, url_path="validate-data-file")
     def validate_data_file(self, request):
@@ -201,30 +212,16 @@ class GerneratorViewset(ViewSet):
     
     @action(methods=["post"], detail=False)
     def evaluate(self, request):
-
         get = request.data.get
         EvaluationUtility._data = get("all_students")
         EvaluationUtility.EBACC = settings.EBACC_SUBJECTS
-        initial = EvaluationUtility(blocks=get("initial"))
-        # initial.pathways = False
-        # initial.execute()
-        # initial.evaluation.pprint()
-        # new = EvaluationUtility(blocks=get("new"))
-        # new.pathways = False
-        # new.execute()
-        # print(initial.evaluation.compare(new.evaluation))
-        # new.evaluation.pprint()
-        
-        operations = request.data.get("operations")
-        for operation in operations:
-            operation.pop("id")
-            ttype = operation.pop("type")
-            print("EXECUTING OPERATION : ", operation)
-            op = execute_operation(operation=ttype.lower(), blocks=initial.blocks, **operation)
-            result = op.compare()
-            # print("\n", result)
-            # for block in op.blocks:
-            #     print(block)
+        report = get_operation_report(
+            operations=get("operations"),
+            blocks=get("initial"),
+            ignore_keys=["id"]
+            
+            )
+        print(report)
         return response.Response()
     
     ##############################################
