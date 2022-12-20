@@ -82,7 +82,6 @@ export default defineComponent({
                     }).then(
                         response => {
                             if (response.status == 200) {
-                                console.log(this.file);
                                 this.$store.commit(
                                     "setDataProvision", {
                                         "usingDatabase": false,
@@ -91,10 +90,13 @@ export default defineComponent({
                                 )
                                 this.$emit("next")
                             } else {
+                                console.log(response);
                                 this.$emit('error', response.data.detail)
                             }
                         }
-                    )
+                    ).catch(error=>{
+                        this.$emit('error', error.response.data.detail)
+                    })
                 }
             } else {
                 this.$store.commit(

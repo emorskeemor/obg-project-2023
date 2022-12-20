@@ -3,13 +3,14 @@
     <div class="row justify-center">
         <q-separator />
         <div class="col-1 q-pa-sm bg-grey-4">
+             
             <!-- <div class="row absolute-center bg-red"> -->
                 {{index}}
             <!-- </div> -->
         </div>
 
         <div class="col-5 q-pa-sm">
-            {{student.id}}
+            {{student}}
         </div>
         <div class="col-3 q-pa-sm">
             {{student.pathway}}

@@ -18,8 +18,10 @@ from apps.generator.models import (
 from apps.environment.models import (
     GenerationSettings,Room, AvalilableOptionChoices, AvailableOption
     )
+from apps.students.models import Student, Choice
+# permissions
 from apps.environment.api.permissions import RoomAccessPermission
-from apps.students.models import Student
+
 # django
 from django.shortcuts import get_object_or_404  
 from django.conf import settings
@@ -91,10 +93,13 @@ class GerneratorViewset(ViewSet):
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
         # and converting it to a dictionary
+        
         if get("data_using_csv") is True:
+            print("using csv")
             options = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
+            print("using database")
             data = self._students_from_room(room)
         if data == {}:
             raise exceptions.ValidationError({
@@ -103,9 +108,12 @@ class GerneratorViewset(ViewSet):
         # get the subject codes 
         override = {}
         if get("subjects_using_csv"):
+            print("subjects using csv")
             options = get_options_from_csv(request)
         else:
+            print("subjects using database")
             options, override = self._get_room_subjects(room)
+        print("present options :", options)
         if options == []:
             raise exceptions.ValidationError({
                 "error":"cannot generate option blocks with no option codes"
@@ -152,7 +160,6 @@ class GerneratorViewset(ViewSet):
         '''
         # get some initial data
         get = self._load_form_data(request).get
-        file_to_list = partial(csv_file_to_list, request)
         room = get_object_or_404(Room, code=get("room_id"))
         options = {}
         for available_option in AvailableOption.objects.all():
@@ -164,6 +171,8 @@ class GerneratorViewset(ViewSet):
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
             data = self._students_from_room(room)
+        for student in data.values():
+            print(student)
         classes = int(get("classes"))
         counts = subject_counts(data=data, option_codes=list(sorted(tuple(options.keys()))))
         # CLASH HEAT MAP GRAPH
@@ -212,6 +221,9 @@ class GerneratorViewset(ViewSet):
     
     @action(methods=["post"], detail=False)
     def evaluate(self, request):
+        '''
+        evaluate a manipulated set of option blocks by using operations
+        '''
         get = request.data.get
         EvaluationUtility._data = get("all_students")
         EvaluationUtility.EBACC = settings.EBACC_SUBJECTS
@@ -227,27 +239,6 @@ class GerneratorViewset(ViewSet):
     ##############################################
     # PRVIVATE METHODS
     ##############################################
-    
-    @staticmethod
-    def _get_student_pathways(data):
-        '''
-        returns the pathway a set of options follow
-        '''
-        pathways = DEFAULT_PATHWAYS.copy()
-        counts = dict.fromkeys(tuple(map(lambda x:x.__name__, pathways)), 0)
-        ebacc = settings.EBACC_SUBJECTS
-        for options in data.values():
-            path = None
-            for possible_path in pathways:
-                try:
-                    path = possible_path(ebacc)
-                    path(*options)
-                    break
-                except PathwayFailed:
-                    pass
-            current = counts[path.__class__.__name__]
-            counts[path.__class__.__name__] = current + 1
-        return counts
 
     @staticmethod
     def _students_from_room(room) -> Dict:
@@ -256,8 +247,9 @@ class GerneratorViewset(ViewSet):
         students = Student.objects.prefetch_related("options").filter(room=room)
         for student in students:
             options = []
-            for option in student.options.all():
-                options.append(option.subject_code)
+            for choice in Choice.objects.filter(student=student):
+                if not choice.reserve:
+                    options.append(choice.option.subject_code)
             data[str(student.uuid)] = options
         return data
       

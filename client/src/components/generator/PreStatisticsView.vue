@@ -3,7 +3,7 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row ">
             <div class="col-5 q-ma-md">
-                <q-card>
+                <q-card style="min-height:72vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg">
                             <!-- <div class="text-h6 q-pa-md">clashes</div> -->
@@ -17,14 +17,13 @@
                 </q-card>
             </div>
             <div class="col q-ma-md">
-                <q-card>
+                <q-card style="min-height:72vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg">
                             <apexchart type="heatmap" height="350" width="350" :options="heatMapOptions" :series="heatMapSeries"></apexchart>
                             <div class="row">
                                 <div class="col">
                                     <q-select v-model="ignoreOptions" style="width:20vh" multiple :options="availableOptions" use-chips stack-label label="ignore subjects" dense hint="select subjects to ignore" />
-                                    <q-btn label="refresh" size="sm" @click="getData"/>
 
                                 </div>
                                 <div class="col">
@@ -39,7 +38,7 @@
                 </q-card>
             </div>
             <div class="col q-ma-md">
-                <q-card style="min-width:50vh">
+                <q-card style="min-height:50vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-sm">
                             <apexchart width="400" type="donut" :options="pieOptions" :series="pieSeries" v-if="!fetching"></apexchart>
@@ -52,7 +51,8 @@
         </div>
     </q-card>
     <div class="absolute-bottom-right q-pa-md">
-        <div class="q-gutter-lg q-pa-md">
+        <div class="q-gutter-sm q-pa-sm">
+            <q-btn label="refresh" size="md" @click="getData" color="teal-4" push/>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
             <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" />
         </div>
@@ -149,12 +149,7 @@ export default defineComponent({
                 }
             },
             // CLASH HEAT MAP
-            heatMapSeries: [{
-                    name: "Ge",
-                    data: []
-                },
-
-            ],
+            heatMapSeries: [],
             heatMapOptions: {
                 chart: {
                     height: 500,

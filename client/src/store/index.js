@@ -40,6 +40,7 @@ export default createStore({
     })
     },
     setDataProvision(state, data){
+      console.log(data);
       state.using_database = data.usingDatabase
       if (!data.usingDatabase){
         state.data_file = data.file

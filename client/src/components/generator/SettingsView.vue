@@ -3,8 +3,15 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="q-pa-md">
             <q-card-section>
-                <div class="text-h4">
-                    Ensure your settings are good to go
+                <div class="row text-h4 items-center justify-center">
+                    Ensure your settings are good to go     
+                    <div v-if="this.$store.state.using_database">
+                        <q-chip icon="table">Using database</q-chip>
+                    </div>
+                    <div v-else>
+                        <q-chip icon="folder">Using CSV</q-chip>
+                    </div>
+
                 </div>
             </q-card-section>
             <q-card-section>

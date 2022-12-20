@@ -60,8 +60,9 @@ export default defineComponent({
             this.toggleTimer()
             var formData = new FormData()
             formData.append("data", this.$store.state.data_file)
+            console.log(!this.$store.state.using_database);
             const payload = {
-                "data_using_csv": this.$store.state.usingDatabase,
+                "data_using_csv": !this.$store.state.using_database,
                 "code": this.$route.params.room_id,
 
             }
