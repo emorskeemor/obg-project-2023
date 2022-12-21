@@ -3,7 +3,9 @@
 
     <div class="row">
         <div class="col bg-grey-3">
-            <div class="text-h6 text-black q-pa-sm">Option Block [{{index+1}}]</div>
+            <div class="text-h6 text-black q-pa-sm row">Block<div class="text-bold q-ml-sm">[{{index+1}}] </div>
+                <q-chip icon="subject">{{ block.length }}</q-chip>
+            </div>
         </div>
         <div class="col-10">
             <div class="row">

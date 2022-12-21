@@ -100,6 +100,7 @@ class GerneratorViewset(ViewSet):
         else:
             options, override = self._get_room_subjects(room)
         # give the generator the initial variables and prepare it
+        print(room_settings.blocks)
         generator = Generator(
             data=data,
             options=options,

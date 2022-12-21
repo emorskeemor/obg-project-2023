@@ -1,7 +1,10 @@
 <template>
-<q-card square>
-    <q-card-section class="row justify-center">
-        <div class="bg-grey-3" style="width:100vh">
+<q-card square flat>
+    <div class="row justify-center">
+        <div class="bg-grey-3" style="width:110vh">
+            <div class="text-h4 row justify-center q-pa-sm">
+                Failed students
+            </div>
             <div class="row justify-center items-center">
                 <q-separator />
                 <div class="col-2 q-pa-sm bg-grey-4 text-bold">ID</div>
@@ -21,7 +24,7 @@
             </div>
         </div>
 
-    </q-card-section>
+    </div>
 
 </q-card>
 </template>

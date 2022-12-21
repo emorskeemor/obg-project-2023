@@ -1,19 +1,18 @@
 <template>
 <div style="min-height:68vh">
-    <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
+    <q-card class="absolute-center  no-margin full-width full-height" square flat>
         <div class="row">
             <div class="col-5">
-                <q-scroll-area style="height:65vh">
-                    <q-card square class="q-pa-md">
-                        <div class="text-h4 q-pa-sm">
-                            Generated blocks
-                        </div>
+                <div class="text-h4 bg-grey-3 q-pa-sm">
+                    Generated blocks
+                </div>
+                <q-scroll-area style="height:60vh">
+                    <q-card square class="q-pa-md bg-grey-4" flat>
                         <div class="row justify-center">
                             <div v-for="(block, index) in $store.state.generated_blocks" :key="index">
                                 <Block :block="block" :index="index" />
                             </div>
                         </div>
-                        <q-btn push class="bg-teal-4 text-white q-ma-sm" size="md" label="toggle" @click="toggle=!toggle" />
                     </q-card>
                 </q-scroll-area>
 
@@ -28,6 +27,8 @@
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
+            <q-btn push class="bg-teal-3 text-white" size="md" label="toggle" @click="toggle=!toggle" />
+
         </q-btn-group>
     </div>
 

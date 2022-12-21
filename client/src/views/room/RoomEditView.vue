@@ -100,15 +100,15 @@
                         </div>
                     </q-card-section>
 
-                    <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy />
-                    </q-card-section>
                     <q-card-section class="bg-grey-4">
                         <div class="text-h5 q-pa-xs">Available options</div>
                         <div class="text-body2 q-mb-md">Edit the available options for the room</div>
                         <div class="text-h4 main-font"></div>
                         <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="md" icon="edit" />
-
+                        
+                    </q-card-section>
+                    <q-card-section class="bg-grey-4">
+                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy />
                     </q-card-section>
 
                 </q-card>

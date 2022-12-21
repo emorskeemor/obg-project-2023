@@ -1,7 +1,7 @@
 <template>
 <div style="min-height:68vh">
-    <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
-        <q-card class="absolute-center bg-grey-4 " style="min-height:50vh">
+    <q-card class="absolute-center bg-grey-3 no-margin full-width full-height">
+        <q-card class="absolute-center bg-grey-5" style="height:50vh;width:50%" bordered >
             <div v-if="run">
                 <q-card-section>
                     <div class="text-h3">We are currently generating the option blocks!</div>
@@ -12,9 +12,7 @@
                 </q-card-section>
             </div>
             <div v-else>
-                <q-card-section>
-                    <div class="text-h3">Blocks have already been generated</div>
-                </q-card-section>
+                <div class="absolute-center text-h4">Blocks have already been generated</div>
             </div>
         </q-card>
 

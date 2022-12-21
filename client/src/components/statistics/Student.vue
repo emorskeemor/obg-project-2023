@@ -1,5 +1,5 @@
 <template>
-<q-card class="bg-grey-3" style="width:100vh" square>
+<q-card class="bg-grey-3" style="width:110vh" square>
     <div class="row justify-center">
         <q-separator />
         <div class="col-2 bg-grey-4">
