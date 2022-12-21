@@ -3,7 +3,7 @@
 
     <div class="row">
         <div class="col bg-grey-3">
-            <div class="text-h6 text-black q-pa-sm">Block {{index+1}}</div>
+            <div class="text-h6 text-black q-pa-sm">Option Block [{{index+1}}]</div>
         </div>
         <div class="col-10">
             <div class="row">

@@ -8,7 +8,7 @@
                         <div v-for="(i, index) in blocks" :key="i[0]" class="col q-pa-sm bg-grey-3">
                             <div class="text-h5 q-ma-sm">Option Block <div class="text-bold">[{{index+1}}] {{blocks[index].length}}</div>
                             </div>
-                            <q-scroll-area style="height:63vh">
+                            <q-scroll-area style="height:60vh">
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
                                     <!-- iterate over all available options in pagination -->
                                     <template #item="{element}">
@@ -74,10 +74,22 @@
                     </q-card-section>
                     <q-card-section>
                         <div class="row">
+                            <div class="text-body1">Success percentage : {{ this.$store.state.success_percentage }}</div>
+                        </div>
+                        <div class="row">
                             <div class="text-body1">Total subjects in blocks: {{totalSubjects}}</div>
                         </div>
                         <div class="row">
-                            <!-- <div class="text-body1">Total available subjects: {{this.$store.state.subjects.length}}</div> -->
+                            <div class="text-body1">generation time : {{ this.$store.state.debug_data.generation_time }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-body1">completed nodes : {{this.$store.state.debug_data.completed_nodes}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-body1">generated nodes: {{this.$store.state.debug_data.generated_nodes}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-body1">generated states: {{this.$store.state.debug_data.generated_states}}</div>
                         </div>
                     </q-card-section>
                     <q-separator />

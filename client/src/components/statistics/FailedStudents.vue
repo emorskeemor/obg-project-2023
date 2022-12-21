@@ -4,10 +4,10 @@
         <div class="bg-grey-3" style="width:100vh">
             <div class="row justify-center items-center">
                 <q-separator />
-                <div class="col-1 q-pa-sm bg-grey-4 text-bold">ID</div>
+                <div class="col-2 q-pa-sm bg-grey-4 text-bold">ID</div>
                 <div class="col-3 q-pa-sm bg-grey-4 text-bold">Name</div>
                 <div class="col-2 q-pa-sm bg-grey-4 text-bold">Pathway</div>
-                <div class="col-3 q-pa-sm bg-grey-4 text-bold">Options</div>
+                <div class="col-2 q-pa-sm bg-grey-4 text-bold">Options</div>
                 <div class="col-3 q-pa-sm bg-grey-4 text-bold">Priority</div>
             </div>
             <div>

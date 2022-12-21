@@ -3,23 +3,22 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-5">
-                <q-card square>
-                    <div class="text-h4">
-                        Generated blocks
-                    </div>
-                    <div class="row justify-center">
-                        <div v-for="(block, index) in $store.state.generated_blocks" :key="index">
-                            <Block :block="block" :index="index" />
+                <q-scroll-area style="height:65vh">
+                    <q-card square class="q-pa-md">
+                        <div class="text-h4 q-pa-sm">
+                            Generated blocks
                         </div>
-                    </div>
-                    <q-card-actions class="float-right ">
-                        <q-btn push class="bg-teal-4 text-white" size="md" label="toggle" @click="toggle=!toggle" />
-                    </q-card-actions>
-                </q-card>
+                        <div class="row justify-center">
+                            <div v-for="(block, index) in $store.state.generated_blocks" :key="index">
+                                <Block :block="block" :index="index" />
+                            </div>
+                        </div>
+                        <q-btn push class="bg-teal-4 text-white q-ma-sm" size="md" label="toggle" @click="toggle=!toggle" />
+                    </q-card>
+                </q-scroll-area>
 
             </div>
             <div class="col-7">
-
                 <FailedStudents v-if="toggle" />
                 <SuccessfulStudents v-if="!toggle" />
             </div>

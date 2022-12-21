@@ -9,6 +9,8 @@ export default createStore({
     successful_students: [],
     failed_students:[],
     all_students:[],
+    success_percentage:0,
+    debug_data: {},
     // provision type
     using_database:false,
     data_file: ref(null),
@@ -38,6 +40,8 @@ export default createStore({
       state.initial_blocks = state.generated_blocks.map(function (arr) {
         return arr.slice();
     })
+    state.debug_data = evaluation.debug
+    state.success_percentage = evaluation.success
     },
     setDataProvision(state, data){
       console.log(data);

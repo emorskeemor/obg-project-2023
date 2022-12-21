@@ -87,7 +87,8 @@ class GerneratorViewset(ViewSet):
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
         # and converting it to a dictionary
-        if get("data_using_csv") is True:
+        data_using_csv = get("data_using_csv")
+        if data_using_csv is True:
             options = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
@@ -127,12 +128,30 @@ class GerneratorViewset(ViewSet):
         students = Student.objects.filter(room=room)
         serialized = generator.evaluation.serialize(include_paths=True)
         for value in serialized.get("success"):
-            print(value)
-        
+            name = "Anonymous"
+            email = "Not given"
+            if not data_using_csv:
+                student = students.get(uuid=value)
+                name = f"{student.first_name} {student.last_name}"
+                email = student.email
+            serialized["success"][value]["name"] = name
+            serialized["success"][value]["email"] = email
+        for value in serialized.get("failed"):
+            name = "Anonymous"
+            email = "Not given"
+            if not data_using_csv:
+                student = students.get(uuid=value)
+                name = f"{student.first_name} {student.last_name}"
+                email = student.email
+            serialized["failed"][value]["name"] = name
+            serialized["failed"][value]["email"] = email
+            
         generator_data = {
             "blocks": generator.evaluation.blocks,
             "students": serialized,
             "all": generator.data,
+            "success": generator.evaluation.success_percentage,
+            "debug": generator.debug_data
         }
         # DEBUG PURPOSES ONLY
         generator.evaluation.pprint()

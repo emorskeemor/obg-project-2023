@@ -2,15 +2,26 @@
 <q-card class="bg-grey-3" style="width:100vh" square>
     <div class="row justify-center">
         <q-separator />
-        <div class="col-1 q-pa-sm bg-grey-4">
-             
-            <!-- <div class="row absolute-center bg-red"> -->
-                {{index}}
-            <!-- </div> -->
+        <div class="col-2 bg-grey-4">
+            <q-btn color="grey" :label="index.slice(0,12)" size="sm">
+                <q-popup-proxy>
+                    <q-banner>
+                        <template v-slot:avatar>
+                            <q-icon name="account_circle" color="light-grey" />
+                        </template>
+                        <div class="row">
+                            student uuid: {{index}}
+                        </div>
+                        <div class="row">
+                            student email: {{student.email }}
+                        </div>
+                    </q-banner>
+                </q-popup-proxy>
+            </q-btn>
         </div>
 
-        <div class="col-5 q-pa-sm">
-            {{student}}
+        <div class="col-4 q-pa-sm">
+            {{student.name}}
         </div>
         <div class="col-3 q-pa-sm">
             {{student.pathway}}
@@ -45,7 +56,7 @@ export default defineComponent({
         }
     },
     methods: {
-        getOptionStyle(index){
+        getOptionStyle(index) {
             let base = "q-pa-sm "
             base = base.concat(this.colours[index])
             return base
