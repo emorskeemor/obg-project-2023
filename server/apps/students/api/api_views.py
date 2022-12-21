@@ -18,7 +18,7 @@ from apps.environment.api import (
 )
 from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings
 
-from core.utils import csv_file_to_list, valid_uuid_or_error
+from core.utils import csv_file_to_list, valid_uuid_or_error, load_form_data, get_data_from_csv
 
 from .serializers import (
     ChoiceSerializer, 
@@ -62,10 +62,12 @@ class StudentViewset(ModelViewSet):
         Dump csv containing student options into the database.
         WARNING : Caution while using this endpoint as it will create many records in the DB
         '''
-        data = csv_file_to_list(request, "data", slice(4))
-        serialized = StudentDumpSerializer(data=request.data)
+        # load the form data and parse the csv file given
+        data = load_form_data(request)
+        serialized = StudentDumpSerializer(data=data)
         serialized.is_valid(raise_exception=True)
         get = serialized.data.get
+        data = get_data_from_csv(request)
         
         room_code = get("room_code")
         room = get_object_or_404(Room, code=room_code)

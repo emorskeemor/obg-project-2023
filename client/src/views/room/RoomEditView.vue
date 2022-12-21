@@ -15,27 +15,60 @@
                         <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                             <div v-show="!fetching">
                                 <div class="q-gutter-md q-pa-sm">
-                                    <q-input v-model="domain" autofocus outlined label="domain name" hint="domain name">
-                                        <template v-slot:prepend>
-                                            <q-icon name="domain" />
-                                        </template>
-                                    </q-input>
-                                    <q-input v-model="title" autofocus outlined label="room title" :rules="[
+                                    <div class="row q-gutter-sm">
+                                        <div class="col">
+                                            <q-input v-model="domain" autofocus outlined label="domain name" hint="domain name">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="domain" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                        <div class="col">
+                                            <q-input v-model="title" autofocus outlined label="room title" :rules="[
                                 val => !!val || 'A title is required']">
-                                        <template v-slot:prepend>
-                                            <q-icon name="house" />
-                                        </template>
-                                    </q-input>
+                                                <template v-slot:prepend>
+                                                    <q-icon name="house" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                    </div>
                                     <div class="row">
-                                        <q-toggle v-model="public" label="Public" size="lg" />
-                                        <q-toggle v-model="CheckEmailDomain" label="Check domain" size="lg" />
+                                        <q-toggle v-model="public" label="Public" size="md" />
+                                        <q-toggle v-model="CheckEmailDomain" label="Check domain" size="md" />
 
                                     </div>
-                                    <q-input v-model="emailMatch" autofocus outlined label="email match" hint="A student's email domain must match a required room domain" :readonly="!CheckEmailDomain">
-                                        <template v-slot:prepend>
-                                            <q-icon name="email" />
-                                        </template>
-                                    </q-input>
+                                    <div class="row">
+                                        <q-input v-model="emailMatch" autofocus outlined label="email match" hint="A student's email domain must match a required room domain" :readonly="!CheckEmailDomain">
+                                            <template v-slot:prepend>
+                                                <q-icon name="email" />
+                                            </template>
+                                        </q-input>
+                                    </div>
+                                    <div class="row q-gutter-sm">
+                                        <q-btn press color="red" label="remove all students" @click="deleteAllStudent" size="sm" />
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <q-file filled bottom-slots v-model="dataFile" label="upload data file" counter max-files="12">
+
+                                                <template v-slot:append>
+                                                    <q-icon v-if="dataFile !== null" name="close" @click.stop.prevent="dataFile = null" class="cursor-pointer" />
+                                                    <q-icon name="create_new_folder" @click.stop.prevent />
+                                                </template>
+
+                                                <template v-slot:hint>
+                                                    Field hint
+                                                </template>
+
+                                                <template v-slot:after>
+                                                    <q-btn round dense flat icon="upload_file" @click="bulkCreate"/>
+                                                </template>
+                                            </q-file>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </transition>
@@ -67,9 +100,8 @@
                         </div>
                     </q-card-section>
 
-                    
-                    <q-card-section class="bg-grey-4 absolute-bottom" >
-                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy/>
+                    <q-card-section class="bg-grey-4 absolute-bottom">
+                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy />
                     </q-card-section>
                     <q-card-section class="bg-grey-4">
                         <div class="text-h5 q-pa-xs">Available options</div>
@@ -127,7 +159,7 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done"/>
+                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done" />
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -148,6 +180,7 @@ import {
     axiosInstance
 } from '@/api/axios';
 import {
+    ref,
     defineComponent
 } from 'vue';
 import BannerComponent from '@/components/misc/BannerComponent.vue';
@@ -179,7 +212,9 @@ export default defineComponent({
                 errorMessage: "",
                 successMessage: "",
 
-                optionsId: 0
+                optionsId: 0,
+
+                dataFile: ref(null),
             }
         },
         beforeMount() {
@@ -264,12 +299,40 @@ export default defineComponent({
             },
             generatorView() {
                 this.$router.push({
-                    name:"options-generator",
-                    params:{
+                    name: "options-generator",
+                    params: {
                         user_id: this.$route.params.user_id,
                         room_id: this.$route.params.room_id,
                     }
                 })
+            },
+            deleteAllStudent() {
+                axiosInstance.delete(`api-rooms/rooms/${this.$route.params.room_id}/delete-all-students/`).then(
+                    response => {
+                        console.log(response);
+                    }
+                )
+            },
+            bulkCreate() {
+                var formData = new FormData()
+                formData.append("data", this.dataFile)
+                const payload = {
+                    "data_using_csv": true,
+                    "room_code": this.$route.params.room_id,
+                    "options_using": this.settingsTitle
+
+                }
+                formData.append("payload", JSON.stringify(payload))
+
+                axiosInstance.post(`api-students/students/dump-students/`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }).then(
+                    response => {
+                       console.log(response);
+                    }
+                )
             }
         }
     },

@@ -22,8 +22,6 @@ class Student(models.Model):
         Room,
         on_delete=models.CASCADE,
         verbose_name=_("room connected to"),
-        blank=True,
-        null=True,
         )
     options = models.ManyToManyField(Option, through="Choice", related_name="students")
 

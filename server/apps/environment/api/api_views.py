@@ -93,6 +93,9 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["get"])
     def room_available(self, request, pk): 
+        '''
+        returns response whether or not the room is available or closed
+        '''
         room = get_object_or_404(Room, code=pk, domain=get_domain(request))
         if room.public:
             return response.Response({"detail":"room is public and can be accessed"}, status=status.HTTP_200_OK)
@@ -100,12 +103,16 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["get"])
     def room_with_settings(self, request, pk):
+        '''
+        return details about a room and its settings that are attached to it
+        '''
         room = get_object_or_404(Room, code=pk)
         room_serialized = self.serializer_class(room)
         # add the settings of the room as well
         settings = get_object_or_404(GenerationSettings, room=room)
         available_opts = get_object_or_404(AvalilableOptionChoices, room=room)
         payload = {}
+        # serialize it
         settings_serialized = SettingsSerializer(settings)
         settings_data = settings_serialized.data.copy()
         settings_data.pop("room")
@@ -116,14 +123,23 @@ class RoomViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=["get"])
     def retrieve_using_domain_and_code(self, request):
-        get = request.data.get
-        room = get_object_or_404(Room, domain=get("domain"), code=get("code"))
+        '''
+        return a room's details by using the domain and room code
+        '''
+        room = get_object_or_404(
+            Room, 
+            domain=request.data.get("domain"), 
+            code=request.data.get("code")
+            )
         serialized = self.serializer_class(room)
         return response.Response(serialized.data, status=status.HTTP_200_OK)
 
     
     @action(detail=True, methods=["get"], url_path="available-options")
     def available_options(self, request, pk):
+        '''
+        return all available options for a room
+        '''
         room = get_object_or_404(Room, code=pk)
         room_opts = get_object_or_404(AvalilableOptionChoices, room=room)
         opts = room_opts.options.all().order_by("title")
@@ -138,6 +154,18 @@ class RoomViewSet(viewsets.ModelViewSet):
         payload["room"] = room_opts_serialized.data
         payload["all"] = all_opts_serializeed.data 
         return response.Response(payload, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["delete"], url_path="delete-all-students")
+    def delete_all_students(self, request, pk):
+        '''
+        deletes all students from a given room
+        '''
+        room = get_object_or_404(Room, code=pk)
+        
+        for student in Student.objects.filter(room=room):
+            student.delete()
+        
+        return response.Response({"detail":"all students deleted successfully"}, status=status.HTTP_200_OK )
          
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room

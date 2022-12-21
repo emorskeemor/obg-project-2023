@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from rest_framework.exceptions import ValidationError
+from django.conf import settings
 
 import io
 import csv
@@ -55,3 +56,28 @@ def csv_file_to_list(request, name:str, slice_func:int, slicing_error_msg:str=No
         if hints:
             response["hints"] = hints
         raise ValidationError(response)
+    
+def get_data_from_csv(request):
+    return csv_file_to_list(
+        request,
+        name=settings.DATA_CSV_LOOKUP, 
+        slice_func=slice(4),
+        hints="each line requires n items of 'subject_codes'"
+    )
+    
+def get_options_from_csv(request):
+    return csv_file_to_list(
+        request,
+        name=settings.OPTIONS_CSV_LOOKUP, 
+        slice_func=1,
+        hints="each line requires two items 'subject_name','subject_code'"
+    )
+    
+from django.core import exceptions
+import json
+    
+def load_form_data(request) -> dict:
+    payload = request.data.get("payload")
+    if payload is None:
+        raise exceptions.ValidationError({"detail":"payload required as form data"})
+    return json.loads(payload)
