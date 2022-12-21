@@ -16,4 +16,4 @@ admin.site.register(Room)
 admin.site.register(GenerationSettings)
 admin.site.register(AvalilableOptionChoices, AvalilableOptionsAdmin)
 # unregistered to reduce confusion
-# admin.site.register(AvailableOption)
+admin.site.register(AvailableOption)

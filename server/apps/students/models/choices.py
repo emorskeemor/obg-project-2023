@@ -10,7 +10,7 @@ class Choice(models.Model):
     '''
     Through field between student and option
     '''
-    student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
     reserve = models.BooleanField(verbose_name=_("declares if the choice is a reserve"), default=False)
     priority = models.PositiveIntegerField(verbose_name=_("priority of the option"), default=0)

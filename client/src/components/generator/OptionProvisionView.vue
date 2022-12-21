@@ -50,7 +50,7 @@ export default defineComponent({
     emits: ["next", "back", "error"],
     watch: {
         file() {
-            // this.$emit("choose", false, this.file)
+            // handle choice whenever the file changes
             this.handleChoice(false)
         }
     },
@@ -67,13 +67,13 @@ export default defineComponent({
                 if (this.file.type !== "text/csv") {
                     this.$emit('error', "The file provided is not a CSV file.")
                 } else {
+                    // create form data to send for file validation. 
                     var formData = new FormData()
                     formData.append("data", this.file)
                     const payload = {
                         "data_using_csv": true,
                         "code": this.$route.params.room_id,
                     }
-                    // console.log(this.file);
                     formData.append("payload", JSON.stringify(payload))
                     axiosInstance.post("api-generate/generator/validate-data-file/", formData, {
                         headers: {

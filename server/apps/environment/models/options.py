@@ -15,12 +15,12 @@ class AvailableOption(models.Model):
     option = models.ForeignKey(
         Option, 
         verbose_name=_("option connected to"), 
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL, null=True
         )
     option_choices = models.ForeignKey(
         AvalilableOptionChoices, 
         verbose_name=_("available options"), 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
         )
     classes = models.PositiveSmallIntegerField(
             verbose_name=_("classes delegated to this subject"),

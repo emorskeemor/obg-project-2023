@@ -42,7 +42,6 @@ from drf_yasg.utils import swagger_auto_schema
 from core.utils import csv_file_to_list
 
 import operator
-# views in the generator module should only be accessed by authorised users.
 
 def get_data_from_csv(request):
     return csv_file_to_list(
@@ -76,11 +75,6 @@ class GerneratorViewset(ViewSet):
         '''
         Runs the option block generation process
         '''
-        # serialized = GenerationSerializer(data=request.data)
-        file_to_list = partial(csv_file_to_list, request)
-        
-        # serialized.is_valid(raise_exception=True)
-        # cleaned_get = json.loads(request.data.get("payload")).get
         get = self._load_form_data(request).get
         room = get_object_or_404(
             Room, 
@@ -93,31 +87,17 @@ class GerneratorViewset(ViewSet):
         self.check_object_permissions(request, room)
         # we are either get the data from a csv or we are reading from a database
         # and converting it to a dictionary
-        
         if get("data_using_csv") is True:
-            print("using csv")
             options = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
-            print("using database")
             data = self._students_from_room(room)
-        if data == {}:
-            raise exceptions.ValidationError({
-                "error":"cannot generate option block with no students"
-            })
-        # get the subject codes 
+        # get the subject codes either from a CSV or from a database
         override = {}
         if get("subjects_using_csv"):
-            print("subjects using csv")
             options = get_options_from_csv(request)
         else:
-            print("subjects using database")
             options, override = self._get_room_subjects(room)
-        print("present options :", options)
-        if options == []:
-            raise exceptions.ValidationError({
-                "error":"cannot generate option blocks with no option codes"
-            })
         # give the generator the initial variables and prepare it
         generator = Generator(
             data=data,
@@ -125,7 +105,7 @@ class GerneratorViewset(ViewSet):
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=protocols.ProtocolD(target_percentage=95.8),
+            protocol=protocols.ProtocolB(),
             debug=settings.GENERATOR_DEBUG
         )          
         generator.setup()  
@@ -139,16 +119,22 @@ class GerneratorViewset(ViewSet):
                 opt["subject_code"] for opt in double_insert.targets.values("subject_code")
                 ]
             generator.insert_together(target,*targets)
+        # EXECUTE THE GENERATION PROCESS
         generator.freeze()
         generator.execute()
         generator.evaluate()
         
+        students = Student.objects.filter(room=room)
+        serialized = generator.evaluation.serialize(include_paths=True)
+        for value in serialized.get("success"):
+            print(value)
+        
         generator_data = {
             "blocks": generator.evaluation.blocks,
-            "students": generator.evaluation.serialize(include_paths=True),
+            "students": serialized,
             "all": generator.data,
         }
-        
+        # DEBUG PURPOSES ONLY
         generator.evaluation.pprint()
        
         return response.Response(generator_data, status=status.HTTP_200_OK)
@@ -165,16 +151,17 @@ class GerneratorViewset(ViewSet):
         for available_option in AvailableOption.objects.all():
             code = available_option.option.subject_code
             options[code] = available_option.option.title
-        # get the data
+            
+        # get the data either using a csv or database
         if get("using_database") is False:
             data_opts = get_data_from_csv(request)
             data = populate_with_id([clean_options(opts, 4) for opts in data_opts])
         else:
             data = self._students_from_room(room)
-        for student in data.values():
-            print(student)
+        # get some variables to be commonly used by each graph
         classes = int(get("classes"))
         counts = subject_counts(data=data, option_codes=list(sorted(tuple(options.keys()))))
+        
         # CLASH HEAT MAP GRAPH
         grouped = group_by_class(counts, class_size=24, maximum=4)
         clash_heat_map = graphs.ClashMatrixGraph(
@@ -193,7 +180,6 @@ class GerneratorViewset(ViewSet):
         # PATHWAY PIE CHART
         pathway_pie_chart = graphs.PathwayPieChart(data=data, ebacc=settings.EBACC_SUBJECTS)
         pathway_pie_chart.serialize()
-        
         context = {
             # heat map
             "clash_heat_map": clash_heat_map.as_dict(),
@@ -202,11 +188,16 @@ class GerneratorViewset(ViewSet):
             # extra statistics
             "subject_codes": list(counts.keys()),
             "options": options,
+            "number_of_students": len(data), 
+            "number_of_subjects": sum([len(options) for options in data.values()]),
         }
         return response.Response(context, status=status.HTTP_200_OK)
     
     @action(methods=["post"], detail=False, url_path="validate-data-file")
     def validate_data_file(self, request):
+        '''
+        validates data file to be used in generation
+        '''
         get = self._load_form_data(request).get
         opts, _ = self._get_room_subjects(
             room=get_object_or_404(Room, code=get("code"))

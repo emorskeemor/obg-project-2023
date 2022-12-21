@@ -6,8 +6,6 @@
                 <q-card style="min-height:72vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg">
-                            <!-- <div class="text-h6 q-pa-md">clashes</div> -->
-
                             <apexchart class="col" width="600" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
 
                         </div>
@@ -24,7 +22,6 @@
                             <div class="row">
                                 <div class="col">
                                     <q-select v-model="ignoreOptions" style="width:20vh" multiple :options="availableOptions" use-chips stack-label label="ignore subjects" dense hint="select subjects to ignore" />
-
                                 </div>
                                 <div class="col">
                                     <q-input v-model="maxClashes" label="max clashes" dense type="number" />
@@ -42,6 +39,9 @@
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-sm">
                             <apexchart width="400" type="donut" :options="pieOptions" :series="pieSeries" v-if="!fetching"></apexchart>
+                            <div>Number of students : {{ studentCount }}</div>
+                            <div>Number of subjects : {{ subjectCount }}</div>
+
                         </div>
                     </transition>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
@@ -163,11 +163,15 @@ export default defineComponent({
                     text: 'Subject clashes'
                 },
             },
-            // OTHER DATA
+            // clash matrix data
             ignoreOptions: [],
             availableOptions: [],
             classes: 1,
             maxClashes: 3,
+
+            // other statistics
+            studentCount:0,
+            subjectCount:0,
 
             fetching: true,
         }
@@ -206,6 +210,10 @@ export default defineComponent({
                     this.pieOptions.labels = data.pathway_pie_chart.options
                     // clash heat map
                     this.heatMapSeries = data.clash_heat_map.series
+                    // other statistics
+                    this.studentCount = data.number_of_students
+                    this.subjectCount = data.number_of_subjects
+                    this.averageSubjects = data.average_subjects
 
                     this.availableOptions = data.subject_codes
                     this.fetching = false
