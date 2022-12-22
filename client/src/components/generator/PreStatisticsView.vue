@@ -5,8 +5,8 @@
             <div class="col-5 q-ma-md">
                 <q-card style="min-height:72vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div class="q-pa-lg">
-                            <apexchart class="col" width="600" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
+                        <div class="q-pa-lg absolute-center full-width">
+                            <apexchart  width="100%" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
 
                         </div>
                     </transition>
@@ -17,8 +17,8 @@
             <div class="col q-ma-md">
                 <q-card style="min-height:72vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div class="q-pa-lg">
-                            <apexchart type="heatmap" height="350" width="350" :options="heatMapOptions" :series="heatMapSeries"></apexchart>
+                        <div class="q-pa-lg absolute-center full-width">
+                            <apexchart type="heatmap" height="400" width="100%" :options="heatMapOptions" :series="heatMapSeries"></apexchart>
                             <div class="row">
                                 <div class="col">
                                     <q-select v-model="ignoreOptions" style="width:20vh" multiple :options="availableOptions" use-chips stack-label label="ignore subjects" dense hint="select subjects to ignore" />
@@ -37,8 +37,8 @@
             <div class="col q-ma-md">
                 <q-card style="min-height:50vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                        <div class="q-pa-sm">
-                            <apexchart width="400" type="donut" :options="pieOptions" :series="pieSeries" v-if="!fetching"></apexchart>
+                        <div class="q-pa-sm absolute-center full-width">
+                            <apexchart width="100%" type="donut" :options="pieOptions" :series="pieSeries" v-if="!fetching"></apexchart>
                             <div>Number of students : {{ studentCount }}</div>
                             <div>Number of subjects : {{ subjectCount }}</div>
 

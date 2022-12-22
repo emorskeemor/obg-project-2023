@@ -258,8 +258,6 @@ class GerneratorViewset(ViewSet):
         students = Student.objects.prefetch_related("choices").filter(room=room)
         for student in students:
             options = []
-            # for item in student.optionsl:
-            #     item
             for choice in student.choices.all():
                 if not choice.reserve:
                     options.append(choice.option.subject_code)
@@ -306,3 +304,10 @@ class InsertTogetherViewset(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InsertTogetherSerializer
     queryset = InsertTogether.objects.all()
+    
+    @action(methods=["get"], detail=True, url_path="room-rules")
+    def room_rules(self, request, pk, *args, **kwargs):
+        room = get_object_or_404(Room, code=pk)
+        settings = get_object_or_404(GenerationSettings, room=room)
+        inserts = InsertTogether.objects.filter(settings=settings)
+        return super().list(request, *args, **kwargs)

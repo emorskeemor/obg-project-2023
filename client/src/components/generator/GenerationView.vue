@@ -2,11 +2,11 @@
 <div style="min-height:68vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height">
         <q-card class="absolute-center bg-grey-5" style="height:50vh;width:50%" bordered >
-            <div v-if="run">
-                    <div class="text-h3 absolute-center">We are currently generating the option blocks!</div>
+            <div v-if="run" class="absolute-center">
+                    <div class="text-h4">We are currently generating the option blocks!</div>
                 
-                    <div class="text-h4 absolute-center">Please be patient as it may take a few minutes</div>
-                    <div class="text-h4 absolute-center">seconds : {{time}}</div>
+                    <div class="text-h6 ">Please be patient as it may take a few minutes</div>
+                    <div class="text-h5">seconds : {{time}}</div>
             </div>
             <div v-else>
                 <div class="absolute-center text-h4">Blocks have already been generated</div>

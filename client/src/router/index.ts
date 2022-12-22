@@ -11,13 +11,17 @@ import LogoutView from '@/views/auth/LogoutView.vue'
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
 import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
 import ChoicesView from '@/views/room/ChoicesView.vue'
+import RoomEditView from '@/views/room/RoomEditView.vue'
+import RuleEditorView from '@/views/room/RuleEditorView.vue'
+import AvailableOptionsView from '@/views/room/AvailableOptionsView.vue'
+
 // teacher
 import TeacherDashboardView from '@/views/dashboard/TeacherDashboardView.vue'
+// generator
+import GeneratorView from '@/views/gen/GeneratorView.vue'
 
 import { isLoggedIn } from 'axios-jwt'
-import RoomEditView from '@/views/room/RoomEditView.vue'
-import AvailableOptionsView from '@/views/room/AvailableOptionsView.vue'
-import GeneratorView from '@/views/gen/GeneratorView.vue'
+
 
 // http://localhost:8080/user/352a7ee2-b55d-4096-a0c7-77a4e482f91d/dashboard
 
@@ -75,6 +79,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/u/:user_id/r/:room_id/edit',
     name: 'room-edit',
     component: RoomEditView,
+    beforeEnter: (to, from) => {
+      if (!isLoggedIn()){
+        return {name:"E404"}
+      }
+    },
+  },
+  {
+    path: '/u/:user_id/r/:room_id/rules/',
+    name: 'rules-edit',
+    component: RuleEditorView,
     beforeEnter: (to, from) => {
       if (!isLoggedIn()){
         return {name:"E404"}

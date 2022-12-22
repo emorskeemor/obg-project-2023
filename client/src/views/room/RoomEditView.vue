@@ -62,7 +62,7 @@
                                                 </template>
 
                                                 <template v-slot:after>
-                                                    <q-btn round dense flat icon="upload_file" @click="bulkCreate"/>
+                                                    <q-btn round dense flat icon="upload_file" @click="bulkCreate" />
                                                 </template>
                                             </q-file>
                                         </div>
@@ -100,16 +100,17 @@
                         </div>
                     </q-card-section>
 
-                    <q-card-section class="bg-grey-4">
-                        <div class="text-h5 q-pa-xs">Available options</div>
-                        <div class="text-body2 q-mb-md">Edit the available options for the room</div>
-                        <div class="text-h4 main-font"></div>
-                        <q-btn label="Edit" color="teal-4" @click="editAvailableChoices" size="md" icon="edit" />
-                        
-                    </q-card-section>
-                    <q-card-section class="bg-grey-4">
-                        <q-btn label="Generate" color="red-7" size="lg" @click="generatorView" glossy />
-                    </q-card-section>
+                    <q-card-actions class="bg-grey-4 absolute-bottom row justify-center">
+                        <div class="text-h6 row full-width justify-center">Other Settings</div>
+                        <div class="text-body2 full-width justify-center q-mb-md">Edit the available options and rules for the room</div>
+                        <q-btn-group class="row">
+                            <q-btn label="Edit Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
+                            <q-btn label="Generate" color="red-7" size="md" @click="generatorView" glossy/>
+
+                            <q-btn label="Edit Rules" color="teal-4" @click="ruleEditorView" size="md" icon="rule" />
+                        </q-btn-group>
+
+                    </q-card-actions>
 
                 </q-card>
 
@@ -128,31 +129,59 @@
                                         Settings will be responsible for how the option blocks are generated
                                     </div>
 
-                                    <q-input v-model="settingsTitle" autofocus outlined label="settings title">
-                                        <template v-slot:prepend>
-                                            <q-icon name="edit" />
-                                        </template>
-                                    </q-input>
-                                    <q-input v-model="blocks" autofocus outlined label="blocks" type="number">
-                                        <template v-slot:prepend>
-                                            <q-icon name="grid_view" />
-                                        </template>
-                                    </q-input>
-                                    <q-input v-model="classSize" autofocus outlined label="class size" type="number">
-                                        <template v-slot:prepend>
-                                            <q-icon name="school" />
-                                        </template>
-                                    </q-input>
-                                    <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number">
-                                        <template v-slot:prepend>
-                                            <q-icon name="subject" />
-                                        </template>
-                                    </q-input>
-                                    <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number">
-                                        <template v-slot:prepend>
-                                            <q-icon name="currency_pound" />
-                                        </template>
-                                    </q-input>
+                                    <div class="row q-gutter-sm">
+                                        <div class="col">
+                                            <q-input v-model="settingsTitle" autofocus outlined label="settings title">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="edit" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                        <div class="col">
+                                            <q-input v-model="blocks" autofocus outlined label="blocks" type="number">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="grid_view" />
+                                                </template>
+                                            </q-input>
+
+                                        </div>
+                                    </div>
+                                    <div class="row q-gutter-sm">
+                                        <div class="col">
+                                            <q-input v-model="classSize" autofocus outlined label="class size" type="number">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="school" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                        <div class="col">
+                                            <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="subject" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                    </div>
+                                    <div class="row q-gutter-sm">
+                                        <div class="col">
+                                            <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="currency_pound" />
+                                                </template>
+                                            </q-input>
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
+                                    <div class="row q-gutter-sm">
+                                        <div class="col">
+
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </transition>
@@ -306,6 +335,15 @@ export default defineComponent({
                     }
                 })
             },
+            ruleEditorView() {
+                this.$router.push({
+                    name: "rules-edit",
+                    params: {
+                        user_id: this.$route.params.user_id,
+                        room_id: this.$route.params.room_id,
+                    }
+                })
+            },
             deleteAllStudent() {
                 axiosInstance.delete(`api-rooms/rooms/${this.$route.params.room_id}/delete-all-students/`).then(
                     response => {
@@ -330,7 +368,7 @@ export default defineComponent({
                     }
                 }).then(
                     response => {
-                       console.log(response);
+                        console.log(response);
                     }
                 )
             }
