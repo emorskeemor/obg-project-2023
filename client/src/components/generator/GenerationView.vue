@@ -3,13 +3,10 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height">
         <q-card class="absolute-center bg-grey-5" style="height:50vh;width:50%" bordered >
             <div v-if="run">
-                <q-card-section>
-                    <div class="text-h3">We are currently generating the option blocks!</div>
-                </q-card-section>
-                <q-card-section>
-                    <div class="text-h4">Please be patient as it may take a few minutes</div>
-                    <div class="text-h4">{{time}}</div>
-                </q-card-section>
+                    <div class="text-h3 absolute-center">We are currently generating the option blocks!</div>
+                
+                    <div class="text-h4 absolute-center">Please be patient as it may take a few minutes</div>
+                    <div class="text-h4 absolute-center">seconds : {{time}}</div>
             </div>
             <div v-else>
                 <div class="absolute-center text-h4">Blocks have already been generated</div>
@@ -83,7 +80,6 @@ export default defineComponent({
         toggleTimer() {
             if (this.isRunning) {
                 clearInterval(this.interval);
-                console.log('timer stops');
             } else {
                 this.interval = setInterval(this.incrementTime, 100);
             }

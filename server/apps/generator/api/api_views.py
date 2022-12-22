@@ -255,10 +255,12 @@ class GerneratorViewset(ViewSet):
     def _students_from_room(room) -> Dict:
         '''gets the students from a given room in the database and return it as a dict'''
         data = {}
-        students = Student.objects.prefetch_related("options").filter(room=room)
+        students = Student.objects.prefetch_related("choices").filter(room=room)
         for student in students:
             options = []
-            for choice in Choice.objects.filter(student=student):
+            # for item in student.optionsl:
+            #     item
+            for choice in student.choices.all():
                 if not choice.reserve:
                     options.append(choice.option.subject_code)
             data[str(student.uuid)] = options
