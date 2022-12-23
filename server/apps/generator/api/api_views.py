@@ -100,7 +100,7 @@ class GerneratorViewset(ViewSet):
         else:
             options, override = self._get_room_subjects(room)
         # give the generator the initial variables and prepare it
-        print(room_settings.blocks)
+        print(override)
         generator = Generator(
             data=data,
             options=options,
@@ -307,7 +307,48 @@ class InsertTogetherViewset(ModelViewSet):
     
     @action(methods=["get"], detail=True, url_path="room-rules")
     def room_rules(self, request, pk, *args, **kwargs):
+        '''
+        returns data about the insert rules
+        '''
         room = get_object_or_404(Room, code=pk)
+        self.check_object_permissions(request, room)
         settings = get_object_or_404(GenerationSettings, room=room)
         inserts = InsertTogether.objects.filter(settings=settings)
-        return super().list(request, *args, **kwargs)
+        serialized = self.serializer_class(inserts, many=True)
+        options = []
+        # also attach the available options so it can be used to create
+        # a new room later
+        for available_option in AvailableOption.objects.all():
+            options.append({
+                "label": available_option.option.title,
+                "value": available_option.pk
+            })
+            
+        payload = {
+            "inserts": serialized.data,
+            "available_options": options
+        }
+        return response.Response(payload, status=status.HTTP_200_OK)
+    
+    def create(self, request, *args, **kwargs):
+        get = request.data.get
+        room = get_object_or_404(Room, code=get("room_code"))
+        # self.check_object_permissions(request, room)
+        settings = get_object_or_404(GenerationSettings, room=room)
+        print(get("target_pk"))
+        target = get_object_or_404(AvailableOption, pk=get("target_pk"))
+        new_insert = InsertTogether(settings=settings, target=target.option)
+        new_insert.save()
+        targets = []
+        for subject in get("targets", []):
+            targets.append(
+                get_object_or_404(AvailableOption, pk=subject.get("value")).option
+            )
+        new_insert.targets.add(*targets)
+        
+        return response.Response()
+    
+    # def destroy(self, request, pk=None, *args, **kwargs):
+    #     insert = get_object_or_404(InsertTogether, pk=pk)
+    #     insert.delete()
+    #     return response.Response(status=status.HTTP_301_MOVED_PERMANENTLY)

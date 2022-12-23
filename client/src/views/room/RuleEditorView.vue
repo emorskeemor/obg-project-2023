@@ -1,5 +1,5 @@
 <template>
-<q-page class="q-pa-xs no-scroll" padding>
+<q-page class="q-pa-none no-scroll" padding>
     <div class="q-pa-md" style="width:100%">
         <div class="row q-gutter-xl">
             <div class="col-8">
@@ -26,7 +26,7 @@
                                         Targets
                                     </div>
                                     <div class="col q-pa-sm">
-
+                                        Actions
                                     </div>
                                 </div>
                                 <q-scroll-area class="col" visible style="height:50vh">
@@ -71,7 +71,7 @@
                                                 </q-btn>
                                             </div>
                                             <div class="col">
-                                                <q-btn label="delete" push />
+                                                <q-btn label="delete" push color="red" @click="deleteInserts(insert.pk)"/>
                                                 <!-- <q-toggle v-model="" /> -->
 
                                             </div>
@@ -96,14 +96,44 @@
                     </q-card-section>
                     <q-card-section>
                         <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                            <div v-show="!fetching">
+                            <div v-show="!fetching" class="full-height">
+                                <div class="row items-center justify-center q-gutter-md">
+                                    <div class="main-font text-body2">
+                                        Any time the target subject will be inserted into the block, we can also insert other
+                                        subjects to be inserted at the same time.
+                                    </div>
 
+                                    <div class="row full-width justify-center ">
+                                        <q-select v-model="target" 
+                                        style="width:40vh" 
+                                        :options="availableOptions" 
+                                        label="primary target" dense 
+                                        hint="the target subject" map-options />
+
+                                    </div>
+                                    <div class="row full-width justify-center ">
+                                        <q-select v-model="targets" 
+                                        style="width:40vh" multiple 
+                                        :options="availableOptions" 
+                                        use-chips label="targets" dense 
+                                        hint="select subjects that will be inserted with the target" map-options />
+                                    </div>
+                                    <div class="row full-width justify-center items-center">
+                                        <div class="row main-font text-body2 q-pa-sm">
+                                            Enable strict as extra validation to ensure that these subjects must be in the same block.
+                                            This also prevents students from being able to pick the target subject with all the targets.
+                                        </div>
+                                        <div class="row">
+                                            <q-toggle v-model="strict" label="Strict Insertion" checked-icon="check" unchecked-icon="clear" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </transition>
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done" />
+                        <q-btn label="Create" color="teal-4" @click="createInsert" size="md" icon="done" />
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -119,12 +149,9 @@ import {
     axiosInstance
 } from '@/api/axios';
 import {
+    ref,
     defineComponent
 } from 'vue';
-import BannerComponent from '@/components/misc/BannerComponent.vue';
-import AvailableOptionItem from '@/components/options/AvailableOptionItem.vue';
-import OptionItem from '@/components/options/OptionItem.vue';
-import SubjectInfoDialog from '@/components/options/SubjectInfoDialog.vue';
 
 import draggable from "vuedraggable";
 
@@ -136,7 +163,11 @@ export default defineComponent({
     data() {
         return {
             inserts: [],
-            fetching: true
+            fetching: true,
+            availableOptions: [],
+            targets: [],
+            target: ref(null),
+            strict: false,
         }
     },
     methods: {
@@ -145,15 +176,36 @@ export default defineComponent({
 
             axiosInstance.get(`api-generate/together/${this.$route.params.room_id}/room-rules/`).then(
                 response => {
-                    this.inserts = response.data
+                    this.inserts = response.data.inserts
+                    this.availableOptions = response.data.available_options
                     this.fetching = false
 
                 }
             )
         },
         createInsert() {
-            console.log("creating");
-        }
+            if (this.target !== null) {
+                this.fetching = true
+                axiosInstance.post(`api-generate/together/`, {
+                    room_code: this.$route.params.room_id,
+                    target_pk: this.target.value,
+                    targets: this.targets
+                }).then(
+                    response => {
+                        this.getInserts()
+                    }
+                )
+            }
+
+        },
+        deleteInserts(pk){
+            this.fetching = true
+            axiosInstance.delete(`api-generate/together/${pk}`).then(
+                response=>{
+                    this.getInserts()
+                }
+            )
+        },
     }
 
 });

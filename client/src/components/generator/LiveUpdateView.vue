@@ -167,8 +167,7 @@
                     <q-separator />
                     <q-card-actions>
                         <q-btn-group>
-                            <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
-                            <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
+                            
                         </q-btn-group>
                     </q-card-actions>
                 </q-card>
@@ -178,6 +177,8 @@
     </q-card>
     <div class="absolute-bottom-right q-pa-md">
         <q-btn-group>
+            <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
+                            <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
         </q-btn-group>
