@@ -9,8 +9,9 @@ import LoginView from '@/views/auth/LoginView.vue'
 import LogoutView from '@/views/auth/LogoutView.vue'
 // students and rooms
 import RoomJoinView from '@/views/room/RoomJoinView.vue'
-import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
 import ChoicesView from '@/views/room/ChoicesView.vue'
+import StudentCredentialsView from '@/views/room/StudentAccessView.vue'
+import StudentsView from '@/views/room/StudentsView.vue'
 import RoomEditView from '@/views/room/RoomEditView.vue'
 import RuleEditorView from '@/views/room/RuleEditorView.vue'
 import AvailableOptionsView from '@/views/room/AvailableOptionsView.vue'
@@ -79,6 +80,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/u/:user_id/r/:room_id/edit',
     name: 'room-edit',
     component: RoomEditView,
+    beforeEnter: (to, from) => {
+      if (!isLoggedIn()){
+        return {name:"E404"}
+      }
+    },
+  },
+  {
+    path: '/u/:user_id/r/:room_id/students',
+    name: 'students-view',
+    component: StudentsView,
     beforeEnter: (to, from) => {
       if (!isLoggedIn()){
         return {name:"E404"}

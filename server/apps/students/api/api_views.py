@@ -131,6 +131,15 @@ class StudentViewset(ModelViewSet):
         
         return Response(serialized_data, status=status.HTTP_200_OK)
     
+    @action(methods=["get"], url_path="room-students", detail=True)
+    def room_students(self, request, pk):
+        
+        room = get_object_or_404(Room, code=pk)
+        
+        serialized = self.serializer_class(room.students.all(), many=True)
+        
+        return Response(serialized.data, status=status.HTTP_200_OK)
+    
 class ChoiceViewset(ModelViewSet):
     '''
     views to access choices

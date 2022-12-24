@@ -98,7 +98,7 @@
                         <div>
                             Here you can edit this room and the settings that are attatched to it
                         </div>
-                        <q-btn label="Generate" color="red-7" size="md" @click="generatorView" glossy/>
+                        <q-btn label="Generate" color="red-7" size="md" @click="changeRoute('options-generator')" glossy/>
 
                     </q-card-section>
 
@@ -107,8 +107,8 @@
                         <div class="text-body2 full-width justify-center q-mb-md">Edit the available options, students and the generation rules</div>
                         <q-btn-group class="row">
                             <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
-                            <q-btn label="Students" color="teal-4" @click="editAvailableChoices" size="md" icon="account_circle" />
-                            <q-btn label="Rules" color="teal-4" @click="ruleEditorView" size="md" icon="rule" />
+                            <q-btn label="Students" color="teal-4" @click="changeRoute('students-view')" size="md" icon="account_circle" />
+                            <q-btn label="Rules" color="teal-4" @click="changeRoute('rules-edit')" size="md" icon="rule" />
                         </q-btn-group>
 
                     </q-card-actions>
@@ -329,18 +329,9 @@ export default defineComponent({
                     }
                 })
             },
-            generatorView() {
+            changeRoute(route) {
                 this.$router.push({
-                    name: "options-generator",
-                    params: {
-                        user_id: this.$route.params.user_id,
-                        room_id: this.$route.params.room_id,
-                    }
-                })
-            },
-            ruleEditorView() {
-                this.$router.push({
-                    name: "rules-edit",
+                    name: route,
                     params: {
                         user_id: this.$route.params.user_id,
                         room_id: this.$route.params.room_id,
