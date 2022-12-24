@@ -66,7 +66,7 @@ class AvailableOptionSerializer(serializers.ModelSerializer):
     serialize a single available option
     '''
     option = OptionSerializer(read_only=True)
-    option_choices = AvailableOptionChoiceSerializer(many=True, read_only=True)
+    option_choices = AvailableOptionChoiceSerializer(write_only=True)
     classes = serializers.IntegerField(help_text="classes delegated to this subject")
     class Meta:
         model = AvailableOption

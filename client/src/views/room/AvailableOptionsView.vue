@@ -91,9 +91,33 @@
                         </template>
                     </q-input>
                 </q-card-section>
+                <!-- <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeChosenOption" v-if="!fetching" itemStyle="width:55vh;margin:1vh;max-height:15vh;" :index="index" /> -->
                 <draggable class="list-group" :list="getFilteredCOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
-                    <template #item="{element, index}">
-                        <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeChosenOption" v-if="!fetching" itemStyle="width:55vh;margin:1vh;max-height:15vh;" :index="index" />
+                    <template #item="{element}">
+                        <div class="row justify-center items-center">
+                            <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
+                                <q-card-section style="padding:5px">
+                                    <div class="text-h5 text-white">{{element.title}}</div>
+                                </q-card-section>
+                                <q-card-actions>
+                                    <div class="row full-width items-center justify-center">
+                                        <div class="col-2 q-mt-md">
+                                            <q-btn-group>
+                                                <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(element)" icon="highlight_off" />
+                                                <q-btn class="bg-blue text-white" @click="displaySubjectDetails(element)" icon="info" />
+                                            </q-btn-group>
+                                        </div>
+                                        <div class="col q-ml-lg q-mt-md">
+                                            <q-input 
+                                            standout outlined
+                                            label="classes" v-model="element.classes" style="width:20vh" type="number" dense/>
+
+                                        </div>
+                                    </div>
+
+                                </q-card-actions>
+                            </q-card>
+                        </div>
                     </template>
 
                 </draggable>
@@ -117,11 +141,10 @@
                         <div class="text-h6">We could not find the subject you are looking for.</div>
                     </q-card>
                 </div>
-
             </q-card>
         </div>
     </div>
-
+    
     <BannerComponent colour="green" :message="successMessage" @dismiss="this.successMessage=''" v-if="successMessage.length !== 0" />
     <BannerComponent colour="red" :message="errorMessage" @dismiss="this.errorMessage=''" v-if="errorMessage.length !== 0" />
     <q-dialog v-model="displaySubjectInfo">
@@ -139,7 +162,6 @@ import {
 } from 'vue';
 import BannerComponent from '@/components/misc/BannerComponent.vue';
 import AvailableOptionItem from '@/components/options/AvailableOptionItem.vue';
-import OptionItem from '@/components/options/OptionItem.vue';
 import SubjectInfoDialog from '@/components/options/SubjectInfoDialog.vue';
 
 import draggable from "vuedraggable";
@@ -153,7 +175,6 @@ export default defineComponent({
         draggable,
         BannerComponent,
         AvailableOptionItem,
-        OptionItem,
         SubjectInfoDialog,
     },
     display: "Custom Clone",
@@ -193,7 +214,7 @@ export default defineComponent({
             } else {
                 let startingPage = (this.availableOptionsPage - 1) * AVAILABLE_OPTIONS_PER_PAGE
                 return [...[...this.availableOptions].filter(
-                    option => option.title.toLowerCase().includes(this.availableOptionsSearch)
+                    option => option.title.toLowerCase().includes(this.availableOptionsSearch.toLowerCase())
                 )].slice(startingPage, startingPage + AVAILABLE_OPTIONS_PER_PAGE)
             }
         },
@@ -208,7 +229,7 @@ export default defineComponent({
             } else {
                 let startingPage = (this.chosenOptionsPage - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.chosenOptions].filter(
-                    option => option.title.toLowerCase().includes(this.chosenOptionsSearch)
+                    option => option.title.toLowerCase().includes(this.chosenOptionsSearch.toLowerCase())
                 )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
             }
         },

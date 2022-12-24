@@ -3,6 +3,7 @@
         <q-card :style="itemStyle" class="bg-teal-3 glossy">
             <q-card-section style="padding:5px">
             <div class="text-h5 text-white">{{element.title}}</div>
+            <q-input label="Standard" />
             <slot/>
             </q-card-section>
             <q-card-actions>
@@ -18,7 +19,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     name: 'OptionItem',  
     props: ["element", "itemStyle" ,"index"],
-    emits: ["showInfo", "removeOption"]
+    emits: ["showInfo", "removeOption", "changeClasses"]
 });
 
 </script>

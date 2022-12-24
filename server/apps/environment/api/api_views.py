@@ -142,17 +142,30 @@ class RoomViewSet(viewsets.ModelViewSet):
         '''
         room = get_object_or_404(Room, code=pk)
         room_opts = get_object_or_404(AvalilableOptionChoices, room=room)
-        opts = room_opts.options.all().order_by("title")
+        current_opts = room_opts.options.all().order_by("title")
+        # serialize all the vailable options that the user can pick. Filter out
+        # those that already have been chosen. 
         all_opts = []
         all_available_opts = Option.objects.all().order_by("title")
         for available in all_available_opts:
-            if not opts.filter(pk=available.pk).exists():
+            if not current_opts.filter(pk=available.pk).exists():
                 all_opts.append(available)
-        payload = {}
-        room_opts_serialized = OptionSerializer(opts, many=True)
         all_opts_serializeed = OptionSerializer(all_opts, many=True)
-        payload["room"] = room_opts_serialized.data
-        payload["all"] = all_opts_serializeed.data 
+        # serialize the current chosen options
+        opts = AvailableOption.objects.filter(option_choices=room_opts)
+        room_opts_serialized = AvailableOptionSerializer(opts, many=True)
+        room_opts_data = []
+        for option in room_opts_serialized.data.copy():
+            opt = option.pop("option")
+            room_opts_data.append({
+                **option,
+                **opt, 
+            })
+            
+        payload = {
+            "room": room_opts_data,
+            "all": all_opts_serializeed.data
+        }
         return response.Response(payload, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=["delete"], url_path="delete-all-students")
@@ -213,25 +226,41 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     @action(detail=True, methods=["put"])
     def batch_update(self, request, pk):
         
-        current = get_object_or_404(AvalilableOptionChoices.objects.prefetch_related("options"), pk=pk)
+        available = get_object_or_404(AvalilableOptionChoices, pk=pk)
         all_options = Option.objects.all()
         options = request.data.get("options")
+        current = AvailableOption.objects.filter(
+            option_choices=available
+        )
         
         new_options = []
         for option in options:
             pk = option.get("id")
-            individual = current.options.filter(pk=pk)
+            classes = option.get("classes", None)
+            individual = available.options.filter(pk=pk)
             if not individual.exists():
-                new_options.append(AvailableOption(option=all_options.get(pk=pk), option_choices=current))
-        for current_option in AvailableOption.objects.filter(option_choices=current):
+                new_options.append(
+                    AvailableOption(
+                        option=all_options.get(pk=pk), 
+                        option_choices=available,
+                        classes=classes,
+                        )
+                    )
+            else:
+                to_update = current.filter(option__pk=pk)[0]
+                to_update.classes = classes
+                to_update.save()
+                
+                
+        for current_option in AvailableOption.objects.filter(option_choices=available):
             found = False
             for option in options:
                 if option.get("id") == current_option.option.pk:
                     found = True
                     break
             if not found:
+                print("deleting")
                 current_option.delete()
-                
         AvailableOption.objects.bulk_create(new_options)
         return response.Response(status=status.HTTP_200_OK)
             

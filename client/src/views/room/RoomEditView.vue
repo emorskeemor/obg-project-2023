@@ -175,12 +175,13 @@
                                         </div>
                                     </div>
                                     <div class="row q-gutter-sm">
-                                        <div class="col">
-
+                                        <!-- <div class="col">
+                                            
                                         </div>
                                         <div class="col">
 
-                                        </div>
+                                        </div> -->
+                                        <q-toggle v-model="blocksMustAlign" label="blocks must align"/>
                                     </div>
                                 </div>
                             </div>
@@ -230,10 +231,11 @@ export default defineComponent({
                 CheckEmailDomain: false,
                 // settings details
                 blocks: 0,
-                blocksMustAlign: 0,
+                blocksMustAlign: false,
                 classSize: 0,
                 lessonCost: 0,
                 maxSubjectsPerBlock: 0,
+
                 settingsTitle: 0,
                 settingsId: 0,
 
