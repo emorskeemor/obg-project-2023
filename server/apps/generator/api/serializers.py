@@ -33,7 +33,7 @@ class InsertTogetherSerializer(serializers.ModelSerializer):
     serialize insert together objects
     '''
     target = OptionSerializer(read_only=True)
-    settings = SettingsSerializer(read_only=True)
+    settings = SettingsSerializer(write_only=True)
     targets = OptionSerializer(many=True, read_only=True)
     
     class Meta:

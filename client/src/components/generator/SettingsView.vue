@@ -4,7 +4,7 @@
         <div class="q-pa-md">
             <q-card-section>
                 <div class="row text-h4 items-center justify-center">
-                    Ensure your settings are good to go     
+                    Ensure your settings are good to go
                     <div v-if="this.$store.state.using_database">
                         <q-chip icon="table">Using database</q-chip>
                     </div>
@@ -19,17 +19,21 @@
                     <div class="col">
 
                         <q-card class="q-pa-md bg-white" style="min-height:50vh">
-                            <div class="text-h3 text-center">Generation Settings</div>
+                            <div class="text-h4 text-center">Generation Settings</div>
+                            <div class="text-body1 text-center">
+                                The settings are READ ONLY and can be edited using the button at the bottom
+                                of the page
+                            </div>
 
                             <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                                 <div class="row q-gutter-md">
                                     <div class="col q-gutter-md">
                                         <q-input v-model="settingsTitle" autofocus outlined label="title" type="text" readonly>
                                             <template v-slot:prepend>
-                                                <q-icon name="grid_view" />
+                                                <q-icon name="subject" />
                                             </template>
                                         </q-input>
-                                        <q-input v-model="blocks" autofocus outlined label="blocks" type="number" readonly>
+                                        <q-input v-model="blocks" autofocus filled label="blocks" type="number" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="grid_view" />
                                             </template>
@@ -41,7 +45,7 @@
                                         </q-input>
                                     </div>
                                     <div class="col q-gutter-md">
-                                        <q-input v-model="classSize" autofocus outlined label="class size" type="number" readonly>
+                                        <q-input v-model="classSize" autofocus filled label="class size" type="number" readonly>
                                             <template v-slot:prepend>
                                                 <q-icon name="school" />
                                             </template>
@@ -51,6 +55,7 @@
                                                 <q-icon name="subject" />
                                             </template>
                                         </q-input>
+                                        <q-toggle v-model="blocksMustAlign" disable label="blocks must algin" />
 
                                     </div>
                                 </div>
@@ -61,10 +66,70 @@
 
                     <div class="col">
                         <q-card class="q-pa-md bg-white" style="min-height:50vh">
-                            <div class="text-h3 text-center">Rules</div>
+                            <div class="text-h4 text-center">Rules</div>
+                            <div class="text-body1 text-center">
+                                The rules are READ ONLY and can be edited using the button at the bottom
+                                of the page
+                            </div>
 
                             <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                                <div class="row q-gutter-md">
+                                <div v-if="!fetching">
+                                    <div class="row justify-center items-center bg-grey-3">
+                                        <div class="col-1 q-pa-md bg-grey-4">
+                                            ID
+                                        </div>
+                                        <div class="col q-pa-sm">
+                                            Target
+                                        </div>
+                                        <div class="col q-pa-sm">
+                                            Targets
+                                        </div>
+                                    </div>
+                                    <q-scroll-area visible style="height:30vh">
+                                        <q-card v-for="insert in inserts" :key="insert.pk" flat square>
+                                            <div class="row justify-center items-center bg-grey-3">
+                                                <div class="col-1 q-pa-lg bg-grey-4">
+                                                    {{ insert.pk }}
+                                                </div>
+                                                <div class="col">
+                                                    <q-btn color="grey" :label="insert.target.title" size="md" style="width:80%">
+                                                        <q-popup-proxy>
+                                                            <q-banner>
+                                                                <template v-slot:avatar>
+                                                                    <q-icon name="subject" color="light-grey" />
+                                                                </template>
+                                                                <div class="row">
+                                                                    target uuid: {{insert.target.uuid}}
+                                                                </div>
+                                                                <div class="row">
+                                                                    target code: {{insert.target.subject_code }}
+                                                                </div>
+                                                            </q-banner>
+                                                        </q-popup-proxy>
+                                                    </q-btn>
+                                                </div>
+                                                <div class="col">
+                                                    <q-btn color="grey" :label="insert.targets.length == 1 ? insert.targets[0].title :`${insert.targets[0].title}...` " size="md" style="width:80%">
+                                                        <q-badge color="purple" floating>
+                                                            {{ insert.targets.length }}
+                                                        </q-badge>
+                                                        <q-popup-proxy>
+
+                                                            <q-banner>
+                                                                <template v-slot:avatar>
+                                                                    <q-icon name="subject" color="light-grey" />
+                                                                </template>
+                                                                <div v-for="subject in insert.targets" :key="subject.uuid">
+                                                                    {{ subject.title }}
+                                                                </div>
+                                                            </q-banner>
+                                                        </q-popup-proxy>
+                                                    </q-btn>
+                                                </div>
+
+                                            </div>
+                                        </q-card>
+                                    </q-scroll-area>
                                 </div>
                             </transition>
                             <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
@@ -113,7 +178,7 @@ export default defineComponent({
             usingDatabase: false,
 
             blocks: 0,
-            blocksMustAlign: 0,
+            blocksMustAlign: false,
             classSize: 0,
             lessonCost: 0,
             maxSubjectsPerBlock: 0,
@@ -124,6 +189,8 @@ export default defineComponent({
             fetching: false,
             errorMessage: "",
             successMessage: "",
+
+            inserts: []
         }
     },
     methods: {
@@ -142,6 +209,8 @@ export default defineComponent({
                         this.settingsTitle = data.settings.title
                         this.settingsId = data.settings.id
                         this.optionsId = data.opts_id
+
+                        this.inserts = data.inserts
 
                         this.$store.commit("setSettingsData", data)
 

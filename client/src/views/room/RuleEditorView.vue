@@ -8,7 +8,7 @@
                         <div class="text-h4 main-font">Current Rules</div>
                     </q-card-section>
                     <q-card-section class="col">
-                        <div class="text-body2 q-ma-sm">
+                        <div class="text-body1 q-ma-sm">
                             Rules define subjects that must be inserted together. This can be useful when you do not want two
                             subjects to not be chosen together. A way to avoid this is to insert subjects at the same time into
                             the same block.
@@ -29,7 +29,7 @@
                                         Actions
                                     </div>
                                 </div>
-                                <q-scroll-area class="col" visible style="height:50vh">
+                                <q-scroll-area class="col" visible style="height:48vh">
                                     <q-card v-for="insert in inserts" :key="insert.pk" flat square>
                                         <div class="row justify-center items-center">
                                             <div class="col-1 q-pa-lg">
@@ -98,7 +98,7 @@
                         <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                             <div v-show="!fetching" class="full-height">
                                 <div class="row items-center justify-center q-gutter-md">
-                                    <div class="main-font text-body2">
+                                    <div class="main-font text-body1">
                                         Any time the target subject will be inserted into the block, we can also insert other
                                         subjects to be inserted at the same time.
                                     </div>
@@ -119,9 +119,8 @@
                                         hint="select subjects that will be inserted with the target" map-options />
                                     </div>
                                     <div class="row full-width justify-center items-center">
-                                        <div class="row main-font text-body2 q-pa-sm">
-                                            Enable strict as extra validation to ensure that these subjects must be in the same block.
-                                            This also prevents students from being able to pick the target subject with all the targets.
+                                        <div class="row main-font text-body1 q-pa-sm">
+                                            This prevents students from being able to pick the target subject with all the targets.
                                         </div>
                                         <div class="row">
                                             <q-toggle v-model="strict" label="Strict Insertion" checked-icon="check" unchecked-icon="clear" />

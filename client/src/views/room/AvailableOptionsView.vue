@@ -69,7 +69,7 @@
                 </div>
                 <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" icon="arrow_backwards" :disable="chosenOptions.length==0" />
 
-                <div class="absolute-bottom justify-center bg-blue-grey" style="padding:10px">
+                <div class="absolute-bottom justify-center bg-grey-4" style="padding:5px">
                     <q-btn-group>
                         <q-btn class="bg-teal-4 text-white" size="md" label="Save" @click="saveChoices" :disable="chosenOptions.length==0" />
                     </q-btn-group>
@@ -95,21 +95,21 @@
                 <draggable class="list-group" :list="getFilteredCOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
                     <template #item="{element}">
                         <div class="row justify-center items-center">
-                            <q-card style="width:55vh;margin:1vh;max-height:15vh;" class="bg-teal-3 glossy">
+                            <q-card style="width:55vh;margin:4px;max-height:15vh;" class="bg-teal-3 glossy">
                                 <q-card-section style="padding:5px">
-                                    <div class="text-h5 text-white">{{element.title}}</div>
+                                    <div class="text-h5 text-white">{{element.title}}, {{ element.subject_code }}</div>
                                 </q-card-section>
                                 <q-card-actions>
-                                    <div class="row full-width items-center justify-center">
-                                        <div class="col-2 q-mt-md">
+                                    <div class="row full-width items-center justify-center q-gutter-md">
+                                        <div class="col-2">
                                             <q-btn-group>
                                                 <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(element)" icon="highlight_off" />
                                                 <q-btn class="bg-blue text-white" @click="displaySubjectDetails(element)" icon="info" />
                                             </q-btn-group>
                                         </div>
-                                        <div class="col q-ml-lg q-mt-md">
+                                        <div class="col q-ml-lg">
                                             <q-input 
-                                            standout outlined
+                                            standout outlined filled
                                             label="classes" v-model="element.classes" style="width:20vh" type="number" dense/>
 
                                         </div>
@@ -227,6 +227,7 @@ export default defineComponent({
             if (this.fetching) {
                 return []
             } else {
+                
                 let startingPage = (this.chosenOptionsPage - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.chosenOptions].filter(
                     option => option.title.toLowerCase().includes(this.chosenOptionsSearch.toLowerCase())

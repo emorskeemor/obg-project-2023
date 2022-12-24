@@ -98,16 +98,17 @@
                         <div>
                             Here you can edit this room and the settings that are attatched to it
                         </div>
+                        <q-btn label="Generate" color="red-7" size="md" @click="generatorView" glossy/>
+
                     </q-card-section>
 
                     <q-card-actions class="bg-grey-4 absolute-bottom row justify-center">
                         <div class="text-h6 row full-width justify-center">Other Settings</div>
-                        <div class="text-body2 full-width justify-center q-mb-md">Edit the available options and rules for the room</div>
+                        <div class="text-body2 full-width justify-center q-mb-md">Edit the available options, students and the generation rules</div>
                         <q-btn-group class="row">
-                            <q-btn label="Edit Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
-                            <q-btn label="Generate" color="red-7" size="md" @click="generatorView" glossy/>
-
-                            <q-btn label="Edit Rules" color="teal-4" @click="ruleEditorView" size="md" icon="rule" />
+                            <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
+                            <q-btn label="Students" color="teal-4" @click="editAvailableChoices" size="md" icon="account_circle" />
+                            <q-btn label="Rules" color="teal-4" @click="ruleEditorView" size="md" icon="rule" />
                         </q-btn-group>
 
                     </q-card-actions>

@@ -8,13 +8,13 @@ from apps.environment.models import (
 from apps.students.models import Student
 
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
 
 from rest_framework import (
     exceptions, permissions, 
     response, status, viewsets
     )
 from rest_framework.decorators import action
+from rest_framework.request import Request
 
 from .serializers import (
     RoomSerializer,
@@ -22,11 +22,15 @@ from .serializers import (
     SettingsSerializer,
     AvailableOptionChoiceSerializer,
     AvailableOptionSerializer,
-    OptionSerializer
+    OptionSerializer,
 )
 from apps.students.models import Option
+from apps.generator.models import InsertTogether
+from apps.generator.api.serializers import InsertTogetherSerializer
 
 from .pagination import AvailableOptionPagination
+
+from typing import List, Dict, Any
 
 def get_domain(request)->str:
     domain = request.GET.get("domain", None)
@@ -48,7 +52,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         return response.Response(serialized.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=["post"])
-    def join(self, request):
+    def join(self, request: Request):
         '''
         Allow a student to join a room
         '''
@@ -108,21 +112,26 @@ class RoomViewSet(viewsets.ModelViewSet):
         '''
         room = get_object_or_404(Room, code=pk)
         room_serialized = self.serializer_class(room)
-        # add the settings of the room as well
+        # get the settings, available options and the insertion rules
+        # for the room too
         settings = get_object_or_404(GenerationSettings, room=room)
         available_opts = get_object_or_404(AvalilableOptionChoices, room=room)
-        payload = {}
-        # serialize it
+        insertions = InsertTogether.objects.filter(settings=settings)
+        # serialize everything we need
         settings_serialized = SettingsSerializer(settings)
+        inserts_serialized = InsertTogetherSerializer(insertions, many=True)
         settings_data = settings_serialized.data.copy()
         settings_data.pop("room")
-        payload["room"] = room_serialized.data
-        payload["settings"] = settings_data
-        payload["opts_id"] = available_opts.pk
+        payload = {
+            "room": room_serialized.data,
+            "inserts": inserts_serialized.data,
+            "settings": settings_data,
+            "opts_id": available_opts.pk
+        }
         return response.Response(payload, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=["get"])
-    def retrieve_using_domain_and_code(self, request):
+    def retrieve_using_domain_and_code(self, request: Request):
         '''
         return a room's details by using the domain and room code
         '''
@@ -169,15 +178,15 @@ class RoomViewSet(viewsets.ModelViewSet):
         return response.Response(payload, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=["delete"], url_path="delete-all-students")
-    def delete_all_students(self, request, pk):
+    def delete_all_students(self, request: Request, pk):
         '''
-        deletes all students from a given room
+        deletes all students from a given room. WARNING: this 
+        cannot be undone once comitted
         '''
         room = get_object_or_404(Room, code=pk)
-        
+        self.check_object_permissions(request, room)
         for student in Student.objects.filter(room=room):
             student.delete()
-        
         return response.Response({"detail":"all students deleted successfully"}, status=status.HTTP_200_OK )
          
     def create(self, request):
@@ -209,7 +218,10 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     
     @action(detail=False, methods=["get"], url_path="room-choices")
-    def available_room_choices(self, request):
+    def available_room_choices(self, request: Request):
+        '''
+        gets all available options for a given room. Returns 'Option' object
+        '''
         get = request.GET.get
         room = get_object_or_404(
             Room,
@@ -225,20 +237,27 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
     
     @action(detail=True, methods=["put"])
     def batch_update(self, request, pk):
-        
+        '''
+        batch update available options to either delete them or add new 
+        available options to a room.
+        '''
         available = get_object_or_404(AvalilableOptionChoices, pk=pk)
         all_options = Option.objects.all()
-        options = request.data.get("options")
+        options: List[Dict[str, Any]] = request.data.get("options")
+        # TODO: need serialization validation
         current = AvailableOption.objects.filter(
             option_choices=available
         )
-        
+        # go through the options we have and check if they already exist.
+        # if they do not, then create a new one to be bulk created. If they do,
+        # then we just need to update them.
         new_options = []
         for option in options:
             pk = option.get("id")
             classes = option.get("classes", None)
             individual = available.options.filter(pk=pk)
             if not individual.exists():
+                # create a new available option
                 new_options.append(
                     AvailableOption(
                         option=all_options.get(pk=pk), 
@@ -247,11 +266,12 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
                         )
                     )
             else:
+                # update
                 to_update = current.filter(option__pk=pk)[0]
                 to_update.classes = classes
                 to_update.save()
                 
-                
+        # delete any available options if they have been removed.
         for current_option in AvailableOption.objects.filter(option_choices=available):
             found = False
             for option in options:
@@ -259,7 +279,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
                     found = True
                     break
             if not found:
-                print("deleting")
+                # TODO: not atomic
                 current_option.delete()
         AvailableOption.objects.bulk_create(new_options)
         return response.Response(status=status.HTTP_200_OK)

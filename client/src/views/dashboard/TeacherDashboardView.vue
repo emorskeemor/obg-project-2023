@@ -13,7 +13,10 @@
                         </template>
                     </q-input>
                 </q-card-section>
-                <RoomItem v-for="room in currentRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
+                <q-scroll-area style="height:55vh">
+                    <RoomItem v-for="room in currentRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
+
+                </q-scroll-area>
             </q-card>
         </div>
         <!-- middle column -->
@@ -111,7 +114,7 @@ export default defineComponent({
     methods: {
         deleteRoom(room) {
             // delete a given room
-            axiosInstance.delete(`api-rooms/rooms/${room.id}`).then(
+            axiosInstance.delete(`api-rooms/rooms/${room.pk}`).then(
                 response => {
                     this.fetchRooms()
                 })
