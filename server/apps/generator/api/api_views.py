@@ -29,12 +29,12 @@ from django.conf import settings
 # generator
 from bloc.core.pre_generate.validate import populate_with_id, clean_options
 from bloc.core.pre_generate.statistics import subject_counts, group_by_class, filter_grouped_by
-from bloc.core.post_generate.pathway import DEFAULT_PATHWAYS
-from bloc.core.post_generate.evaluation import EvaluationUtility
-from bloc.core.generate.utility import Generator
+from bloc.core.post_generate.evaluation import EvaluationUtility, EmptyEvaluatedObject
+from bloc.core.generate.utility import Generator, Node
 from bloc.core.exceptions import PathwayFailed
 from bloc.core import protocols
 from bloc.core.post_generate.operations import get_operation_report
+from bloc.core.post_generate import validators
 from bloc.core.post_generate import graphs
 
 from drf_yasg.utils import swagger_auto_schema
@@ -99,16 +99,29 @@ class GerneratorViewset(ViewSet):
             options = get_options_from_csv(request)
         else:
             options, override = self._get_room_subjects(room)
+        # handle validators
+        validate = [
+            validators.MaxOptionsValidator(
+                maximum=room_settings.max_subjects_per_block
+            ),
+            validators.StrictMultipleInsertionValidator(Node)
+        ]
+        if room_settings.blocks_must_align:
+            validate.append(validators.PerfectAlignmentValidator())
         # give the generator the initial variables and prepare it
-        print(override)
         generator = Generator(
+            # provide default data
             data=data,
             options=options,
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=protocols.ProtocolB(),
-            debug=settings.GENERATOR_DEBUG
+            protocol=protocols.ProtocolA(),
+            # other data
+            debug=settings.GENERATOR_DEBUG,
+            # provide the validators
+            # validators=validate
+
         )          
         generator.setup()  
         generator.classes.update(**override)
@@ -125,7 +138,19 @@ class GerneratorViewset(ViewSet):
         generator.freeze()
         generator.execute()
         generator.evaluate()
+        if isinstance(generator.evaluation, EmptyEvaluatedObject):
+            generator_data = {
+            "blocks": generator.evaluation.blocks,
+            "students": [],
+            "all": generator.data,
+            "success": generator.evaluation.success_percentage,
+            "debug": generator.debug_data
+        }
         
+            return response.Response(generator_data, status=status.HTTP_200_OK)
+
+        # handle the serialization. We need to handle the difference between using a
+        # csv and a database as the csv will not have names
         students = Student.objects.filter(room=room)
         serialized = generator.evaluation.serialize(include_paths=True)
         for value in serialized.get("success"):
