@@ -2,11 +2,20 @@
 <q-page class="q-pa-none" padding>
     <div class="q-pa-md" style="width:100%">
         <q-card class="bg-grey-3 q-mt-md" style="min-height:77vh">
-            <q-input filled v-model="search" label="Search chosen options" lazy-rules type="text">
-                <template v-slot:prepend>
-                    <q-icon name="search" />
-                </template>
-            </q-input>
+            <div class="row">
+                <div class="col-10">
+                    <q-input filled v-model="search" label="Search for students" lazy-rules type="text">
+                    <template v-slot:prepend>
+                        <q-icon name="search" />
+                    </template>
+                </q-input>
+                </div>
+                <div class="col">
+                    <q-select v-model="searchBy" 
+                    :options="searchOptions" label="search by ..." dense map-options class="q-pa-sm" />
+
+                </div>
+            </div>
             <div class="row justify-center items-center q-pa-md">
                 <div class="col-1">
                     id
@@ -56,7 +65,7 @@
                             </div>
                             <div class="col-3">
                                 <div class="row justify-center items-center">
-                                    <q-input v-model="student.email" style="width:40vh" standout dense/>
+                                    <q-input v-model="student.email" style="width:40vh" standout dense />
                                 </div>
                             </div>
                             <div class="col-1">
@@ -91,7 +100,7 @@
                             </div>
                             <div class="col-1">
                                 <div class="row justify-center items-center">
-                                    <q-input v-model="student.max_choices" style="width:8vh" standout dense/>
+                                    <q-input v-model="student.max_choices" style="width:8vh" standout dense />
                                 </div>
 
                             </div>
@@ -109,7 +118,7 @@
             <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
             <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
                 <q-pagination v-model="page" :max=studentPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
-                <q-btn label="save" color="green" @click="saveStudents"/>
+                <q-btn label="save" color="green" @click="saveStudents" />
             </div>
         </q-card>
     </div>
@@ -135,6 +144,23 @@ export default defineComponent({
             page: 1,
             search: "",
             fetching: false,
+            searchBy: {
+                value: "first_name",
+                label: "first name"
+            },
+            searchOptions: [{
+                    value: "first_name",
+                    label: "first name"
+                },
+                {
+                    value: "last_name",
+                    label: "last name"
+                },
+                {
+                    value: "email",
+                    label: "email"
+                },
+            ]
         }
     },
     watch: {
@@ -155,7 +181,7 @@ export default defineComponent({
 
                 let startingPage = (this.page - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.students].filter(
-                    student => student.first_name.toLowerCase().includes(this.search.toLowerCase())
+                    student => student[this.searchBy.value].toLowerCase().includes(this.search.toLowerCase())
                 )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
             }
         },
