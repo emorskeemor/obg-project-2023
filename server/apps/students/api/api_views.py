@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status, exceptions
 from rest_framework.decorators import action
 from rest_framework import permissions
+from rest_framework.request import Request
 
 from django.shortcuts import get_object_or_404
 from copy import deepcopy
@@ -57,7 +58,7 @@ class StudentViewset(ModelViewSet):
     
     @swagger_auto_schema(request_body=StudentDumpSerializer)
     @action(detail=False, methods=["post"], url_path="dump-students")
-    def dump_students(self, request):
+    def dump_students(self, request: Request):
         '''
         Dump csv containing student options into the database.
         WARNING : Caution while using this endpoint as it will create many records in the DB
@@ -131,14 +132,29 @@ class StudentViewset(ModelViewSet):
         
         return Response(serialized_data, status=status.HTTP_200_OK)
     
-    @action(methods=["get"], url_path="room-students", detail=True)
-    def room_students(self, request, pk):
-        
-        room = get_object_or_404(Room, code=pk)
-        
-        serialized = self.serializer_class(room.students.all(), many=True)
-        
-        return Response(serialized.data, status=status.HTTP_200_OK)
+    @action(methods=["get", "put"], url_path="room-students", detail=True)
+    def room_students(self, request:Request, pk):
+        '''
+        returns all students attached to a room
+        '''
+        if request.method == "GET":
+            room = get_object_or_404(Room, code=pk)
+            serialized = self.serializer_class(room.students.all(), many=True)
+            return Response(serialized.data, status=status.HTTP_200_OK)
+        elif request.method == "PUT":
+            room = get_object_or_404(Room, code=pk)
+            students = room.students.all()
+            
+            for student_data in request.data.get("students", []):
+                student: Student = students.get(uuid=student_data.get("uuid"))
+                # student.max_choices = student_data.get("mna")
+                # student.save()
+                serialized = self.serializer_class(instance=student, data=student_data)
+                serialized.is_valid(raise_exception=True)
+                serialized.save()
+            
+            return Response({}, status=status.HTTP_200_OK)
+
     
 class ChoiceViewset(ModelViewSet):
     '''
