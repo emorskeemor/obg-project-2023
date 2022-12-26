@@ -11,6 +11,7 @@ export default createStore({
     all_students:[],
     success_percentage:0,
     debug_data: {},
+    rules_followed: true,
     // provision type
     using_database:false,
     data_file: ref(null),
@@ -37,6 +38,7 @@ export default createStore({
       state.successful_students = evaluation.students.success
       state.failed_students = evaluation.students.failed
       state.all_students = evaluation.all
+      state.rules_followed = evaluation.rules_followed
       state.initial_blocks = state.generated_blocks.map(function (arr) {
         return arr.slice();
     })

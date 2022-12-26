@@ -13,6 +13,9 @@
                                 <Block :block="block" :index="index" />
                             </div>
                         </div>
+                        <div v-if="failed" style="height:60vh">
+                        </div>
+
                     </q-card>
                 </q-scroll-area>
 
@@ -22,12 +25,31 @@
                 <SuccessfulStudents v-if="!toggle" />
             </div>
         </div>
+
     </q-card>
+    <q-dialog v-model="failed">
+        <q-card>
+            <q-card-section>
+                <div class="text-h6 text-center">There's some bad news...</div>
+
+            </q-card-section>
+
+            <q-card-section class="q-pt-none text-body1">
+                We could not generate any blocks with these configurations and the data provided. This is most likely
+                due to rules that were put in place causing the blocks that were generated to not pass requirements. It may
+                also be due to the the protocol that is being used.
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn flat label="RESTART" color="primary" @click="restart" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
     <div class="absolute-bottom-left q-pa-sm">
         <q-btn-group>
-            <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
-            <q-btn push class="bg-teal-3 text-white" size="md" label="toggle" @click="toggle=!toggle" />
+            <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
+            <q-btn push class="bg-teal-4 text-white" size="md" label="live update" icon="update" @click="$emit('next')" />
+            <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" />
 
         </q-btn-group>
     </div>
@@ -56,9 +78,21 @@ export default defineComponent({
     },
     data() {
         return {
-            toggle: false
+            toggle: false,
+            failed: !this.$store.state.rules_followed
         }
     },
+    methods: {
+        restart() {
+            this.$router.push({
+                "name": "room-edit",
+                params: {
+                    user_id: this.$route.params.user_id,
+                    room_id: this.$route.params.room_id,
+                }
+            })
+        }
+    }
 
 });
 </script>

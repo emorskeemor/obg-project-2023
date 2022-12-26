@@ -12,22 +12,22 @@
         </q-step>
 
         <q-step :name="3" title="Pre-statistics" icon="assignment" :done="step > 3">
-            <PreStatisticsView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" />
+            <PreStatisticsView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :finished="finishedGeneration"/>
         </q-step>
 
-        <q-step :name="4" title="Generate" icon="add_comment" :done="step > 4">
+        <q-step :name="4" title="Generate" icon="add_comment" :done="step > 4" v-if="!finishedGeneration">
             <GenerationView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :run="!finishedGeneration" @finished="generateCompleted" />
 
         </q-step>
-        <q-step :name="5" title="Post-statistics" icon="assignment">
+        <q-step :name="5" title="Post-statistics" icon="assignment" :done="step > 5">
             <PostStatisticsView @back="previousStep" @next="nextStep" />
 
         </q-step>
-        <q-step :name="6" title="Live update" icon="add_comment">
+        <q-step :name="6" title="Live update" icon="add_comment" :done="step > 6">
             <LiveUpdateView @back="previousStep" @next="nextStep" @error="onError" @dismissError="dismissError"/>
 
         </q-step>
-        <q-step :name="7" title="Save" icon="add_comment">
+        <q-step :name="7" title="Save" icon="add_comment" :done="step > 7">
             <SaveView @back="previousStep" @next="nextStep" />
 
         </q-step>

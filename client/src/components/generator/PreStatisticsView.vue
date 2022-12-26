@@ -54,7 +54,8 @@
         <div class="q-gutter-sm q-pa-sm">
             <q-btn label="refresh" size="md" @click="getData" color="teal-4" push/>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
-            <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" />
+            <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" v-if="!finished"/>
+            <q-btn push class="bg-teal-4 text-white" size="md" label="Post Statistics" icon="analytics" @click="$emit('next')" v-if="finished"/>
         </div>
 
     </div>
@@ -74,7 +75,7 @@ import {
 export default defineComponent({
     name: 'PreStatisticsView',
     emits: ["back", "next"],
-    props: [],
+    props: ["finished"],
 
     beforeMount() {
         this.getData()

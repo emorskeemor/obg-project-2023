@@ -179,7 +179,7 @@
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
                             <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
+            <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
         </q-btn-group>
     </div>

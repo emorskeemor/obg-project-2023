@@ -109,6 +109,14 @@ class GerneratorViewset(ViewSet):
         if room_settings.blocks_must_align:
             validate.append(validators.PerfectAlignmentValidator())
         # give the generator the initial variables and prepare it
+        AVAILABLE_PROTOCOLS = {
+            "protocol_A": protocols.ProtocolA,
+            "protocol_B": protocols.ProtocolB,
+            "protocol_C": protocols.ProtocolC,
+            "protocol_D": protocols.ProtocolD,
+            "protocol_E": protocols.ProtocolE,
+        }
+        protocol= AVAILABLE_PROTOCOLS.get(get("protocol"))
         generator = Generator(
             # provide default data
             data=data,
@@ -116,11 +124,12 @@ class GerneratorViewset(ViewSet):
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=protocols.ProtocolA(),
+            protocol=protocol(),
+            # protocol=protocols.Pro(),
             # other data
             debug=settings.GENERATOR_DEBUG,
             # provide the validators
-            # validators=validate
+            validators=validate
 
         )          
         generator.setup()  
@@ -140,15 +149,15 @@ class GerneratorViewset(ViewSet):
         generator.evaluate()
         if isinstance(generator.evaluation, EmptyEvaluatedObject):
             generator_data = {
-            "blocks": generator.evaluation.blocks,
-            "students": [],
-            "all": generator.data,
-            "success": generator.evaluation.success_percentage,
-            "debug": generator.debug_data
-        }
+                "blocks": generator.evaluation.blocks,
+                "students": {"success":[], "failed": []},
+                "all": generator.data,
+                "success": generator.evaluation.success_percentage,
+                "debug": generator.debug_data,
+                "rules_followed": False
+            }
         
             return response.Response(generator_data, status=status.HTTP_200_OK)
-
         # handle the serialization. We need to handle the difference between using a
         # csv and a database as the csv will not have names
         students = Student.objects.filter(room=room)
@@ -177,10 +186,13 @@ class GerneratorViewset(ViewSet):
             "students": serialized,
             "all": generator.data,
             "success": generator.evaluation.success_percentage,
-            "debug": generator.debug_data
+            "debug": generator.debug_data,
+            "rules_followed": True
+
         }
         # DEBUG PURPOSES ONLY
         generator.evaluation.pprint()
+        generator.reset()
        
         return response.Response(generator_data, status=status.HTTP_200_OK)
 
@@ -280,7 +292,7 @@ class GerneratorViewset(ViewSet):
     def _students_from_room(room) -> Dict:
         '''gets the students from a given room in the database and return it as a dict'''
         data = {}
-        students = Student.objects.prefetch_related("choices").filter(room=room)
+        students = Student.objects.prefetch_related("choices").filter(room=room).order_by("first_name")
         for student in students:
             options = []
             for choice in student.choices.all():
