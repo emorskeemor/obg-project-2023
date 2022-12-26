@@ -171,6 +171,7 @@ class GerneratorViewset(ViewSet):
                 email = student.email
             serialized["success"][value]["name"] = name
             serialized["success"][value]["email"] = email
+            serialized["success"][value]["uuid"] = value
         for value in serialized.get("failed"):
             name = "Anonymous"
             email = "Not given"
@@ -180,6 +181,7 @@ class GerneratorViewset(ViewSet):
                 email = student.email
             serialized["failed"][value]["name"] = name
             serialized["failed"][value]["email"] = email
+            serialized["failed"][value]["uuid"] = value
             
         generator_data = {
             "blocks": generator.evaluation.blocks,
