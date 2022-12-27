@@ -4,7 +4,7 @@
         <div class="bg-grey-3" style="width:110vh">
             <div class="text-h4 row q-pa-sm">
                 Failed students<div class="text-bold q-ml-sm">
-                    <q-chip icon="account_circle">{{ 100-this.$store.state.success_percentage }}%</q-chip>
+                    <q-chip icon="account_circle">{{ Math.round(100-this.$store.state.success_percentage) }}%</q-chip>
                     <q-chip icon="account_circle">{{ Object.keys(this.$store.state.failed_students).length}}</q-chip>
 
                 </div>

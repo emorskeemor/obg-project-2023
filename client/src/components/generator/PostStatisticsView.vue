@@ -27,7 +27,7 @@
         </div>
 
     </q-card>
-    <q-dialog v-model="failed">
+    <q-dialog v-model="failed" persistent>
         <q-card>
             <q-card-section>
                 <div class="text-h6 text-center">There's some bad news...</div>

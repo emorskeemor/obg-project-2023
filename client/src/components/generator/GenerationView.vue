@@ -14,7 +14,7 @@
         </q-card>
 
     </q-card>
-    <q-dialog v-model="wait" v-if="this.run">
+    <q-dialog v-model="wait" v-if="this.run" persistent>
         <q-card style="width:60vh">
             <q-card-section>
                 <div class="text-h6 text-center">Choose a protocol</div>
@@ -30,7 +30,8 @@
             </q-card-section>
 
             <q-card-actions align="right">
-                <q-btn flat label="run" color="primary" @click="start" v-close-popup v-if="protocol!==null" />
+                <q-btn push class="bg-teal-4 text-white" size="md" label="cancel" icon="cancel" @click="$emit('back')" />
+                <q-btn push label="run" color="primary" @click="start" v-close-popup v-if="protocol!==null" />
             </q-card-actions>
         </q-card>
     </q-dialog>
@@ -91,7 +92,7 @@ export default defineComponent({
                 this.toggleTimer()
                 var formData = new FormData()
                 formData.append("data", this.$store.state.data_file)
-                console.log(!this.$store.state.using_database);
+
                 const payload = {
                     "data_using_csv": !this.$store.state.using_database,
                     "code": this.$route.params.room_id,

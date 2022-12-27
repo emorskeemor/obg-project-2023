@@ -3,7 +3,7 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row ">
             <div class="col-5 q-ma-md">
-                <q-card style="min-height:72vh">
+                <q-card style="min-height:70vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg absolute-center full-width">
                             <apexchart  width="100%" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
@@ -15,7 +15,7 @@
                 </q-card>
             </div>
             <div class="col q-ma-md">
-                <q-card style="min-height:72vh">
+                <q-card style="min-height:70vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg absolute-center full-width">
                             <apexchart type="heatmap" height="400" width="100%" :options="heatMapOptions" :series="heatMapSeries"></apexchart>

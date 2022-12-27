@@ -36,7 +36,7 @@
 
       <!-- footer  -->
       <q-footer reveal elevated>
-        <q-toolbar class="bg-teal-4">
+        <q-toolbar class="bg-teal-4" style="height:8vh">
           <q-btn class="bg-black" @click="$router.back()">Back</q-btn>
         </q-toolbar>
       </q-footer>

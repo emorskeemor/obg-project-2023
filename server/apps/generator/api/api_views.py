@@ -156,7 +156,8 @@ class GerneratorViewset(ViewSet):
                 "debug": generator.debug_data,
                 "rules_followed": False
             }
-        
+            generator.reset()
+
             return response.Response(generator_data, status=status.HTTP_200_OK)
         # handle the serialization. We need to handle the difference between using a
         # csv and a database as the csv will not have names
@@ -281,10 +282,8 @@ class GerneratorViewset(ViewSet):
             operations=get("operations"),
             blocks=get("initial"),
             ignore_keys=["id"]
-            
             )
-        print(report)
-        return response.Response()
+        return response.Response(report, status=status.HTTP_200_OK)
     
     ##############################################
     # PRVIVATE METHODS

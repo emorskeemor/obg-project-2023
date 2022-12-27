@@ -3,23 +3,24 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row">
             <div class="col-8">
-                <q-card square style="height:80vh">
+                <q-card square style="height:90vh">
                     <div class="row">
                         <div v-for="(i, index) in blocks" :key="i[0]" class="col q-pa-sm bg-grey-3">
-                            <div class="text-h5 q-ma-sm">Option Block <div class="text-bold">[{{index+1}}] {{blocks[index].length}}</div>
+                            <div class="text-h5 q-ma-xs">Block {{index+1}} 
+
+                                <q-chip icon="subjects">{{blocks[index].length}}</q-chip>
+
                             </div>
-                            <q-scroll-area style="height:60vh">
+                            <q-scroll-area style="height:68vh">
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
-                                    <!-- iterate over all available options in pagination -->
                                     <template #item="{element}">
                                         <div :id="element">
-                                            <q-card :class="current == element ? 'bg-red-6 q-pa-sm' : 'bg-grey-4 q-pa-sm'" @click="current=element" square>
+                                            <q-card flat :class="current == element ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element" square style="min-height:5vh">
                                                 <div class="row">
-
-                                                    <div class="col-2">
+                                                    <div class="col-2 main-font">
                                                         <div class="text-bold">{{element}}</div>
                                                     </div>
-                                                    <div class="col-7">
+                                                    <div class="col-7 text-body2 main-font">
                                                         {{this.$store.state.options[element]}}
                                                     </div>
                                                 </div>
@@ -38,14 +39,14 @@
                                 <draggable class="list-group" item-key="id" :list="Object.keys(this.$store.state.options)" :group="{ name: 'people', pull: 'clone', put: false }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="addSubject">
                                     <template #item="{element}">
                                         <div :id="element">
-                                            <q-card :class="current == element ? 'bg-blue-5 q-pa-sm text-white text-bold' : 'bg-grey-3 q-pa-sm'" @click="current=element">
+                                            <q-card square :class="current == element ? 'bg-blue-5 q-pa-xs text-white text-bold main-font' : 'bg-grey-3 q-pa-xs main-font'" @click="current=element">
                                                 {{element}}, {{this.$store.state.options[element]}}
                                             </q-card>
                                         </div>
                                     </template>
                                 </draggable>
                             </q-scroll-area>
-                            <div class="bg-grey-6 q-mt-md">
+                            <div class="bg-grey-6 q-mt-md" style="height:13vh">
                                 <div class="text-h6 text-white">
                                     <q-btn flat icon="delete" class="text-white" />
                                 </div>
@@ -58,8 +59,8 @@
                                         </div>
                                     </template>
                                 </draggable>
-                                <div class="text-body1 text-white q-pa-sm">
-                                    drag subjects above to delete them
+                                <div class="text-body1 text-white q-pa-sm main-font">
+                                    Drag subjects above to delete them
                                 </div>
                             </div>
                         </div>
@@ -68,40 +69,47 @@
                 </q-card>
             </div>
             <div class="col-4">
-                <q-card square style="height:80vh">
-                    <q-card-section>
-                        <div class="text-h3">statistics</div>
-                    </q-card-section>
+                <q-card square style="height:80vh" class="bg-grey-3" flat>
+                    <div class="text-h5 q-pa-sm">Statistics</div>
                     <q-card-section>
                         <div class="row">
-                            <div class="text-body1">Success percentage : {{ this.$store.state.success_percentage }}</div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <q-chip icon="account_circle"> success  : {{ this.$store.state.success_percentage }}</q-chip>
+                                </div>
+                                <div class="row">
+                                    <q-chip icon="subjects">Total subjects : {{ totalSubjects }}</q-chip>
+                                </div>
+                                <div class="row">
+                                    <q-chip icon="schedule">Generation time : {{ this.$store.state.debug_data.generation_time }} seconds</q-chip>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <q-chip icon="emoji_objects">Completed nodes : {{ this.$store.state.debug_data.completed_nodes }}</q-chip>
+
+                                </div>
+                                <div class="row">
+                                    <q-chip icon="emoji_objects">Generated nodes : {{ this.$store.state.debug_data.generated_nodes }}</q-chip>
+                                </div>
+                                <div class="row">
+                                    <q-chip icon="emoji_objects">Generated states : {{ this.$store.state.debug_data.generated_states }}</q-chip>
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="text-body1">Total subjects in blocks: {{totalSubjects}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="text-body1">generation time : {{ this.$store.state.debug_data.generation_time }}</div>
-                        </div>
-                        <div class="row">
-                            <div class="text-body1">completed nodes : {{this.$store.state.debug_data.completed_nodes}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="text-body1">generated nodes: {{this.$store.state.debug_data.generated_nodes}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="text-body1">generated states: {{this.$store.state.debug_data.generated_states}}</div>
-                        </div>
+
                     </q-card-section>
                     <q-separator />
 
-                    <q-card-section>
+                    <q-card-section class="bg-grey-4">
                         <div class="row">
                             <div class="col">
-                                <div class="text-h4 q-ma-sm">
+                                <div class="text-h5">
                                     Operations
                                 </div>
                                 <div class="row bg-grey-3 justify-center">
-                                    <div class="col-1 q-pa-sm text-bold justify-center items-center bg-grey-4">
+                                    <div class="col-1 q-pa-sm text-bold justify-center items-center bg-grey-5">
                                         ID
                                     </div>
                                     <div class="col-2 q-pa-sm text-bold justify-center items-center bg-grey-5">
@@ -167,18 +175,69 @@
                     <q-separator />
                     <q-card-actions>
                         <q-btn-group>
-                            
+
                         </q-btn-group>
                     </q-card-actions>
                 </q-card>
             </div>
         </div>
-
     </q-card>
-    <div class="absolute-bottom-right q-pa-md">
+    <q-dialog v-model="popup">
+        <q-card style="width:100vh;height:60vh">
+            <q-card-section>
+                <div class="text-h6 text-center">Results</div>
+
+            </q-card-section>
+
+            <q-card-section class="q-pt-none text-body1">
+                <div class="row q-pa-sm bg-grey-3 justify-center items-center">
+                        <div class="col-1 text-center">
+                            ID
+                        </div>
+                        <div class="col-2 text-center">
+                            Type
+                        </div>
+                        <div class="col-2 text-center">
+                            % Change
+                        </div>
+                        <div class="col-4 text-center">
+                            # failed
+                        </div>
+                        <div class="col text-center">
+                            Detail
+                        </div>
+                    </div>
+                <q-card v-for="result in evaluationResults" :key="result.id" square flat class="q-pa-sm bg-grey-4">
+                    <div class="row ">
+                        <div class="col-1 text-center">
+                            {{ result.id + 1 }}
+                        </div>
+                        <div class="col-2 text-center">
+                            {{ result.type }}
+                        </div>
+                        <div class="col-2 text-center">
+                            {{ result.info.success_change }}
+                        </div>
+                        <div class="col-4 text-center">
+                            {{ result.info.students_difference }}
+                        </div>
+                        <div class="col text-center">
+                            {{ result.detail }}
+                        </div>
+                    </div>
+                </q-card>
+                <q-card v-if="evaluationResults.length === 0" style="height:40vh" class="row justify-center items-center" square flat>
+                    <div class="text-h4">No operations were commited</div>
+                </q-card>
+                
+            </q-card-section>
+            
+        </q-card>
+    </q-dialog>
+    <div class="absolute-bottom-right q-mb-lg q-mr-lg">
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
-                            <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
+            <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
         </q-btn-group>
@@ -216,6 +275,8 @@ export default defineComponent({
             current: "",
             operations: [],
             errorMessage: "",
+            popup: false,
+            evaluationResults: []
         }
     },
     computed: {
@@ -250,6 +311,7 @@ export default defineComponent({
                         type: "REMOVE",
                         block: Number(event.from.id),
                         subject: event.clone.id,
+                        detail: `Removing '${event.clone.id}' from Block ${Number(event.from.id)+1}`
                     })
                 } else {
 
@@ -258,7 +320,8 @@ export default defineComponent({
                         type: "MOVE",
                         target: Number(event.from.id),
                         subject: event.clone.id,
-                        to: Number(event.to.id)
+                        to: Number(event.to.id),
+                        detail: `Moving '${event.clone.id}' Block ${Number(event.from.id)+1} to ${Number(event.to.id)+1}`
                     })
                 }
             }
@@ -269,7 +332,8 @@ export default defineComponent({
                     id: this.operations.length + 1,
                     type: "ADD",
                     subject: event.item.id,
-                    block: Number(event.to.id)
+                    block: Number(event.to.id),
+                    detail: `Adding '${event.item.id}' to Block ${Number(event.to.id)+1}`
                 })
             }
         },
@@ -379,7 +443,8 @@ export default defineComponent({
                 new: this.blocks,
                 operations: this.operations,
             }).then(response => {
-                console.log(response);
+                this.popup = true
+                this.evaluationResults = response.data
             })
         },
         subjectInBlock(block, target) {
