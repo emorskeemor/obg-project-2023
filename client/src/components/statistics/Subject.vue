@@ -1,7 +1,7 @@
 <template>
 
 <q-card class="bg-grey-2" style="padding:3px">
-    <div class="text-black">{{code}}, {{this.$store.state.options[code]}}</div>
+    <div class="text-black main-font">{{code}}, {{this.$store.state.options[code]}}</div>
 
 </q-card>
 </template>

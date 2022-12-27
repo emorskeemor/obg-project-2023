@@ -126,7 +126,7 @@
                                 <q-scroll-area style="height:25vh">
                                     <div v-if="operations.length !== 0">
                                         <div v-for="(op, index) in operations" :key="index">
-                                            <q-card class="bg-grey-3" square>
+                                            <q-card class="bg-grey-3" square flat>
                                                 <div class="row justify-center items-center">
                                                     <div class="col-1 justify-center items-center q-pa-sm">
                                                         {{op.id}}
@@ -161,7 +161,7 @@
                                         </div>
                                     </div>
                                     <div v-else>
-                                        <q-card class="q-pa-sm bg-grey-3" square>
+                                        <q-card class="q-pa-sm bg-grey-3" square flat>
                                             <div class="text-body1">
                                                 Changes to the option blocks will show up here
                                             </div>
@@ -173,11 +173,6 @@
                         </div>
                     </q-card-section>
                     <q-separator />
-                    <q-card-actions>
-                        <q-btn-group>
-
-                        </q-btn-group>
-                    </q-card-actions>
                 </q-card>
             </div>
         </div>
@@ -191,37 +186,37 @@
 
             <q-card-section class="q-pt-none text-body1">
                 <div class="row q-pa-sm bg-grey-3 justify-center items-center">
-                        <div class="col-1 text-center">
+                        <div class="col-1 text-center main-font">
                             ID
                         </div>
-                        <div class="col-2 text-center">
+                        <div class="col-2 text-center main-font">
                             Type
                         </div>
-                        <div class="col-2 text-center">
+                        <div class="col-2 text-center main-font">
                             % Change
                         </div>
-                        <div class="col-4 text-center">
-                            # failed
+                        <div class="col-4 text-center main-font">
+                            # student change
                         </div>
-                        <div class="col text-center">
+                        <div class="col text-center main-font">
                             Detail
                         </div>
                     </div>
                 <q-card v-for="result in evaluationResults" :key="result.id" square flat class="q-pa-sm bg-grey-4">
                     <div class="row ">
-                        <div class="col-1 text-center">
+                        <div class="col-1 text-center main-font">
                             {{ result.id + 1 }}
                         </div>
-                        <div class="col-2 text-center">
+                        <div class="col-2 text-center main-font">
                             {{ result.type }}
                         </div>
-                        <div class="col-2 text-center">
+                        <div class="col-2 text-center main-font">
                             {{ result.info.success_change }}
                         </div>
-                        <div class="col-4 text-center">
+                        <div class="col-4 text-center main-font">
                             {{ result.info.students_difference }}
                         </div>
-                        <div class="col text-center">
+                        <div class="col text-center main-font">
                             {{ result.detail }}
                         </div>
                     </div>
@@ -437,6 +432,7 @@ export default defineComponent({
             this.dismissError()
         },
         evaluate() {
+            this.popup = false
             axiosInstance.post("api-generate/generator/evaluate/", {
                 initial: this.$store.state.generated_blocks,
                 all_students: this.$store.state.all_students,

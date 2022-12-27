@@ -9,10 +9,10 @@
                         <template v-slot:avatar>
                             <q-icon name="account_circle" color="light-grey" />
                         </template>
-                        <div class="row">
+                        <div class="row main-font">
                             student uuid: {{student.uuid}}
                         </div>
-                        <div class="row">
+                        <div class="row main-font">
                             student email: {{student.email }}
                         </div>
                     </q-banner>
@@ -20,10 +20,10 @@
             </q-btn>
         </div>
 
-        <div class="col-3 q-pa-sm" style="height: 5.5vh">
+        <div class="col-3 q-pa-sm main-font" style="height: 5.5vh">
             {{student.name}}
         </div>
-        <div class="col-2 q-pa-sm" style="height: 5.5vh">
+        <div class="col-2 q-pa-sm main-font" style="height: 5.5vh">
             {{student.pathway}}
         </div>
 

@@ -31,7 +31,7 @@ from bloc.core.pre_generate.validate import populate_with_id, clean_options
 from bloc.core.pre_generate.statistics import subject_counts, group_by_class, filter_grouped_by
 from bloc.core.post_generate.evaluation import EvaluationUtility, EmptyEvaluatedObject
 from bloc.core.generate.utility import Generator, Node
-from bloc.core.exceptions import PathwayFailed
+from bloc.core.exceptions import SubjectAlreadyExists, SubjectNotFound
 from bloc.core import protocols
 from bloc.core.post_generate.operations import get_operation_report
 from bloc.core.post_generate import validators
@@ -278,11 +278,15 @@ class GerneratorViewset(ViewSet):
         get = request.data.get
         EvaluationUtility._data = get("all_students")
         EvaluationUtility.EBACC = settings.EBACC_SUBJECTS
-        report = get_operation_report(
-            operations=get("operations"),
-            blocks=get("initial"),
-            ignore_keys=["id"]
-            )
+        try:
+            report = get_operation_report(
+                operations=get("operations"),
+                blocks=get("initial"),
+                ignore_keys=["id"]
+                )
+        except (SubjectNotFound, SubjectAlreadyExists):
+            raise exceptions.ValidationError({"detail":"could not evaluate"})
+        print(report)
         return response.Response(report, status=status.HTTP_200_OK)
     
     ##############################################
