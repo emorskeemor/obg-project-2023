@@ -4,9 +4,9 @@
     <div class="q-pa-md" style="width:100%">
         <div class="row q-gutter-xl">
             <div class="col-4">
-                <q-card class="bg-grey-3 q-mt-md" style="min-height:78vh">
+                <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
                     <q-card-section class="bg-grey-4">
-                        <div class="text-h4 main-font">Room Settings</div>
+                        <div class="text-h4 main-font text-weight-medium">Room Settings</div>
                     </q-card-section>
                     <q-card-section>
                         <div class="text-body2">
@@ -83,9 +83,9 @@
             </div>
             <!-- middle column -->
             <div class="col">
-                <q-card class="bg-grey-3" style="min-height:70vh">
+                <q-card class="bg-grey-3 shadow-15" style="min-height:70vh">
                     <q-card-section class="bg-grey-4">
-                        <div class="text-h3 main-font">Room Details</div>
+                        <div class="text-h4 main-font text-weight-medium">Room Details</div>
                         <div class="q-pa-md">
                             <q-input v-model="code" autofocus outlined label="room code" hint="code of the room" readonly>
                                 <template v-slot:prepend>
@@ -98,12 +98,12 @@
                         <div>
                             Here you can edit this room and the settings that are attatched to it
                         </div>
-                        <q-btn label="Generate" color="red-7" size="md" @click="changeRoute('options-generator')" glossy/>
+                        <q-btn label="Generate" color="red-7" size="lg" @click="changeRoute('options-generator')" glossy/>
 
                     </q-card-section>
 
                     <q-card-actions class="bg-grey-4 absolute-bottom row justify-center">
-                        <div class="text-h6 row full-width justify-center">Other Settings</div>
+                        <div class="text-h6 row full-width justify-center q-ma-sm">Other Settings</div>
                         <div class="text-body2 full-width justify-center q-mb-md">Edit the available options, students and the generation rules</div>
                         <q-btn-group class="row">
                             <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
@@ -118,9 +118,9 @@
             </div>
             <!-- generated blocks -->
             <div class="col-4">
-                <q-card class="bg-grey-3 q-mt-md" style="min-height:78vh">
+                <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
                     <q-card-section class="bg-grey-4">
-                        <div class="text-h4 main-font">Generation Settings</div>
+                        <div class="text-h4 main-font text-weight-medium">Generation Settings</div>
                     </q-card-section>
                     <q-card-section>
                         <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">

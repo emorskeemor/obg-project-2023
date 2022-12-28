@@ -1,7 +1,7 @@
 <template>
 <div class="">
     <q-banner inline-actions :class="getType">
-        <div class="absolute-center">
+        <div class="absolute-center q-pa-md">
             <div class="text-bold">
                 {{message}}
             </div>
@@ -24,7 +24,7 @@ export default defineComponent({
     emits: ["dismiss"],
     computed: {
         getType() {
-            return `text-white absolute-bottom z-max bg-${this.colour}`
+            return `text-white fixed-bottom q-pa-md z-max bg-${this.colour}`
         }
     }
 

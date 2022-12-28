@@ -108,6 +108,10 @@
                                 <div class="text-h5">
                                     Operations
                                 </div>
+                                <div>
+                                    Linear will evaluate each operation depedent on the results of the previous operation.
+                                    <q-toggle v-model="linear" label="linear"/>
+                                </div>
                                 <div class="row bg-grey-3 justify-center">
                                     <div class="col-1 q-pa-sm text-bold justify-center items-center bg-grey-5">
                                         ID
@@ -123,7 +127,7 @@
                                     </div>
                                 </div>
                                 <q-separator />
-                                <q-scroll-area style="height:25vh">
+                                <q-scroll-area style="height:20vh">
                                     <div v-if="operations.length !== 0">
                                         <div v-for="(op, index) in operations" :key="index">
                                             <q-card class="bg-grey-3" square flat>
@@ -270,6 +274,7 @@ export default defineComponent({
             current: "",
             operations: [],
             errorMessage: "",
+            linear:false,
             popup: false,
             evaluationResults: []
         }
@@ -438,10 +443,15 @@ export default defineComponent({
                 all_students: this.$store.state.all_students,
                 new: this.blocks,
                 operations: this.operations,
+                linear: this.linear
             }).then(response => {
                 this.popup = true
                 this.evaluationResults = response.data
-            })
+            }).catch(
+                error=> {
+                    this.errorMessage = error.response.data.detail
+                }
+            )
         },
         subjectInBlock(block, target) {
             let found = false

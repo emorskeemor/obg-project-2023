@@ -4,7 +4,7 @@
     <!-- current rooms  -->
     <div class="row q-gutter-xl">
         <div class="col-4">
-            <q-card class="bg-grey-3 q-mt-md" style="min-height:75vh">
+            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 main-font">Your Rooms</div>
                     <q-input filled v-model="search" label="Search" lazy-rules type="text">
@@ -21,7 +21,7 @@
         </div>
         <!-- middle column -->
         <div class="col">
-            <q-card class="bg-grey-3" style="min-height:70vh">
+            <q-card class="bg-grey-3 shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 main-font">Welcome to your dashboard</div>
                 </q-card-section>
@@ -35,7 +35,7 @@
         </div>
         <!-- generated blocks -->
         <div class="col-4">
-            <q-card class="bg-grey-3 q-mt-md" style="min-height:75vh">
+            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 main-font">Generated blocks</div>
                 </q-card-section>

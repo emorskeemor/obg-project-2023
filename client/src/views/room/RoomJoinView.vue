@@ -1,8 +1,8 @@
 <template>
 <q-page class="q-pa-xs no-scroll" padding>
     <!-- header  -->
-    <q-card style="width:100vh;padding:5vh" class="absolute-center bg-grey-3">
-        <div class="text-h1 text-center">
+    <q-card style="width:80vh;padding:5vh" class="absolute-center bg-grey-3 shadow-15">
+        <div class="text-h2 main-font text-center text-weight-medium q-ma-md">
             Access a room
         </div>
         <div class="text-h5 text-center q-pb-xl">Enter the details of the room bellow</div>
@@ -27,7 +27,7 @@
             </div>
 
             <!-- submit button to request access -->
-            <q-btn class="bg-green-13 text-white" push size="20px" @click="handleAccess" label="Join" icon-right="login" />
+            <q-btn class="bg-teal-4 text-white" push size="20px" @click="handleAccess" label="Join" icon-right="login" />
 
         </div>
 
@@ -89,6 +89,19 @@ export default defineComponent({
                             // this.errorMessage = "Room with given domain and room code not found"
                             this.errorMessage = response.data.detail
                             this.error = true
+                        }
+                    }
+                ).catch(
+                    error => {
+                        console.log(error.response);
+                        if (error.response.status == "404") {
+                            this.errorMessage = "Room was not found. Please ensure the room code and domain were typed in correctly"
+                            this.error = true
+
+                        } else {
+                            this.errorMessage = error.response.data.detail
+                            this.error = true
+
                         }
                     }
                 )

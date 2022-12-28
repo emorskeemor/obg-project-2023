@@ -268,6 +268,8 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             else:
                 # update
                 to_update = current.filter(option__pk=pk)[0]
+                if not classes:
+                    classes = None
                 to_update.classes = classes
                 to_update.save()
                 

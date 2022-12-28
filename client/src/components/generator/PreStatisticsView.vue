@@ -1,5 +1,5 @@
 <template>
-<div style="min-height:70vh">
+<div style="min-height:73vh">
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="row ">
             <div class="col-5 q-ma-md">
@@ -50,7 +50,7 @@
             </div>
         </div>
     </q-card>
-    <div class="absolute-bottom-right q-pa-md">
+    <div class="absolute-bottom-right q-pb-xl">
         <div class="q-gutter-sm q-pa-sm">
             <q-btn label="refresh" size="md" @click="getData" color="teal-4" push/>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />

@@ -4,9 +4,9 @@
 
         <!-- available options that the student can choose from -->
         <div class="col-4 q-gutter-md">
-            <q-card class="bg-grey-3" style="min-height:77vh">
+            <q-card class="bg-grey-3 shadow-15" style="min-height:77vh" >
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 text-black main-font" style="padding-bottom:1vh">Available options</div>
+                    <div class="text-h4 text-black main-font text-weight-medium" style="padding-bottom:1vh">Available options</div>
                     <!-- search bar -->
                     <q-input filled v-model="search" label="Search" lazy-rules type="text">
                         <template v-slot:prepend>
@@ -43,15 +43,15 @@
         <!-- details about the option block choice -->
 
         <div class="col">
-            <q-card class="bg-grey-3" style="padding:20px;min-height:75vh">
+            <q-card class="bg-grey-3 shadow-15" style="padding:20px;min-height:75vh">
                 <!-- details about how to choose the options -->
-                <div class="text-h4 text-black main-font">Hello {{studentData.firstName}} {{studentData.lastName}}</div>
+                <div class="text-h4 text-black main-font text-weight-medium">Hello '{{studentData.firstName}} {{studentData.lastName}}'</div>
                 <div class="text-body1">Drag the subjects you would like to take into the chosen subjects section to the right</div>
 
                 <!-- display how may subjects the student can take -->
-                <q-separator color="black" spaced />
-                <div class="text-h6 text-black main-font text-weight-medium">You are able to take {{maximumAllowedOptions}} subjects</div>
-                <div class="text-h6 text-black main-font text-weight-medium">and {{maximumReserveOptions}} reserve options</div>
+                <!-- <q-separator color="black" spaced /> -->
+                <div class="text-h6 text-black main-font text-weight-medium">You are able to take [{{maximumAllowedOptions}}] subjects</div>
+                <div class="text-h6 text-black main-font text-weight-medium">and [{{maximumReserveOptions}}] reserve options</div>
 
                 <q-separator color="black" spaced />
                 <!-- reserve options -->
@@ -82,9 +82,9 @@
 
         <!-- The chosen options the student has chosen -->
         <div class="col-4 q-gutter-md">
-            <q-card class="bg-grey-3" style="min-height:77vh">
-                <q-card-section class="bg-grey-4">
-                    <div class="text-h4 text-black main-font">Chosen options</div>
+            <q-card class="bg-grey-3 shadow-15" style="min-height:77vh">
+                <q-card-section class="bg-grey-4 row items-center justify-center" style="height:15vh">
+                    <div class="text-h4 text-black main-font text-weight-medium">Your chosen options</div>
                 </q-card-section>
                 <draggable class="list-group" :list="chosenOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="changesMade=true" itemKey="name" id="chosenOptions">
                     <template #item="{element, index}">

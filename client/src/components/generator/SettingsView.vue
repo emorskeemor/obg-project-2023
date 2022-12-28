@@ -142,7 +142,7 @@
         </div>
 
     </q-card>
-    <div class="absolute-bottom q-pa-sm q-mb-md">
+    <div class="absolute-bottom q-pa-sm q-mb-lg">
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
             <q-btn push class="bg-teal-3 text-white" size="md" label="change settings" icon="edit" @click="editRoom" />

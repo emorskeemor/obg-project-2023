@@ -91,28 +91,26 @@
                         </template>
                     </q-input>
                 </q-card-section>
-                <!-- <OptionItem :element="element" @showInfo="loadSubjectInfo" @removeOption="removeChosenOption" v-if="!fetching" itemStyle="width:55vh;margin:1vh;max-height:15vh;" :index="index" /> -->
                 <draggable class="list-group" :list="getFilteredCOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
                     <template #item="{element}">
                         <div class="row justify-center items-center">
-                            <q-card style="width:55vh;margin:4px;max-height:15vh;" class="bg-teal-3 glossy">
+                            <q-card style="width:55vh;margin:4px;max-height:15vh;" class="bg-teal-3">
                                 <q-card-section style="padding:5px">
                                     <div class="text-h5 text-white">{{element.title}}, {{ element.subject_code }}</div>
                                 </q-card-section>
                                 <q-card-actions>
                                     <div class="row full-width items-center justify-center q-gutter-md">
-                                        <div class="col-2">
+                                        <div class="col q-ml-sm">
+                                            <q-input standout outlined filled label="classes" v-model="element.classes" clear-icon="close" type="number" dense :rules="[ val => val > 0|val === null|val==='' || 'classes must be greater than 0']" />
+
+                                        </div>
+                                        <div class="col-3 q-mb-md">
                                             <q-btn-group>
                                                 <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(element)" icon="highlight_off" />
                                                 <q-btn class="bg-blue text-white" @click="displaySubjectDetails(element)" icon="info" />
                                             </q-btn-group>
                                         </div>
-                                        <div class="col q-ml-lg">
-                                            <q-input 
-                                            standout outlined filled
-                                            label="classes" v-model="element.classes" style="width:20vh" type="number" dense/>
 
-                                        </div>
                                     </div>
 
                                 </q-card-actions>
@@ -144,7 +142,7 @@
             </q-card>
         </div>
     </div>
-    
+
     <BannerComponent colour="green" :message="successMessage" @dismiss="this.successMessage=''" v-if="successMessage.length !== 0" />
     <BannerComponent colour="red" :message="errorMessage" @dismiss="this.errorMessage=''" v-if="errorMessage.length !== 0" />
     <q-dialog v-model="displaySubjectInfo">
@@ -227,7 +225,7 @@ export default defineComponent({
             if (this.fetching) {
                 return []
             } else {
-                
+
                 let startingPage = (this.chosenOptionsPage - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.chosenOptions].filter(
                     option => option.title.toLowerCase().includes(this.chosenOptionsSearch.toLowerCase())

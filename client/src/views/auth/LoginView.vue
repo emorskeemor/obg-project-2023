@@ -1,11 +1,11 @@
 <template>
 <q-page class="q-pa-xl" padding>
-    <q-card style="width:90vh;padding:5vh" class="absolute-center bg-grey-3">
+    <q-card style="width:60vh;padding:5vh" class="absolute-center bg-grey-3 shadow-15">
 
-        <div class="text-h1 text-center">
+        <div class="text-h2 text-center main-font text-weight-bold">
             Teacher login
         </div>
-        <div class="text-h5 text-center q-pb-xl">Enter your credentials bellow</div>
+        <div class="text-h5 text-center q-pa-lg main-font">Enter your credentials bellow</div>
         <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
             <q-input filled v-model="email" label="Your email *" hint="email" lazy-rules type="email" :error="error">
                 <template v-slot:prepend>
