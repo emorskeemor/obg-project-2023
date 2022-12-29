@@ -67,6 +67,7 @@
                                             </q-file>
                                         </div>
                                         <div class="col">
+                                            <q-toggle v-model="dummyNames" label="dummy names"/>
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +99,7 @@
                         <div>
                             Here you can edit this room and the settings that are attatched to it
                         </div>
-                        <q-btn label="Generate" color="red-7" size="lg" @click="changeRoute('options-generator')" glossy/>
+                        <q-btn label="Generate" color="red-7" size="lg" @click="changeRoute('options-generator')" glossy :disable="fetching"/>
 
                     </q-card-section>
 
@@ -106,9 +107,9 @@
                         <div class="text-h6 row full-width justify-center q-ma-sm">Other Settings</div>
                         <div class="text-body2 full-width justify-center q-mb-md">Edit the available options, students and the generation rules</div>
                         <q-btn-group class="row">
-                            <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" />
-                            <q-btn label="Students" color="teal-4" @click="changeRoute('students-view')" size="md" icon="account_circle" />
-                            <q-btn label="Rules" color="teal-4" @click="changeRoute('rules-edit')" size="md" icon="rule" />
+                            <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" :disable="fetching" />
+                            <q-btn label="Students" color="teal-4" @click="changeRoute('students-view')" size="md" icon="account_circle" :disable="fetching"/>
+                            <q-btn label="Rules" color="teal-4" @click="changeRoute('rules-edit')" size="md" icon="rule" :disable="fetching"/>
                         </q-btn-group>
 
                     </q-card-actions>
@@ -139,7 +140,7 @@
                                             </q-input>
                                         </div>
                                         <div class="col">
-                                            <q-input v-model="blocks" autofocus outlined label="blocks" type="number">
+                                            <q-input v-model="blocks" autofocus outlined label="blocks" type="number"  :rules="[val=>val > 0 || 'value must be greater than zero']">
                                                 <template v-slot:prepend>
                                                     <q-icon name="grid_view" />
                                                 </template>
@@ -149,14 +150,14 @@
                                     </div>
                                     <div class="row q-gutter-sm">
                                         <div class="col">
-                                            <q-input v-model="classSize" autofocus outlined label="class size" type="number">
+                                            <q-input v-model="classSize" autofocus outlined label="class size" type="number"  :rules="[val=>val > 0 || 'value must be greater than zero']">
                                                 <template v-slot:prepend>
                                                     <q-icon name="school" />
                                                 </template>
                                             </q-input>
                                         </div>
                                         <div class="col">
-                                            <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number">
+                                            <q-input v-model="maxSubjectsPerBlock" autofocus outlined label="subjects per block" type="number"  :rules="[val=>val > 0 || 'value must be greater than zero']"> 
                                                 <template v-slot:prepend>
                                                     <q-icon name="subject" />
                                                 </template>
@@ -165,23 +166,21 @@
                                     </div>
                                     <div class="row q-gutter-sm">
                                         <div class="col">
-                                            <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number">
+                                            <q-input v-model="lessonCost" autofocus outlined label="lesson cost" type="number"  :rules="[val=>val >= 0 || 'value must be postive or zero']">
                                                 <template v-slot:prepend>
                                                     <q-icon name="currency_pound" />
                                                 </template>
                                             </q-input>
                                         </div>
                                         <div class="col">
-
+                                            <q-input v-model="allowedReserves" autofocus outlined label="allowed reserves" type="number" :rules="[val=>val > 0 || 'value must be greater than zero']">
+                                                <template v-slot:prepend>
+                                                    <q-icon name="subject" />
+                                                </template>
+                                            </q-input>
                                         </div>
                                     </div>
                                     <div class="row q-gutter-sm">
-                                        <!-- <div class="col">
-                                            
-                                        </div>
-                                        <div class="col">
-
-                                        </div> -->
                                         <q-toggle v-model="blocksMustAlign" label="blocks must align"/>
                                     </div>
                                 </div>
@@ -190,7 +189,7 @@
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
-                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done" />
+                        <q-btn label="Save" color="teal-4" @click="saveSettings" size="md" icon="done" :disable="fetching"/>
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -247,6 +246,8 @@ export default defineComponent({
                 optionsId: 0,
 
                 dataFile: ref(null),
+                allowedReserves: 2,
+                dummyNames: true,
             }
         },
         beforeMount() {
@@ -339,19 +340,25 @@ export default defineComponent({
                 })
             },
             deleteAllStudent() {
+                this.fetching = true
                 axiosInstance.delete(`api-rooms/rooms/${this.$route.params.room_id}/delete-all-students/`).then(
                     response => {
                         console.log(response);
+                        this.fetching = false
                     }
                 )
             },
             bulkCreate() {
+                this.fetching = true
                 var formData = new FormData()
                 formData.append("data", this.dataFile)
                 const payload = {
                     "data_using_csv": true,
                     "room_code": this.$route.params.room_id,
-                    "options_using": this.settingsTitle
+                    "options_using": this.settingsTitle,
+                    "allowed_reserves": this.allowedReserves,
+                    "max_opts_per_student": this.blocks,
+                    "generate_dummy_names": this.dummyNames
 
                 }
                 formData.append("payload", JSON.stringify(payload))
@@ -363,6 +370,7 @@ export default defineComponent({
                 }).then(
                     response => {
                         console.log(response);
+                        this.fetching = false
                     }
                 )
             }

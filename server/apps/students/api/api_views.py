@@ -17,7 +17,7 @@ from apps.environment.api import (
     serializers as env_serializers,
     permissions as env_permissions,
 )
-from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings
+from apps.environment.models import Room, AvalilableOptionChoices, GenerationSettings, AvailableOption
 
 from core.utils import csv_file_to_list, valid_uuid_or_error, load_form_data, get_data_from_csv
 
@@ -83,8 +83,8 @@ class StudentViewset(ModelViewSet):
         available_options = choices.options.all()
         for options in data:
             options = clean_options(options, max_opts=get("max_opts_per_student"))
-            first_name = None
-            last_name = None
+            first_name = "anonymous"
+            last_name = "user"
             if get("generate_dummy_names"):
                 first_name = names.get_first_name()
                 last_name = names.get_last_name()
@@ -92,6 +92,8 @@ class StudentViewset(ModelViewSet):
                 first_name=first_name,
                 last_name=last_name,
                 room=room,
+                max_reserves=get("allowed_reserves"),
+                max_choices=get("max_opts_per_student"),
                 email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
             )
             student.save()
@@ -139,16 +141,29 @@ class StudentViewset(ModelViewSet):
         '''
         if request.method == "GET":
             room = get_object_or_404(Room, code=pk)
-            serialized = self.serializer_class(room.students.all(), many=True)
-            return Response(serialized.data, status=status.HTTP_200_OK)
+            data = []
+            for student in room.students.all():
+                # separate the reserves from the actual options
+                reserves, main = [], []
+                for choice in student.choices.all():
+                    opt_serialized = OptionSerializer(choice.option).data
+                    if choice.reserve:
+                        reserves.append(opt_serialized)
+                    else:
+                        main.append(opt_serialized)
+                serialized = self.serializer_class(student)
+                to_add = serialized.data.copy()
+                to_add["reserves"] = reserves
+                to_add["options"] = main
+                data.append(to_add)                
+                
+            return Response(data, status=status.HTTP_200_OK)
         elif request.method == "PUT":
             room = get_object_or_404(Room, code=pk)
             students = room.students.all()
             
             for student_data in request.data.get("students", []):
                 student: Student = students.get(uuid=student_data.get("uuid"))
-                # student.max_choices = student_data.get("mna")
-                # student.save()
                 serialized = self.serializer_class(instance=student, data=student_data)
                 serialized.is_valid(raise_exception=True)
                 serialized.save()

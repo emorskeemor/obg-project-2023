@@ -40,5 +40,6 @@ class StudentDumpSerializer(serializers.Serializer):
         default=4, required=False,
         label="max options that a student can take"
         )
+    allowed_reserves = serializers.IntegerField(default=2, required=False)
     data = serializers.FileField(write_only=True, required=False)
     

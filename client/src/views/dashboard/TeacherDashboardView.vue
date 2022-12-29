@@ -4,40 +4,61 @@
     <!-- current rooms  -->
     <div class="row q-gutter-xl">
         <div class="col-4">
-            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
+            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 main-font">Your Rooms</div>
+                    <div class="text-h4 main-font text-weight-medium q-ma-sm">Your Rooms</div>
                     <q-input filled v-model="search" label="Search" lazy-rules type="text">
                         <template v-slot:prepend>
                             <q-icon name="search" />
                         </template>
                     </q-input>
                 </q-card-section>
-                <q-scroll-area style="height:55vh">
-                    <RoomItem v-for="room in currentRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
+                <q-scroll-area style="height:50vh">
+                    <RoomItem v-for="room in getFilteredRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
 
                 </q-scroll-area>
+                <q-card-section class="row justify-center bg-grey-4 absolute-bottom">
+                    <q-pagination v-model="page" :max=roomPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
+
+                </q-card-section>
             </q-card>
         </div>
         <!-- middle column -->
         <div class="col">
             <q-card class="bg-grey-3 shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 main-font">Welcome to your dashboard</div>
+                    <div class="text-h4 main-font">
+                        Welcome to your dashboard {{ userDetails.first_name }}
+                    </div>
                 </q-card-section>
                 <q-card-section>
-                    <q-btn label="create new room" icon="add_circle" class="bg-teal-3 text-white" @click="displayCreatePopup=true" />
+                    <div class="main-font text-body2">
+                        Here you can view and create rooms which students can access. You can then configure settings
+                        get to generating option blocks
+                    </div>
+                    <div class="q-gutter-md">
+                        <div class="row">
+                            <q-input label="first name" class="full-width" v-model="userDetails.first_name" />
+                        </div>
+                        <div class="row">
+                            <q-input label="last name" class="full-width" v-model="userDetails.last_name" />
+                        </div>
+                        <div class="row">
+                            <q-input label="email" class="full-width" v-model="userDetails.email" />
+                        </div>
+                    </div>
                 </q-card-section>
                 <q-card-section class="bg-grey-4 absolute-bottom">
-                    <div class="text-h4 main-font"></div>
+                    <q-btn label="create new room" icon="add_circle" class="bg-teal-3 text-white" @click="displayCreatePopup=true" />
+
                 </q-card-section>
             </q-card>
         </div>
         <!-- generated blocks -->
         <div class="col-4">
-            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:75vh">
+            <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 main-font">Generated blocks</div>
+                    <div class="text-h4 main-font text-weight-medium q-ma-sm">Generated blocks</div>
                 </q-card-section>
             </q-card>
         </div>
@@ -86,6 +107,8 @@ import {
 } from '@/api/axios';
 import RoomItem from '@/components/dashboard/RoomItem.vue';
 
+const CHOSEN_OPTIONS_PER_PAGE = 2
+
 export default defineComponent({
     name: 'TeacherDashboardView',
     components: {
@@ -101,15 +124,35 @@ export default defineComponent({
             newRoomName: "",
             newSettingsName: "",
             newDomainName: "",
+            userDetails: {},
+
+            page: 1,
 
         }
+    },
+    computed: {
+        roomPagination() {
+            return Math.floor(this.currentRooms.length / CHOSEN_OPTIONS_PER_PAGE)
+
+        },
+        getFilteredRooms() {
+            // get chosen options through the search
+            if (this.fetching) {
+                return []
+            } else {
+
+                let startingPage = (this.page - 1) * CHOSEN_OPTIONS_PER_PAGE
+                return [...[...this.currentRooms].filter(
+                    room => room.domain.toLowerCase().includes(this.search.toLowerCase())
+                )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
+            }
+        },
     },
     beforeMount() {
         // get the users room if any
         this.fetching = true
         this.fetchRooms()
         this.loggedIn = isLoggedIn()
-        this.fetching = false
     },
     methods: {
         deleteRoom(room) {
@@ -123,7 +166,10 @@ export default defineComponent({
             // fetch the rooms created by the user and update the array of rooms
             axiosInstance.get(`api-users/users/${this.$route.params.user_id}/rooms`).then(
                 (response) => {
-                    this.currentRooms = response.data
+                    this.currentRooms = response.data.rooms
+                    this.userDetails = response.data.user
+                    this.fetching = false
+
                 })
         },
         createRoom() {

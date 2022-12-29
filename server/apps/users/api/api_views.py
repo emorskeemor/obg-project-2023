@@ -36,5 +36,8 @@ class UserViewSet(ModelViewSet):
             )
         rooms = Room.objects.filter(admin=user)
         serialized = RoomSerializer(rooms, many=True)
-        
-        return Response(serialized.data, status=status.HTTP_200_OK)
+        payload = {
+            "rooms": serialized.data,
+            "user": self.serializer_class(user).data
+        }
+        return Response(payload, status=status.HTTP_200_OK)

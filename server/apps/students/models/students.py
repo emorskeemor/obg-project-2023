@@ -17,6 +17,7 @@ class Student(models.Model):
     first_name = models.CharField(_("student first name"), max_length=100)
     last_name = models.CharField(_("student last name"), max_length=100)
     max_choices = models.IntegerField(_("max choices a student can take"), default=4)
+    max_reserves = models.IntegerField(_("max reserves a student can take"), default=2)
     # room the student is linked too
     room = models.ForeignKey(
         Room,

@@ -21,6 +21,7 @@ class AvailableOption(models.Model):
         AvalilableOptionChoices, 
         verbose_name=_("available options"), 
         on_delete=models.CASCADE,
+        related_name="available_options"
         )
     classes = models.PositiveSmallIntegerField(
             verbose_name=_("classes delegated to this subject"),

@@ -194,6 +194,7 @@ export default defineComponent({
                     this.chosenOptions = [...data.options]
                     this.reserveOptions = [...data.reserves]
                     this.maximumAllowedOptions = data.max_choices
+                    this.maximumReserveOptions = data.max_reserves
                     this.studentData.firstName = data.first_name
                     this.studentData.lastName = data.last_name
                     this.studentData.uuid = data.uuid

@@ -14,7 +14,7 @@
                         </q-btn>
                     </div>
                     <div class="col-2">
-                        <div class="main-font text-h3 text-weight-medium q-mt-lg bg">
+                        <div class="main-font text-h2 text-weight-medium row full-height items-center justify-center">
                             OR
                         </div>
                     </div>

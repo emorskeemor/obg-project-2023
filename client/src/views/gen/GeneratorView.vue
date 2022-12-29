@@ -1,9 +1,9 @@
 <template>
-<div class="bg-red">
+<div class="no-scroll">
 
-    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4" style="height:10vh">
-        <q-step :name="1" title="Define data" icon="settings" :done="step > 1" :error="errorMessage.length !== 0">
-            <OptionProvisionView  @back="previousStep" @next="nextStep" @error="onError"/>
+    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4 no-scroll" style="height:84vh">
+    <q-step :name="1" title="Define data" icon="settings" :done="step > 1" :error="errorMessage.length !== 0">
+        <OptionProvisionView  @back="previousStep" @next="nextStep" @error="onError"/>
 
         </q-step>
 
