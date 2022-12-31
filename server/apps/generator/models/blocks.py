@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core import validators
 
 from apps.environment.models import Room
@@ -31,6 +32,16 @@ class OptionBlocks(models.Model):
             )
         ]
         )
+    created_by = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="option_blocks",
+        null=True
+    )
+    success_percentage = models.FloatField(default=0)
+    generation_time = models.FloatField(default=0)
+    completed_nodes = models.PositiveIntegerField(default=0)
+    generated_nodes = models.PositiveIntegerField(default=0)
     
     def __str__(self) -> str:
         return "%s[%s]" % (self.room.code, self.title)

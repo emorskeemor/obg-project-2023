@@ -1,8 +1,8 @@
 <template>
 <q-page class="q-pa-xs no-scroll" padding>
     <!-- header  -->
-    <q-card style="width:80vh;padding:5vh" class="absolute-center bg-grey-3 shadow-15">
-        <div class="text-h2 main-font text-center text-weight-medium q-ma-md">
+    <q-card style="width:65vh;padding:5vh" class="absolute-center bg-grey-3 shadow-15">
+        <div class="text-h2 main-font text-center text-weight-medium q-pb-md">
             Access a room
         </div>
         <div class="text-h5 text-center q-pb-xl">Enter the details of the room bellow</div>

@@ -2,14 +2,14 @@
 <q-page padding>
     <div>
         
-        <q-card style="width:90vh;height:50vh" class="absolute-center bg-grey-3 shadow-15" >
+        <q-card style="width:80vh;height:40vh" class="absolute-center bg-grey-3 shadow-15" >
             <div class="row justify-center items-center full-height q-pa-md">
                 <div class="main-font text-h1 text-weight-medium">
                     Are you a
                 </div>
-                <div class="q-gutter-md row justify-center">
+                <div class="q-gutter-md row justify-center full-width">
                     <div class="col-4">
-                        <q-btn size="40px" push @click="$router.push(`/room/join`)" icon="face" class="bg-cyan-4 text-white">
+                        <q-btn size="35px" push @click="$router.push(`/room/join`)" icon="face" class="bg-cyan-4 text-white">
                             student
                         </q-btn>
                     </div>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <q-btn size="40px" push @click="$router.push(`/auth/login`)" icon="badge" class="bg-cyan-4 text-white">
+                        <q-btn size="35px" push @click="$router.push(`/auth/login`)" icon="badge" class="bg-cyan-4 text-white">
                             Teacher
                         </q-btn>
                     </div>

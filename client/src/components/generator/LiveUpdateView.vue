@@ -11,7 +11,7 @@
                                 <q-chip icon="subjects">{{blocks[index].length}}</q-chip>
 
                             </div>
-                            <q-scroll-area style="height:68vh">
+                            <q-scroll-area style="height:70vh">
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
                                     <template #item="{element}">
                                         <div :id="element">
@@ -31,7 +31,7 @@
                             </q-scroll-area>
                         </div>
                         <div class="col q-ma-md">
-                            <div class="text-h4">Extra</div>
+                            <div class="text-h4 main-font text-weight-medium">Extra</div>
                             <div class="q-pa-md">
                                 <div>Drag in extra subjects if required</div>
                             </div>
@@ -181,7 +181,7 @@
             </div>
         </div>
     </q-card>
-    <q-dialog v-model="popup">
+    <q-dialog v-model="evaluationPopup">
         <q-card style="width:100vh;height:60vh">
             <q-card-section>
                 <div class="text-h6 text-center">Results</div>
@@ -233,16 +233,35 @@
             
         </q-card>
     </q-dialog>
+    <q-dialog v-model="savePopup">
+        <q-card>
+            <q-card-section>
+                <div class="text-h6 text-center main-font">Save these blocks so you can access them later!</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none text-body1">
+                <q-input label="title" v-model="title" :rules="[val=>val.length > 5 || 'title must be longer than 5 characters']"/>
+                <q-toggle v-model="useCurrentBlocks" label="use current blocks"/>
+                </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn label="RESTART" color="red" @click="restart" />
+                <q-btn label="SAVE" color="primary" @click="saveBlocks" v-if="title.length > 5" />
+
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
     <div class="absolute-bottom-right q-mb-lg q-mr-lg">
         <q-btn-group>
             <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
             <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
             <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="next" icon="redo" @click="$emit('next')" />
+            <q-btn push class="bg-teal-3 text-white" size="md" label="save" icon="save_as" @click="savePopup = true"/>
         </q-btn-group>
     </div>
 
     <BannerComponent colour="red" @dismiss="dismissError" v-if="errorMessage" :message="errorMessage" />
+    <BannerComponent colour="green" @dismiss="successMessage=''" v-if="successMessage" :message="successMessage" />
 
 </div>
 </template>
@@ -274,8 +293,12 @@ export default defineComponent({
             current: "",
             operations: [],
             errorMessage: "",
+            successMessage: "",
             linear:false,
-            popup: false,
+            evaluationPopup: false,
+            savePopup: false,
+            useCurrentBlocks: false,
+            title: "",
             evaluationResults: []
         }
     },
@@ -289,21 +312,24 @@ export default defineComponent({
         }
     },
     methods: {
-        moveSubject(event, og) {
+        moveSubject(event, _og) {
+            // move subject
             if (event.relatedContext.list.includes(event.draggedContext.element) && event.from !== event.to) {
                 this.errorMessage = `'${event.draggedContext.element}' already exists in this block`
                 return false
             }
         },
         changeSubject(event) {
+            // NOTE: used for debug only
             // console.log(event);
         },
         startMove(arg) {
             this.$emit("dismissError")
-
             this.current = arg.item.id
         },
         finishedMove(event) {
+            // called whenever a subject is moved. We need to track if it was moved to the trash or to a different
+            // block.
             if (event.to !== event.from) {
                 if (event.to.id === 'trash') {
                     this.operations.push({
@@ -327,6 +353,7 @@ export default defineComponent({
             }
         },
         addSubject(event) {
+            // ADD subject operation
             if (event.to !== event.from) {
                 this.operations.push({
                     id: this.operations.length + 1,
@@ -338,9 +365,12 @@ export default defineComponent({
             }
         },
         removeOperation(operation) {
+            // remove a given operation
             this.operations = this.operations.filter(op => op.id !== operation.id)
         },
         undoOperation(operation) {
+            // attempts to undo a given operation. It may not be successful so it will
+            // set an error message when needed
             let type = operation.type
             let success = false
             // undo add operation by doing a remove operation
@@ -386,7 +416,6 @@ export default defineComponent({
             }
             // undo MOVE operation by reversing the move
             else if (type === "MOVE") {
-                console.log(operation);
                 if (this.subjectInBlock(operation.target, operation.subject)) {
                     this.errorMessage = `Cannot undo [MOVE] operation as '${operation.subject}' already exists in the original block [${operation.target+1}]`
                 } else {
@@ -409,7 +438,6 @@ export default defineComponent({
                             newBlocks.push(block)
                         }
                     })
-                    console.log(newBlocks);
                     if (found === false) {
                         this.errorMessage = "Could not undo [ADD] operation as the subject no longer exists in the block"
                     } else {
@@ -420,7 +448,6 @@ export default defineComponent({
             }
 
             if (success === true) {
-
                 this.removeOperation(operation)
             }
 
@@ -429,6 +456,7 @@ export default defineComponent({
             this.errorMessage = ""
         },
         reset() {
+            // resets everything as if we just finished generation
             this.blocks = this.$store.state.generated_blocks.map(function (arr) {
                     return arr.slice();
                 }),
@@ -437,6 +465,7 @@ export default defineComponent({
             this.dismissError()
         },
         evaluate() {
+            // send request to evaluate operations the user has comitted
             this.popup = false
             axiosInstance.post("api-generate/generator/evaluate/", {
                 initial: this.$store.state.generated_blocks,
@@ -445,7 +474,7 @@ export default defineComponent({
                 operations: this.operations,
                 linear: this.linear
             }).then(response => {
-                this.popup = true
+                this.evaluationPopup = true
                 this.evaluationResults = response.data
             }).catch(
                 error=> {
@@ -454,6 +483,7 @@ export default defineComponent({
             )
         },
         subjectInBlock(block, target) {
+            // returns bool whether or not a subject exists within a block
             let found = false
             this.blocks[block].forEach(
                 subject => {
@@ -463,6 +493,38 @@ export default defineComponent({
                     }
                 })
             return found
+        },
+        saveBlocks() {
+            // saves blocks
+            var blocks = []
+            if (this.useCurrentBlocks === false) {
+                blocks = this.$store.state.generated_blocks
+            } else {
+                blocks = this.blocks
+            }
+            axiosInstance.post(`api-generate/option-blocks/`, {
+                blocks: blocks,
+                code: this.$route.params.room_id,
+                title: this.title,
+                success: this.$store.state.success_percentage,
+                generation_time: this.$store.state.debug_data.generation_time,
+                completed_nodes: this.$store.state.debug_data.completed_nodes,
+                generated_nodes: this.$store.state.debug_data.generated_nodes
+                
+            }).then(response => {
+                this.successMessage = "saved successfully"
+            }).catch(error=>{
+                this.errorMessage = error.response.data.detail
+            })
+        },
+        restart() {
+            this.$router.push({
+                "name": "room-edit",
+                params: {
+                    user_id: this.$route.params.user_id,
+                    room_id: this.$route.params.room_id,
+                }
+            })
         }
     },
 

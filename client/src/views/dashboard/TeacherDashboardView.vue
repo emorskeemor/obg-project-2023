@@ -6,7 +6,7 @@
         <div class="col-4">
             <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 main-font text-weight-medium q-ma-sm">Your Rooms</div>
+                    <div class="text-h3 main-font text-weight-medium q-ma-sm">Your Rooms</div>
                     <q-input filled v-model="search" label="Search" lazy-rules type="text">
                         <template v-slot:prepend>
                             <q-icon name="search" />
@@ -58,7 +58,32 @@
         <div class="col-4">
             <q-card class="bg-grey-3 q-mt-md shadow-15" style="min-height:70vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 main-font text-weight-medium q-ma-sm">Generated blocks</div>
+                    <div class="text-h3 main-font text-weight-medium q-ma-sm">Generated blocks</div>
+                    <q-input filled v-model="blockSearch" label="Search" lazy-rules type="text">
+                        <template v-slot:prepend>
+                            <q-icon name="search" />
+                        </template>
+                    </q-input>
+                </q-card-section>
+                <q-card-section>
+                    <div v-for="block in getFilteredBlocks" :key="block.id">
+                        <div class="row justify-center items-center">
+                            <q-card style="width:55vh;margin:1vh" class="bg-teal-3 glossy">
+                                <q-card-section>
+                                    <div class="text-h5 text-white">{{block.title}}/{{block.room.code}}</div>
+                                </q-card-section>
+                                <q-card-actions>
+                                    <q-btn class="bg-blue-grey text-white" icon="highlight_off" @click="deleteBlock(block)" />
+                                    <q-btn class="bg-blue text-white" icon="info" @click="blockInfo(block)" />
+
+                                </q-card-actions>
+                            </q-card>
+                        </div>
+                    </div>
+                </q-card-section>
+                <q-card-section class="row justify-center bg-grey-4 absolute-bottom">
+                    <q-pagination v-model="blockPage" :max=blocksPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
+
                 </q-card-section>
             </q-card>
         </div>
@@ -92,6 +117,50 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
+    <q-dialog v-model="showBlockInfo">
+        <q-card style="min-width: 100vh" class="q-pa-md">
+            <div class="text-h5 text-center main-font text-weight-medium">{{ currentBlock.title }}/{{ currentBlock.room.code }}
+                
+            </div>
+            <div class="row">
+                <q-chip icon="grid_view"># blocks : {{ currentBlock.number_of_blocks }}</q-chip>
+                <q-chip icon="done">success % : {{ currentBlock.success_percentage }}</q-chip>
+                <q-chip icon="category">completed nodes : {{ currentBlock.completed_nodes }}</q-chip>
+                <q-chip icon="category">generated nodes : {{ currentBlock.generated_nodes }}</q-chip>
+                <q-chip icon="schedule">generation time : {{ currentBlock.generation_time }} seconds</q-chip>
+            </div>
+            <q-card-section class="q-gutter-md">
+                <q-scroll-area style="height:75vh">
+                    <q-card square class="q-pa-md bg-grey-4" flat>
+                        <div class="row justify-center">
+                            <div v-for="(block, index) in currentBlock.blocks" :key="index">
+                                <q-card style="width:80vh;min-height:15vh">
+                                    <div class="row">
+                                        <div class="col bg-grey-3" style="min-height:15vh">
+                                            <div class="text-h6 text-black q-pa-sm row">Block<div class="text-bold q-ml-sm">[{{index+1}}] </div>
+                                                <q-chip icon="subject">{{ block.length }}</q-chip>
+                                            </div>
+                                        </div>
+                                        <div class="col-10">
+                                            <div class="row q-pa-sm">
+                                                <div v-for="code in block" :key="code" style="padding:5px">
+                                                    <q-card class="bg-grey-2" style="padding:3px">
+                                                        <div class="text-black main-font">{{code[0]}} {{ code[1] }}</div>
+
+                                                    </q-card>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </q-card>
+                            </div>
+                        </div>
+                    </q-card>
+                </q-scroll-area>
+            </q-card-section>
+
+        </q-card>
+    </q-dialog>
 </q-page>
 </template>
 
@@ -112,27 +181,32 @@ const CHOSEN_OPTIONS_PER_PAGE = 2
 export default defineComponent({
     name: 'TeacherDashboardView',
     components: {
-        RoomItem
+        RoomItem,
     },
     data() {
         return {
             loggedIn: false,
             currentRooms: [],
+            currentBlocks: [],
             fetching: false,
             search: "",
+            blockSearch: "",
             displayCreatePopup: false,
+            showBlockInfo: false,
+            currentBlock: {},
             newRoomName: "",
             newSettingsName: "",
             newDomainName: "",
             userDetails: {},
 
             page: 1,
+            blockPage: 1,
 
         }
     },
     computed: {
         roomPagination() {
-            return Math.floor(this.currentRooms.length / CHOSEN_OPTIONS_PER_PAGE)
+            return Math.floor(this.currentRooms.length-1 / CHOSEN_OPTIONS_PER_PAGE)
 
         },
         getFilteredRooms() {
@@ -144,6 +218,22 @@ export default defineComponent({
                 let startingPage = (this.page - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.currentRooms].filter(
                     room => room.domain.toLowerCase().includes(this.search.toLowerCase())
+                )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
+            }
+        },
+        blocksPagination() {
+            return Math.floor(this.currentBlocks.length-1 / CHOSEN_OPTIONS_PER_PAGE)
+
+        },
+        getFilteredBlocks() {
+            // get chosen options through the search
+            if (this.fetching) {
+                return []
+            } else {
+
+                let startingPage = (this.blockPage - 1) * CHOSEN_OPTIONS_PER_PAGE
+                return [...[...this.currentBlocks].filter(
+                    block => block.title.toLowerCase().includes(this.blockSearch.toLowerCase())
                 )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
             }
         },
@@ -162,12 +252,24 @@ export default defineComponent({
                     this.fetchRooms()
                 })
         },
+        deleteBlock(block) {
+            // delete a given room
+            axiosInstance.delete(`api-generate/option-blocks/${block.id}`).then(
+                response => {
+                    this.fetchRooms()
+                })
+        },
+        blockInfo(block) {
+            this.currentBlock = block
+            this.showBlockInfo = true
+        },
         fetchRooms() {
             // fetch the rooms created by the user and update the array of rooms
             axiosInstance.get(`api-users/users/${this.$route.params.user_id}/rooms`).then(
                 (response) => {
                     this.currentRooms = response.data.rooms
                     this.userDetails = response.data.user
+                    this.currentBlocks = response.data.blocks
                     this.fetching = false
 
                 })
@@ -189,7 +291,8 @@ export default defineComponent({
                     room_id: room.pk,
                 }
             })
-        }
+        },
+
     }
 
 });

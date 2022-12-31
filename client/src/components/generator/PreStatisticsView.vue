@@ -6,7 +6,7 @@
                 <q-card style="min-height:70vh">
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
                         <div class="q-pa-lg absolute-center full-width">
-                            <apexchart  width="100%" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
+                            <apexchart width="100%" height="450" type="bar" :options="barChartOptions" :series="barChartSeries" v-if="!fetching"></apexchart>
 
                         </div>
                     </transition>
@@ -52,10 +52,13 @@
     </q-card>
     <div class="absolute-bottom-right q-pb-xl">
         <div class="q-gutter-sm q-pa-sm">
-            <q-btn label="refresh" size="md" @click="getData" color="teal-4" push/>
-            <q-btn push class="bg-teal-4 text-white" size="md" label="back" icon="undo" @click="$emit('back')" />
-            <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" v-if="!finished"/>
-            <q-btn push class="bg-teal-4 text-white" size="md" label="Post Statistics" icon="analytics" @click="$emit('next')" v-if="finished"/>
+            <q-btn-group>
+                <q-btn label="refresh" size="md" @click="getData" color="teal-4" push />
+                <q-btn push class="bg-teal-3 text-white" size="md" label="settings" icon="settings" @click="$emit('back')" />
+                <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" v-if="!finished" />
+                <q-btn push class="bg-teal-4 text-white" size="md" label="Post Statistics" icon="analytics" @click="$emit('next')" v-if="finished" />
+
+            </q-btn-group>
         </div>
 
     </div>
@@ -145,8 +148,8 @@ export default defineComponent({
                     text: 'Pathways chosen by students',
                     align: 'center'
                 },
-                dataLabels:{
-                    enabled:false
+                dataLabels: {
+                    enabled: false
                 }
             },
             // CLASH HEAT MAP
@@ -171,8 +174,8 @@ export default defineComponent({
             maxClashes: 3,
 
             // other statistics
-            studentCount:0,
-            subjectCount:0,
+            studentCount: 0,
+            subjectCount: 0,
 
             fetching: true,
         }

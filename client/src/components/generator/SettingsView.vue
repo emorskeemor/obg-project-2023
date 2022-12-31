@@ -3,7 +3,7 @@
     <q-card class="absolute-center bg-grey-3 no-margin full-width full-height" square>
         <div class="q-pa-md">
             <q-card-section>
-                <div class="row text-h4 items-center justify-center">
+                <div class="row text-h4 items-center justify-center main-font">
                     Ensure your settings are good to go
                     <div v-if="this.$store.state.using_database">
                         <q-chip icon="table">Using database</q-chip>
@@ -18,9 +18,9 @@
                 <div class="row q-gutter-xl">
                     <div class="col">
 
-                        <q-card class="q-pa-md bg-white" style="min-height:50vh">
-                            <div class="text-h4 text-center">Generation Settings</div>
-                            <div class="text-body1 text-center">
+                        <q-card class="q-pa-md bg-white" style="height:50vh">
+                            <div class="text-h4 text-center main-font text-weight-medium">Generation Settings</div>
+                            <div class="text-body1 text-center main-font">
                                 The settings are READ ONLY and can be edited using the button at the bottom
                                 of the page
                             </div>
@@ -65,9 +65,9 @@
                     </div>
 
                     <div class="col">
-                        <q-card class="q-pa-md bg-white" style="min-height:50vh">
-                            <div class="text-h4 text-center">Rules</div>
-                            <div class="text-body1 text-center">
+                        <q-card class="q-pa-md bg-white" style="height:50vh">
+                            <div class="text-h4 text-center main-font text-weight-medium">Rules</div>
+                            <div class="text-body1 text-center q-pa-sm">
                                 The rules are READ ONLY and can be edited using the button at the bottom
                                 of the page
                             </div>

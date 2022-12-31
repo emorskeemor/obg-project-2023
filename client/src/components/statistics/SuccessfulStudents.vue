@@ -1,6 +1,6 @@
 <template>
-<q-card square flat>
-    <div class="row justify-center">
+<q-card square flat class="bg-grey-3">
+    <div class="row justify-center bg-grey-3">
         <div class="bg-grey-3" style="width:110vh">
             <div class="text-h4 row q-pa-sm">
                 Successful students<div class="text-bold q-ml-sm">
@@ -21,7 +21,7 @@
                 <div class="col-3 q-pa-sm bg-grey-4 text-bold">Pathway</div>
                 <div class="col-3 q-pa-sm bg-grey-4 text-bold">Options</div>
             </div>
-            <div style="height:61vh" class="bg-grey-4">
+            <div style="height:62vh" class="bg-grey-4">
                 <div class="bg-grey-3" style="width:100vh">
                     <div v-for="(student, index) in getFilteredOptions" :key="index">
                         <Student :student="student" :index="index" />

@@ -1,8 +1,8 @@
 <template>
 <div style="min-height:68vh">
-    <q-card class="absolute-center  no-margin full-width full-height" square flat>
+    <q-card class="absolute-center no-margin full-width full-height bg-grey-3" square flat>
         <div class="row">
-            <div class="col-5">
+            <div class="col-5 bg-grey-4">
                 <div class="text-h4 bg-grey-3 q-pa-sm">
                     Generated blocks
                 </div>
@@ -18,7 +18,12 @@
 
                     </q-card>
                 </q-scroll-area>
+                <q-btn-group class="float-left q-ml-md">
+                    <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
+                    <q-btn push class="bg-teal-4 text-white" size="md" label="live update" icon="update" @click="$emit('next')" />
+                    <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" />
 
+                </q-btn-group>
             </div>
             <div class="col-7">
                 <FailedStudents v-if="toggle" />
@@ -46,12 +51,7 @@
         </q-card>
     </q-dialog>
     <div class="absolute-bottom-left q-pa-sm">
-        <q-btn-group>
-            <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="live update" icon="update" @click="$emit('next')" />
-            <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" />
 
-        </q-btn-group>
     </div>
 
 </div>

@@ -1,6 +1,6 @@
 <template>
-<q-card square flat>
-    <div class="row justify-center">
+<q-card square flat class="bg-grey-3">
+    <div class="row justify-center bg-grey-3">
         <div class="bg-grey-3" style="width:110vh">
             <div class="text-h4 row q-pa-sm">
                 Failed students<div class="text-bold q-ml-sm">

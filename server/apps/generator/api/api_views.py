@@ -1,8 +1,8 @@
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
 from rest_framework import response, status, exceptions, permissions
+from rest_framework.request import Request
 
-from functools import partial
 import json
 
 from typing import Dict
@@ -278,7 +278,6 @@ class GerneratorViewset(ViewSet):
         get = request.data.get
         EvaluationUtility._data = get("all_students")
         EvaluationUtility.EBACC = settings.EBACC_SUBJECTS
-        print(get("linear", False))
         try:
             report = get_operation_report(
                 operations=get("operations"),
@@ -324,19 +323,56 @@ class GerneratorViewset(ViewSet):
         return options, override
     
     @staticmethod
-    def _load_form_data(request) -> dict:
+    def _load_form_data(request: Request) -> dict:
         payload = request.data.get("payload")
         if payload is None:
             raise exceptions.ValidationError({"detail":"payload required as form data"})
         return json.loads(payload)
     
-    
+import uuid
     
 class OptionBlockViewset(ModelViewSet):
     
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = OptionBlocksSerializer
     queryset = OptionBlocks.objects.all()
+    
+    def create(self, request: Request, *args, **kwargs):
+        
+        blocks = request.data.get("blocks")
+        if blocks is None:
+            raise exceptions.ValidationError({"detail":"blocks required"})
+        room_code = request.data.get("code")
+        room = get_object_or_404(Room, code=room_code)
+        title = request.data.get("title", str(uuid.uuid4()))
+        if OptionBlocks.objects.filter(room=room, title=title).exists():
+            raise exceptions.ValidationError(
+                {"detail":"you already haved saved option blocks named '%s'" % title}
+                )
+        option_blocks = OptionBlocks.objects.create(
+            room=room,
+            title=title,
+            number_of_blocks=len(blocks),
+            success_percentage=request.data.get("success"),
+            generation_time=request.data.get("generation_time"),
+            completed_nodes=request.data.get("completed_nodes"),
+            generated_nodes=request.data.get("generated_nodes"),
+            created_by=request.user
+        )
+        subjects = get_object_or_404(AvalilableOptionChoices, room=room).options.all()
+        
+        for index, block in enumerate(blocks):
+            new_block = Block(
+                blocks=option_blocks,
+                block_id=index,
+                number_of_subjects=len(block)
+            )
+            new_block.save()
+            for subject in block:
+                subject = get_object_or_404(subjects, subject_code=subject)
+                new_block.options.add(subject)
+    
+        return response.Response({"detail":"blocks created"}, status=status.HTTP_200_OK)
     
 class BlockViewset(ModelViewSet):
     
@@ -375,12 +411,11 @@ class InsertTogetherViewset(ModelViewSet):
         }
         return response.Response(payload, status=status.HTTP_200_OK)
     
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Request, *args, **kwargs):
         get = request.data.get
         room = get_object_or_404(Room, code=get("room_code"))
         # self.check_object_permissions(request, room)
         settings = get_object_or_404(GenerationSettings, room=room)
-        print(get("target_pk"))
         target = get_object_or_404(AvailableOption, pk=get("target_pk"))
         new_insert = InsertTogether(settings=settings, target=target.option)
         new_insert.save()
@@ -393,7 +428,4 @@ class InsertTogetherViewset(ModelViewSet):
         
         return response.Response()
     
-    # def destroy(self, request, pk=None, *args, **kwargs):
-    #     insert = get_object_or_404(InsertTogether, pk=pk)
-    #     insert.delete()
-    #     return response.Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+ 

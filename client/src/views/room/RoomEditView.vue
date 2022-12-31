@@ -45,7 +45,7 @@
                                         </q-input>
                                     </div>
                                     <div class="row q-gutter-sm">
-                                        <q-btn press color="red" label="remove all students" @click="deleteAllStudent" size="sm" />
+                                        <q-btn press color="red-7 glossy" label="remove all students" @click="deleteAllStudent" size="sm" />
 
                                     </div>
                                     <div class="row">
@@ -95,12 +95,17 @@
                             </q-input>
                         </div>
                     </q-card-section>
-                    <q-card-section>
+                    <q-card-section class="row justify-center items-center">
                         <div>
                             Here you can edit this room and the settings that are attatched to it
                         </div>
-                        <q-btn label="Generate" color="red-7" size="lg" @click="changeRoute('options-generator')" glossy :disable="fetching"/>
+                        <div class="row justify-center q-pa-sm">
+                            <q-btn label="Generate" color="red-7" size="lg" @click="changeRoute('options-generator')" glossy :disable="fetching"/>
+                        </div>
+                        <div class="row justify-center q-pa-sm">
+                            <q-btn label="View existing blocks" color="teal-3" size="md" glossy :disable="fetching"/>
 
+                        </div>
                     </q-card-section>
 
                     <q-card-actions class="bg-grey-4 absolute-bottom row justify-center">

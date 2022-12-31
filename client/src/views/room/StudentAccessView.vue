@@ -1,9 +1,9 @@
 <template>
 <q-page class="q-pa-none no-scroll" padding>
-    <q-card style="width:80vh" class="absolute-center bg-grey-3 q-pa-lg shadow-15">
+    <q-card style="width:60vh" class="absolute-center bg-grey-3 shadow-15">
 
-        <div class="q-gutter-lg row justify-center items-center q-pa-lg full-width">
-            <div class="row text-h2 main-font text-weight-medium">
+        <div class="q-gutter-md q-pa-lg full-width">
+            <div class="row justify-center text-h3 main-font text-weight-medium">
                 Student access
             </div>
             <div class="text-h5 text-center">Enter your school credentials</div>
@@ -17,7 +17,7 @@
             </div>
 
             <!-- first name input -->
-            <div class="fit row wrap justify-center items-start">
+            <div class="row justify-center">
 
                 <q-input filled v-model="firstName" label="first name *" hint="first name" lazy-rules type="text" :error="error" :rules="[val => !!val || 'field is required']" style="width:60vh">
                     <template v-slot:prepend>
@@ -26,7 +26,7 @@
                 </q-input>
             </div>
             <!-- last name input -->
-            <div class="fit row wrap justify-center items-start">
+            <div class="row justify-center">
 
                 <q-input filled v-model="lastName" label="last name *" hint="last name" lazy-rules type="text" :error="error" :error-message="errorMessage" :rules="[val => !!val || 'field is required']" style="width:60vh">
                     <template v-slot:prepend>
@@ -35,7 +35,6 @@
                 </q-input>
                 <q-btn class="bg-teal-4 text-white" push size="20px" @click="attemptEnter" label="Continue" icon-right="login" />
             </div>
-            <!-- attempt to enter button -->
 
         </div>
 

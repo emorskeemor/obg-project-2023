@@ -34,6 +34,7 @@ class AvailableOption(models.Model):
             null=True
         )
     
+    
     class Meta:
         verbose_name_plural = "Available Options"
         unique_together = ("option", "option_choices")

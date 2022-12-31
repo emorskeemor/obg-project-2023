@@ -1,34 +1,30 @@
 <template>
 <div class="no-scroll">
 
-    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-4 no-scroll" style="height:84vh">
-    <q-step :name="1" title="Define data" icon="settings" :done="step > 1" :error="errorMessage.length !== 0">
-        <OptionProvisionView  @back="previousStep" @next="nextStep" @error="onError"/>
+    <q-stepper v-model="step" ref="stepper" color="primary" animated class="bg-grey-3 no-scroll" style="height:90vh">
+        <q-step :name="1" title="Define data" icon="folder_open" :done="step > 1" :error="errorMessage.length !== 0">
+            <OptionProvisionView @back="previousStep" @next="nextStep" @error="onError" />
 
         </q-step>
 
         <q-step :name="2" title="Settings" icon="settings" :done="step > 2">
-            <SettingsView @back="previousStep" @next="nextStep"/>
+            <SettingsView @back="previousStep" @next="nextStep" />
         </q-step>
 
-        <q-step :name="3" title="Pre-statistics" icon="assignment" :done="step > 3">
-            <PreStatisticsView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :finished="finishedGeneration"/>
+        <q-step :name="3" title="Pre-statistics" icon="analytics" :done="step > 3">
+            <PreStatisticsView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :finished="finishedGeneration" />
         </q-step>
 
-        <q-step :name="4" title="Generate" icon="add_comment" :done="step > 4" v-if="!finishedGeneration">
+        <q-step :name="4" title="Generate" icon="grid_view" :done="step > 4" v-if="!finishedGeneration">
             <GenerationView @back="previousStep" @next="nextStep" :usingDatabase="usingDatabase" :optionsFile="optionsFile" :run="!finishedGeneration" @finished="generateCompleted" />
 
         </q-step>
-        <q-step :name="5" title="Post-statistics" icon="assignment" :done="step > 5">
+        <q-step :name="5" title="Post-statistics" icon="trending_up" :done="step > 5">
             <PostStatisticsView @back="previousStep" @next="nextStep" />
 
         </q-step>
-        <q-step :name="6" title="Live update" icon="add_comment" :done="step > 6">
-            <LiveUpdateView @back="previousStep" @next="nextStep" @error="onError" @dismissError="dismissError"/>
-
-        </q-step>
-        <q-step :name="7" title="Save" icon="add_comment" :done="step > 7">
-            <SaveView @back="previousStep" @next="nextStep" />
+        <q-step :name="6" title="Live update" icon="update" :done="step > 6">
+            <LiveUpdateView @back="previousStep" @next="nextStep" @error="onError" @dismissError="dismissError" />
 
         </q-step>
 
@@ -47,7 +43,6 @@ import PreStatisticsView from '@/components/generator/PreStatisticsView.vue';
 import PostStatisticsView from '@/components/generator/PostStatisticsView.vue';
 import GenerationView from '@/components/generator/GenerationView.vue';
 import LiveUpdateView from '@/components/generator/LiveUpdateView.vue';
-import SaveView from '@/components/generator/SaveView.vue';
 
 import BannerComponent from '@/components/misc/BannerComponent.vue';
 import {
@@ -70,7 +65,6 @@ export default defineComponent({
         PostStatisticsView,
         GenerationView,
         LiveUpdateView,
-        SaveView
     },
     data() {
         return {
@@ -83,8 +77,17 @@ export default defineComponent({
             finishedGeneration: false,
         }
     },
+    beforeRouteLeave(to, from, next) {
+        const answer = window.confirm('Are you sure you want to exit the generation process?')
+        if (answer) {
+            next()
+        } else {
+            next(false)
+        }
+
+    },
     methods: {
-        
+
         dismissError() {
             this.errorMessage = ""
         },
@@ -96,11 +99,9 @@ export default defineComponent({
             this.dismissError()
             this.$refs.stepper.previous()
         },
-        onError(message){
+        onError(message) {
             this.errorMessage = message
         },
-
-
 
         generateCompleted(data) {
             this.finishedGeneration = true
