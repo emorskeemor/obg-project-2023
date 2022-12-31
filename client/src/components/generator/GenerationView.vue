@@ -17,16 +17,40 @@
     <q-dialog v-model="wait" v-if="this.run" persistent>
         <q-card style="width:60vh">
             <q-card-section>
-                <div class="text-h6 text-center">Choose a protocol</div>
+                <div class="text-h4 text-center main-font">Choose a protocol</div>
 
             </q-card-section>
 
-            <q-card-section class="q-pt-none text-body1">
+            <q-card-section class="q-pt-none text-body1 main-font text-center">
                 <div>
                     A protocol defines how the blocks will be generated
                 </div>
-                <q-select v-model="protocol" 
-                    :options="availableProtocols" label="Choose a protocol" dense map-options class="q-pa-sm" />
+                <q-card class="bg-grey-4 q-ma-md q-pa-sm">
+                    <div v-if="protocol == `protocol B`" class="text-body2">
+                        Almost exactly the same as protocol A but will order the option codes.
+                    </div>
+                    <div v-else-if="protocol == `protocol C`" class="text-body2">
+                        Takes a significantly longer time than protocl B but will ensure certain uncertainties during
+                        generation are dealt with
+                    </div>
+                    <div v-else-if="protocol == `protocol D`" class="text-body2">
+                        Evaluates option blocks as soon as they have been generated and terminates when a set of blocks
+                        reach a certain success percentage.
+                    </div>
+                    <div v-else-if="protocol == `protocol E`" class="text-body2">
+                    </div>
+                    <div v-else-if="protocol == `protocol A`" class="text-body2">
+                        Default protocol. Generally the quickest protocol and will get the job done under 30 seconds. However,
+                        there are many uncertainties and does not guarantee the best set of blocks.
+                    </div>
+
+                </q-card>
+                <!-- show inputs based on the protocol being used -->
+                <q-toggle v-if="protocol == `protocol B` " label="reverse options" v-model="reverseOptions" />
+                <q-toggle v-if="protocol == `protocol C` " label="order options " v-model="orderOptions" />
+                <q-input v-if="protocol == `protocol D` " label="target percentage" v-model="targetPercentage" class="q-ma-sm" />
+                <q-input v-if="protocol == `protocol E`" label="iterations" v-model="iterations" class="q-ma-sm" />
+                <q-select v-model="protocol" :options="availableProtocols" label="Choose a protocol" dense map-options class="q-pa-sm" />
             </q-card-section>
 
             <q-card-actions align="right">
@@ -63,14 +87,18 @@ export default defineComponent({
             isRunning: false,
             interval: 0,
             wait: true,
-            protocol: null,
+            protocol: "protocol A",
             availableProtocols: [
-                "protocol_A",
-                "protocol_B",
-                "protocol_C",
-                "protocol_D",
-                "protocol_E",
-            ]
+                "protocol A",
+                "protocol B",
+                "protocol C",
+                "protocol D",
+                "protocol E",
+            ],
+            reverseOptions: true,
+            targetPercentage: 90,
+            iterations: 3,
+            orderOptions: true
 
         }
     },
@@ -96,7 +124,11 @@ export default defineComponent({
                 const payload = {
                     "data_using_csv": !this.$store.state.using_database,
                     "code": this.$route.params.room_id,
-                    "protocol": this.protocol
+                    "protocol": this.protocol,
+                    "reverse_options": this.reverseOptions,
+                    "target_percentage": this.targetPercentage,
+                    "iterations": this.iterations,
+                    "order_options": this.orderOptions
 
                 }
                 formData.append("payload", JSON.stringify(payload))

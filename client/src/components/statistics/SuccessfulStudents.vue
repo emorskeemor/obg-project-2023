@@ -8,7 +8,9 @@
                     <q-chip icon="account_circle">{{ Object.keys(this.$store.state.successful_students).length}}</q-chip>
 
                 </div>
-                <q-input filled v-model="search" label="Search for students" lazy-rules type="text" dense class="q-ml-xl">
+                <q-input filled v-model="search" label="Search for students" lazy-rules type="text" dense class="q-ml-xl"
+                :disable="this.$store.state.using_database == false"
+                >
                     <template v-slot:prepend>
                         <q-icon name="search" />
                     </template>

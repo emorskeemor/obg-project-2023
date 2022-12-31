@@ -6,7 +6,7 @@
                 <q-card square style="height:90vh">
                     <div class="row">
                         <div v-for="(i, index) in blocks" :key="i[0]" class="col q-pa-sm bg-grey-3">
-                            <div class="text-h5 q-ma-xs">Block {{index+1}} 
+                            <div class="text-h5 q-ma-xs">Block {{index+1}}
 
                                 <q-chip icon="subjects">{{blocks[index].length}}</q-chip>
 
@@ -15,7 +15,7 @@
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
                                     <template #item="{element}">
                                         <div :id="element">
-                                            <q-card flat :class="current == element ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element" square style="min-height:5vh">
+                                            <q-card :class="current == element ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element" square style="min-height:5vh">
                                                 <div class="row">
                                                     <div class="col-2 main-font">
                                                         <div class="text-bold">{{element}}</div>
@@ -70,12 +70,12 @@
             </div>
             <div class="col-4">
                 <q-card square style="height:80vh" class="bg-grey-3" flat>
-                    <div class="text-h5 q-pa-sm">Statistics</div>
+                    <div class="text-h4 main-font text-weight-medium">Statistics</div>
                     <q-card-section>
                         <div class="row">
                             <div class="col-7">
                                 <div class="row">
-                                    <q-chip icon="account_circle"> success  : {{ this.$store.state.success_percentage }}</q-chip>
+                                    <q-chip icon="account_circle"> success : {{ this.$store.state.success_percentage }}</q-chip>
                                 </div>
                                 <div class="row">
                                     <q-chip icon="subjects">Total subjects : {{ totalSubjects }}</q-chip>
@@ -102,15 +102,15 @@
                     </q-card-section>
                     <q-separator />
 
-                    <q-card-section class="bg-grey-4">
+                    <q-card-section class="bg-grey-4" style="height:33vh">
                         <div class="row">
                             <div class="col">
-                                <div class="text-h5">
+                                <div class="text-h4 main-font text-weight-medium">
                                     Operations
                                 </div>
                                 <div>
                                     Linear will evaluate each operation depedent on the results of the previous operation.
-                                    <q-toggle v-model="linear" label="linear"/>
+                                    <q-toggle v-model="linear" label="linear" />
                                 </div>
                                 <div class="row bg-grey-3 justify-center">
                                     <div class="col-1 q-pa-sm text-bold justify-center items-center bg-grey-5">
@@ -127,7 +127,7 @@
                                     </div>
                                 </div>
                                 <q-separator />
-                                <q-scroll-area style="height:20vh">
+                                <q-scroll-area style="height:10vh">
                                     <div v-if="operations.length !== 0">
                                         <div v-for="(op, index) in operations" :key="index">
                                             <q-card class="bg-grey-3" square flat>
@@ -176,7 +176,18 @@
                             </div>
                         </div>
                     </q-card-section>
+                    <q-btn-group class="bg-grey-4 full-width row justify-center q-pa-sm">
+                        <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate blocks" @click="evaluate" />
+                        <q-btn push class="bg-blue text-white" size="md" label="reset blocks" @click="reset" />
+                    </q-btn-group>
+
                     <q-separator />
+                    <q-btn-group class="row q-pa-lg">
+                        <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
+                        <q-btn push class="bg-teal-3 text-white" size="md" label="save" icon="save_as" @click="savePopup = true" />
+                        <q-btn push class="bg-teal-3 text-white" size="md" label="exit" color="red" @click="restart" icon="close" />
+
+                    </q-btn-group>
                 </q-card>
             </div>
         </div>
@@ -190,22 +201,22 @@
 
             <q-card-section class="q-pt-none text-body1">
                 <div class="row q-pa-sm bg-grey-3 justify-center items-center">
-                        <div class="col-1 text-center main-font">
-                            ID
-                        </div>
-                        <div class="col-2 text-center main-font">
-                            Type
-                        </div>
-                        <div class="col-2 text-center main-font">
-                            % Change
-                        </div>
-                        <div class="col-4 text-center main-font">
-                            # student change
-                        </div>
-                        <div class="col text-center main-font">
-                            Detail
-                        </div>
+                    <div class="col-1 text-center main-font">
+                        ID
                     </div>
+                    <div class="col-2 text-center main-font">
+                        Type
+                    </div>
+                    <div class="col-2 text-center main-font">
+                        % Change
+                    </div>
+                    <div class="col-4 text-center main-font">
+                        # student change
+                    </div>
+                    <div class="col text-center main-font">
+                        Detail
+                    </div>
+                </div>
                 <q-card v-for="result in evaluationResults" :key="result.id" square flat class="q-pa-sm bg-grey-4">
                     <div class="row ">
                         <div class="col-1 text-center main-font">
@@ -228,9 +239,9 @@
                 <q-card v-if="evaluationResults.length === 0" style="height:40vh" class="row justify-center items-center" square flat>
                     <div class="text-h4">No operations were commited</div>
                 </q-card>
-                
+
             </q-card-section>
-            
+
         </q-card>
     </q-dialog>
     <q-dialog v-model="savePopup">
@@ -240,9 +251,9 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none text-body1">
-                <q-input label="title" v-model="title" :rules="[val=>val.length > 5 || 'title must be longer than 5 characters']"/>
-                <q-toggle v-model="useCurrentBlocks" label="use current blocks"/>
-                </q-card-section>
+                <q-input label="title" v-model="title" :rules="[val=>val.length > 5 || 'title must be longer than 5 characters']" />
+                <q-toggle v-model="useCurrentBlocks" label="use current blocks" />
+            </q-card-section>
 
             <q-card-actions align="right">
                 <q-btn label="RESTART" color="red" @click="restart" />
@@ -251,13 +262,8 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
-    <div class="absolute-bottom-right q-mb-lg q-mr-lg">
-        <q-btn-group>
-            <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate" @click="evaluate" />
-            <q-btn push class="bg-red-6 text-white" size="md" label="reset" @click="reset" />
-            <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
-            <q-btn push class="bg-teal-3 text-white" size="md" label="save" icon="save_as" @click="savePopup = true"/>
-        </q-btn-group>
+    <div class="absolute-bottom-right q-mb-lg q-mr-xl">
+
     </div>
 
     <BannerComponent colour="red" @dismiss="dismissError" v-if="errorMessage" :message="errorMessage" />
@@ -294,7 +300,7 @@ export default defineComponent({
             operations: [],
             errorMessage: "",
             successMessage: "",
-            linear:false,
+            linear: false,
             evaluationPopup: false,
             savePopup: false,
             useCurrentBlocks: false,
@@ -477,7 +483,7 @@ export default defineComponent({
                 this.evaluationPopup = true
                 this.evaluationResults = response.data
             }).catch(
-                error=> {
+                error => {
                     this.errorMessage = error.response.data.detail
                 }
             )
@@ -510,10 +516,10 @@ export default defineComponent({
                 generation_time: this.$store.state.debug_data.generation_time,
                 completed_nodes: this.$store.state.debug_data.completed_nodes,
                 generated_nodes: this.$store.state.debug_data.generated_nodes
-                
+
             }).then(response => {
                 this.successMessage = "saved successfully"
-            }).catch(error=>{
+            }).catch(error => {
                 this.errorMessage = error.response.data.detail
             })
         },

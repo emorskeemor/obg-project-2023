@@ -25,7 +25,8 @@ from .serializers import (
     OptionSerializer,
 )
 from apps.students.models import Option
-from apps.generator.models import InsertTogether
+from apps.generator.models import InsertTogether, OptionBlocks
+from apps.generator.api.serializers import OptionBlocksSerializer
 from apps.generator.api.serializers import InsertTogetherSerializer
 
 from .pagination import AvailableOptionPagination
@@ -122,11 +123,29 @@ class RoomViewSet(viewsets.ModelViewSet):
         inserts_serialized = InsertTogetherSerializer(insertions, many=True)
         settings_data = settings_serialized.data.copy()
         settings_data.pop("room")
+        # blocks
+        blocks = OptionBlocks.objects.filter(room=room)
+        rooms_option_blocks = []
+        for option_blocks in blocks:
+            serialized_opt_blocks = OptionBlocksSerializer(option_blocks)
+            opt_block_codes = []
+            for block in option_blocks.blocks.all():
+                block_codes = []
+                for subject in block.options.all():
+                    block_codes.append(
+                        (subject.subject_code, subject.title)
+                    )
+                opt_block_codes.append(block_codes)
+            data = serialized_opt_blocks.data.copy()
+            data["blocks"] = opt_block_codes
+            rooms_option_blocks.append(data)
+            
         payload = {
             "room": room_serialized.data,
             "inserts": inserts_serialized.data,
             "settings": settings_data,
-            "opts_id": available_opts.pk
+            "opts_id": available_opts.pk,
+            "blocks": rooms_option_blocks
         }
         return response.Response(payload, status=status.HTTP_200_OK)
     

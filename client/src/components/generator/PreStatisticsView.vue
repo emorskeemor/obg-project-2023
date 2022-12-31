@@ -55,7 +55,7 @@
             <q-btn-group>
                 <q-btn label="refresh" size="md" @click="getData" color="teal-4" push />
                 <q-btn push class="bg-teal-3 text-white" size="md" label="settings" icon="settings" @click="$emit('back')" />
-                <q-btn push class="bg-red text-white" size="md" label="Generate" icon="done" @click="$emit('next')" v-if="!finished" />
+                <q-btn push class="bg-blue text-white" size="md" label="Generate" icon="done" @click="$emit('next')" v-if="!finished" :disable="fetching"/>
                 <q-btn push class="bg-teal-4 text-white" size="md" label="Post Statistics" icon="analytics" @click="$emit('next')" v-if="finished" />
 
             </q-btn-group>

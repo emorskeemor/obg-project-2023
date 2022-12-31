@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-5 bg-grey-4">
                 <div class="text-h4 bg-grey-3 q-pa-sm">
-                    Generated blocks
+                    Generated blocks <q-chip icon="grid_view" :label='$store.state.generated_blocks.length'/>
                 </div>
                 <q-scroll-area style="height:60vh">
                     <q-card square class="q-pa-md bg-grey-4" flat>
@@ -18,7 +18,7 @@
 
                     </q-card>
                 </q-scroll-area>
-                <q-btn-group class="float-left q-ml-md">
+                <q-btn-group class="q-ma-sm">
                     <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
                     <q-btn push class="bg-teal-4 text-white" size="md" label="live update" icon="update" @click="$emit('next')" />
                     <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" />
@@ -50,9 +50,6 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
-    <div class="absolute-bottom-left q-pa-sm">
-
-    </div>
 
 </div>
 </template>

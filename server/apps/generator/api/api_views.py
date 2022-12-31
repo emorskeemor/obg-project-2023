@@ -75,7 +75,8 @@ class GerneratorViewset(ViewSet):
         '''
         Runs the option block generation process
         '''
-        get = self._load_form_data(request).get
+        form_data = self._load_form_data(request)
+        get = form_data.get
         room = get_object_or_404(
             Room, 
             code=get("code"),
@@ -108,7 +109,7 @@ class GerneratorViewset(ViewSet):
         ]
         if room_settings.blocks_must_align:
             validate.append(validators.PerfectAlignmentValidator())
-        # give the generator the initial variables and prepare it
+        # handle protocols
         AVAILABLE_PROTOCOLS = {
             "protocol_A": protocols.ProtocolA,
             "protocol_B": protocols.ProtocolB,
@@ -116,7 +117,16 @@ class GerneratorViewset(ViewSet):
             "protocol_D": protocols.ProtocolD,
             "protocol_E": protocols.ProtocolE,
         }
-        protocol= AVAILABLE_PROTOCOLS.get(get("protocol"))
+        protocol_id:str = get("protocol")
+        protocol_id = protocol_id.replace(" ", "_")
+        protocol = AVAILABLE_PROTOCOLS.get(protocol_id)
+        if protocol is None:
+            raise exceptions.ValidationError({"detail":"unknown protocol"})
+        protocol = self._handle_protocol(protocol, form_data)
+        if protocol == protocols.ProtocolC and get("order_options", False):
+            print("ordering")
+            options = sorted(options)
+        # instansiate the generator
         generator = Generator(
             # provide default data
             data=data,
@@ -124,7 +134,7 @@ class GerneratorViewset(ViewSet):
             blocks=room_settings.blocks,
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
-            protocol=protocol(),
+            protocol=protocol,
             # protocol=protocols.Pro(),
             # other data
             debug=settings.GENERATOR_DEBUG,
@@ -154,7 +164,8 @@ class GerneratorViewset(ViewSet):
                 "all": generator.data,
                 "success": generator.evaluation.success_percentage,
                 "debug": generator.debug_data,
-                "rules_followed": False
+                "rules_followed": False,
+                "protocol_used": str(protocol)
             }
             generator.reset()
 
@@ -172,7 +183,7 @@ class GerneratorViewset(ViewSet):
                 email = student.email
             serialized["success"][value]["name"] = name
             serialized["success"][value]["email"] = email
-            serialized["success"][value]["uuid"] = value
+            serialized["success"][value]["uuid"] = str(value)
         for value in serialized.get("failed"):
             name = "Anonymous"
             email = "Not given"
@@ -182,7 +193,7 @@ class GerneratorViewset(ViewSet):
                 email = student.email
             serialized["failed"][value]["name"] = name
             serialized["failed"][value]["email"] = email
-            serialized["failed"][value]["uuid"] = value
+            serialized["failed"][value]["uuid"] =  str(value)
             
         generator_data = {
             "blocks": generator.evaluation.blocks,
@@ -328,6 +339,28 @@ class GerneratorViewset(ViewSet):
         if payload is None:
             raise exceptions.ValidationError({"detail":"payload required as form data"})
         return json.loads(payload)
+    
+    @staticmethod
+    def _handle_protocol(protocol: protocols.BaseProtocol, form_data:dict):
+        if protocol == protocols.ProtocolB:
+            reverse = form_data.get("reverse_options", False)
+            return protocol(reversed=reverse)
+        elif protocol == protocols.ProtocolD:
+            target_percentage = form_data.get("target_percentage")
+            if target_percentage is None:
+                raise exceptions.ValidationError(
+                    {"detail":"target_percentage is required"}
+                )
+            return protocol(target_percentage=target_percentage)
+        elif protocol == protocols.ProtocolE:
+            iterations = form_data.get("iterations")
+            if iterations is None:
+                raise exceptions.ValidationError(
+                    {"detail":"iterations is required"}
+                )
+            return protocol(iters=iterations)
+        else:
+            return protocol()
     
 import uuid
     

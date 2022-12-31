@@ -7,7 +7,7 @@
         <div class="col-4 q-gutter-md">
             <q-card class="bg-grey-3" style="min-height:77vh">
                 <q-card-section class="bg-grey-4">
-                    <div class="text-h4 text-black main-font q-pa-md">Available options</div>
+                    <div class="text-h4 text-black main-font q-pa-md text-weight-medium">Available options</div>
                     <!-- search bar -->
                     <q-input filled v-model="availableOptionsSearch" label="Search available options" lazy-rules type="text" :disable="availableOptions.length==0">
                         <template v-slot:prepend>
@@ -53,7 +53,7 @@
         <div class="col">
             <q-card class="bg-grey-3" style="padding:20px;min-height:75vh">
                 <!-- details about how to choose the options -->
-                <div class="text-h4">Room Options</div>
+                <div class="text-h4 maint-font text-weight-bold">Room Options</div>
                 <q-separator color="black" spaced />
 
                 <div class="text-body1"><b>Drag</b> the subjects you would like to take into the chosen subjects section to the <b>right</b></div>
@@ -84,7 +84,7 @@
                     <q-badge color="red-12 row justify-center rounded-borders" floating rounded style="width:4vh;height:4vh">
                         <div class="text-h5 text-white">{{chosenOptions.length}}</div>
                     </q-badge>
-                    <div class="text-h4 text-black main-font q-pa-md">Chosen options</div>
+                    <div class="text-h4 text-black main-font q-pa-md text-weight-medium">Chosen options</div>
                     <q-input filled v-model="chosenOptionsSearch" label="Search chosen options" lazy-rules type="text">
                         <template v-slot:prepend>
                             <q-icon name="search" />
