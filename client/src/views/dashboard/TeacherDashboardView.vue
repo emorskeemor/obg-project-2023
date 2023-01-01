@@ -66,20 +66,7 @@
                     </q-input>
                 </q-card-section>
                 <q-card-section>
-                    <div v-for="block in getFilteredBlocks" :key="block.id">
-                        <div class="row justify-center items-center">
-                            <q-card style="width:55vh;margin:1vh" class="bg-teal-3 glossy">
-                                <q-card-section>
-                                    <div class="text-h5 text-white">{{block.title}}/{{block.room.code}}</div>
-                                </q-card-section>
-                                <q-card-actions>
-                                    <q-btn class="bg-blue-grey text-white" icon="highlight_off" @click="deleteBlock(block)" />
-                                    <q-btn class="bg-blue text-white" icon="info" @click="blockInfo(block)" />
-
-                                </q-card-actions>
-                            </q-card>
-                        </div>
-                    </div>
+                    <BlocksList :blocks=getFilteredBlocks @delete="deleteBlock" @info="blockInfo"/>
                 </q-card-section>
                 <q-card-section class="row justify-center bg-grey-4 absolute-bottom">
                     <q-pagination v-model="blockPage" :max=blocksPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
@@ -118,48 +105,7 @@
         </q-card>
     </q-dialog>
     <q-dialog v-model="showBlockInfo">
-        <q-card style="min-width: 100vh" class="q-pa-md">
-            <div class="text-h5 text-center main-font text-weight-medium">{{ currentBlock.title }}/{{ currentBlock.room.code }}
-                
-            </div>
-            <div class="row">
-                <q-chip icon="grid_view"># blocks : {{ currentBlock.number_of_blocks }}</q-chip>
-                <q-chip icon="done">success % : {{ currentBlock.success_percentage }}</q-chip>
-                <q-chip icon="category">completed nodes : {{ currentBlock.completed_nodes }}</q-chip>
-                <q-chip icon="category">generated nodes : {{ currentBlock.generated_nodes }}</q-chip>
-                <q-chip icon="schedule">generation time : {{ currentBlock.generation_time }} seconds</q-chip>
-            </div>
-            <q-card-section class="q-gutter-md">
-                <q-scroll-area style="height:75vh">
-                    <q-card square class="q-pa-md bg-grey-4" flat>
-                        <div class="row justify-center">
-                            <div v-for="(block, index) in currentBlock.blocks" :key="index">
-                                <q-card style="width:80vh;min-height:15vh">
-                                    <div class="row">
-                                        <div class="col bg-grey-3" style="min-height:15vh">
-                                            <div class="text-h6 text-black q-pa-sm row">Block<div class="text-bold q-ml-sm">[{{index+1}}] </div>
-                                                <q-chip icon="subject">{{ block.length }}</q-chip>
-                                            </div>
-                                        </div>
-                                        <div class="col-10">
-                                            <div class="row q-pa-sm">
-                                                <div v-for="code in block" :key="code" style="padding:5px">
-                                                    <q-card class="bg-grey-2" style="padding:3px">
-                                                        <div class="text-black main-font">{{code[0]}} {{ code[1] }}</div>
-
-                                                    </q-card>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </q-card>
-                            </div>
-                        </div>
-                    </q-card>
-                </q-scroll-area>
-            </q-card-section>
-
-        </q-card>
+        <ResultsPopup :data="currentBlock"/>
     </q-dialog>
 </q-page>
 </template>
@@ -175,6 +121,8 @@ import {
     axiosInstance
 } from '@/api/axios';
 import RoomItem from '@/components/dashboard/RoomItem.vue';
+import ResultsPopup from '@/components/misc/ResultsPopup.vue';
+import BlocksList from '@/components/misc/BlocksList.vue';
 
 const CHOSEN_OPTIONS_PER_PAGE = 2
 
@@ -182,18 +130,21 @@ export default defineComponent({
     name: 'TeacherDashboardView',
     components: {
         RoomItem,
+        ResultsPopup,
+        BlocksList
     },
     data() {
         return {
             loggedIn: false,
             currentRooms: [],
             currentBlocks: [],
+            currentBlock: {},
+            
             fetching: false,
             search: "",
             blockSearch: "",
             displayCreatePopup: false,
             showBlockInfo: false,
-            currentBlock: {},
             newRoomName: "",
             newSettingsName: "",
             newDomainName: "",

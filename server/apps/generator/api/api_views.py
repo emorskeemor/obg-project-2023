@@ -135,7 +135,6 @@ class GerneratorViewset(ViewSet):
             max_class_size=room_settings.class_size,
             ebacc=settings.EBACC_SUBJECTS,
             protocol=protocol,
-            # protocol=protocols.Pro(),
             # other data
             debug=settings.GENERATOR_DEBUG,
             # provide the validators

@@ -106,7 +106,7 @@ class RoomViewSet(viewsets.ModelViewSet):
             return response.Response({"detail":"room is public and can be accessed"}, status=status.HTTP_200_OK)
         return response.Response({"detail":"room is private and cannot be accessed"}, status=status.HTTP_403_FORBIDDEN)
     
-    @action(detail=True, methods=["get"])
+    @action(detail=True, methods=["get"], url_path="room-with-settings")
     def room_with_settings(self, request, pk):
         '''
         return details about a room and its settings that are attached to it
@@ -123,7 +123,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         inserts_serialized = InsertTogetherSerializer(insertions, many=True)
         settings_data = settings_serialized.data.copy()
         settings_data.pop("room")
-        # blocks
+        # serialize the option blocks by ONLY providing the subject code and its title
         blocks = OptionBlocks.objects.filter(room=room)
         rooms_option_blocks = []
         for option_blocks in blocks:
@@ -136,9 +136,9 @@ class RoomViewSet(viewsets.ModelViewSet):
                         (subject.subject_code, subject.title)
                     )
                 opt_block_codes.append(block_codes)
-            data = serialized_opt_blocks.data.copy()
-            data["blocks"] = opt_block_codes
-            rooms_option_blocks.append(data)
+            serialized_data = serialized_opt_blocks.data.copy()
+            serialized_data["blocks"] = opt_block_codes
+            rooms_option_blocks.append(serialized_data)
             
         payload = {
             "room": room_serialized.data,

@@ -65,7 +65,7 @@ export default defineComponent({
     },
     computed: {
         studentPagination() {
-            return Math.floor(this.students.length / CHOSEN_OPTIONS_PER_PAGE)
+            return Math.floor(this.students.length / CHOSEN_OPTIONS_PER_PAGE) + 1
 
         },
         getFilteredOptions() {
