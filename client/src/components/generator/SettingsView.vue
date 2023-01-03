@@ -196,7 +196,7 @@ export default defineComponent({
     methods: {
         getSettings() {
             this.fetching = true
-            axiosInstance.get(`api-rooms/rooms/${this.$route.params.room_id}/room_with_settings/`).then(
+            axiosInstance.get(`api-rooms/rooms/${this.$route.params.room_id}/room-with-settings/`).then(
                 (response) => {
                     if (response.status == 200) {
                         let data = response.data;

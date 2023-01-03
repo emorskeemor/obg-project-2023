@@ -6,7 +6,6 @@
         </q-card-section>
         <q-card-actions>
             <q-btn class="bg-blue-grey text-white" @click="$emit('onDelete', room)" icon="highlight_off"/>
-            <q-btn class="bg-blue text-white" @click="$emit('onInfo', room)" icon="info"/>
             <q-btn class="bg-grey text-white" @click="$emit('onEdit', room)" icon="edit"/>
 
         </q-card-actions>
@@ -19,7 +18,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     name: 'AvailableOption',  
     props: ["room"],
-    emits: ["onDelete", "onInfo", "onEdit"]
+    emits: ["onDelete", "onEdit"]
 });
 
 </script>

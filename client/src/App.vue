@@ -92,12 +92,11 @@ export default defineComponent({
             const accessToken = getAccessToken()
             if (accessToken) {
                 logout()
-            } else {
-                this.$router.push({
-                    name: "home"
-                })
-
-            }
+            } 
+            this.$router.push({
+                name: "home"
+            })
+            
         }
     }
 });

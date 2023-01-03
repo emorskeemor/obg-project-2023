@@ -148,7 +148,8 @@
             </transition>
             <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
             <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
-                <q-pagination v-model="page" :max=studentPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
+                <q-pagination v-model="page" :max=studentPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" 
+                v-if="!fetching"/>
                 <q-btn label="save" color="teal-4" @click="saveStudents" :disable="fetching"/>
             </div>
         </q-card>
@@ -201,7 +202,7 @@ export default defineComponent({
     },
     computed: {
         studentPagination() {
-            return Math.floor(this.students.length / CHOSEN_OPTIONS_PER_PAGE)
+            return Math.floor(this.students.length / CHOSEN_OPTIONS_PER_PAGE) + 1
 
         },
         getFilteredOptions() {

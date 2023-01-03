@@ -142,7 +142,7 @@ class StudentViewset(ModelViewSet):
         if request.method == "GET":
             room = get_object_or_404(Room, code=pk)
             data = []
-            for student in room.students.all():
+            for student in room.students.all().prefetch_related("choices"):
                 # separate the reserves from the actual options
                 reserves, main = [], []
                 for choice in student.choices.all():
