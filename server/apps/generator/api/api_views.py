@@ -350,14 +350,15 @@ class GerneratorViewset(ViewSet):
                 raise exceptions.ValidationError(
                     {"detail":"target_percentage is required"}
                 )
-            return protocol(target_percentage=target_percentage)
+            print(form_data.get("target_percentage"))
+            return protocol(target_percentage=int(target_percentage))
         elif protocol == protocols.ProtocolE:
             iterations = form_data.get("iterations")
             if iterations is None:
                 raise exceptions.ValidationError(
                     {"detail":"iterations is required"}
                 )
-            return protocol(iters=iterations)
+            return protocol(iters=int(iterations))
         else:
             return protocol()
     
