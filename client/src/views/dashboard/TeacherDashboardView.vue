@@ -293,7 +293,7 @@ export default defineComponent({
                     last_name: this.userDetails.last_name,
                 }).then(() => {
                     this.successMessage = "Details saved succesfully"
-                }).catch(() => {
+                }).catch(error => {
                     this.errorMessage = "Error while saving"
                 })
             }

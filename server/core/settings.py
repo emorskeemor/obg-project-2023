@@ -243,5 +243,5 @@ EBACC_SUBJECTS = {
         "humanities":["Hi","Ge"],
         "languages":["Fr","Sn"],
         "sciences":["Sc","Co"],
-        "vocational":["Co","Bs","Eg","Cb", "Hc", "Bb", "Mu", "Pb", "Sb", "Hb", "Mu"]
+        "vocational":["Bb","Eg","Cb", "Hc", "Mu", "Pb", "Sb", "Hb"]
     }

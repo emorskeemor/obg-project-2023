@@ -9,19 +9,22 @@
                             <div class="text-h5 q-ma-xs">Block {{index+1}}
 
                                 <q-chip icon="subjects">{{blocks[index].length}}</q-chip>
-
                             </div>
-                            <q-scroll-area style="height:70vh">
+                            <q-scroll-area style="height:65vh">
                                 <draggable class="list-group" :list="blocks[index]" :id=index item-key="id" :group="{ name: 'people', pull: true, put: true }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="finishedMove">
                                     <template #item="{element}">
                                         <div :id="element">
-                                            <q-card :class="current == element ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element" square style="min-height:5vh">
+                                            <q-card :class="current == element[0] ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element[0]" square style="min-height:5vh">
                                                 <div class="row">
                                                     <div class="col-2 main-font">
-                                                        <div class="text-bold">{{element}}</div>
+                                                        <div class="text-bold">{{element[0]}}</div>
                                                     </div>
                                                     <div class="col-7 text-body2 main-font">
-                                                        {{this.$store.state.options[element]}}
+                                                        {{this.$store.state.options[element[0]]}}
+                                                    </div>
+                                                    <div class="col">
+                                                        <!-- <q-chip icon="account_circle">{{element[1]}}</q-chip> -->
+                                                        <q-input v-model="element[1]" dense filled/>
                                                     </div>
                                                 </div>
                                             </q-card>
@@ -36,11 +39,11 @@
                                 <div>Drag in extra subjects if required</div>
                             </div>
                             <q-scroll-area style="height:40vh">
-                                <draggable class="list-group" item-key="id" :list="Object.keys(this.$store.state.options)" :group="{ name: 'people', pull: 'clone', put: false }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="addSubject">
+                                <draggable class="list-group" item-key="id" :list="populatedOptions" :group="{ name: 'people', pull: 'clone', put: false }" :move="moveSubject" @start="startMove" @change="changeSubject" @end="addSubject">
                                     <template #item="{element}">
                                         <div :id="element">
-                                            <q-card square :class="current == element ? 'bg-blue-5 q-pa-xs text-white text-bold main-font' : 'bg-grey-3 q-pa-xs main-font'" @click="current=element">
-                                                {{element}}, {{this.$store.state.options[element]}}
+                                            <q-card square :class="current == element[0] ? 'bg-blue-5 q-pa-xs text-white text-bold main-font' : 'bg-grey-3 q-pa-xs main-font'" @click="current=element[0]">
+                                                {{element[0]}}, {{this.$store.state.options[element[0]]}}
                                             </q-card>
                                         </div>
                                     </template>
@@ -315,6 +318,13 @@ export default defineComponent({
                 count = count + item.length
             })
             return count
+        },
+        populatedOptions() {
+            const newObj = []
+            for (const key of Object.keys(this.$store.state.options)) {
+                newObj.push([key, 0])
+            }
+            return newObj
         }
     },
     methods: {
@@ -342,7 +352,8 @@ export default defineComponent({
                         id: this.operations.length + 1,
                         type: "REMOVE",
                         block: Number(event.from.id),
-                        subject: event.clone.id,
+                        subject: event.clone.id.split(",")[0],
+                        students: event.clone.id.split(",")[1],
                         detail: `Removing '${event.clone.id}' from Block ${Number(event.from.id)+1}`
                     })
                 } else {
@@ -351,7 +362,8 @@ export default defineComponent({
                         id: this.operations.length + 1,
                         type: "MOVE",
                         target: Number(event.from.id),
-                        subject: event.clone.id,
+                        subject: event.clone.id.split(",")[0],
+                        students: event.clone.id.split(",")[1],
                         to: Number(event.to.id),
                         detail: `Moving '${event.clone.id}' Block ${Number(event.from.id)+1} to ${Number(event.to.id)+1}`
                     })
@@ -364,7 +376,8 @@ export default defineComponent({
                 this.operations.push({
                     id: this.operations.length + 1,
                     type: "ADD",
-                    subject: event.item.id,
+                    subject: event.clone.id.split(",")[0],
+                    students: event.clone.id.split(",")[1],
                     block: Number(event.to.id),
                     detail: `Adding '${event.item.id}' to Block ${Number(event.to.id)+1}`
                 })
@@ -386,11 +399,10 @@ export default defineComponent({
                 this.blocks.forEach((block, index) => {
                     if (index == operation.block) {
                         newBlocks.push(block.filter(subject => {
-                            if (subject === operation.subject && found === false) {
+                            if (subject[0] === operation.subject && found === false) {
                                 found = true
                             }
-                            console.log(found);
-                            return subject !== operation.subject
+                            return subject[0] !== operation.subject
                         }))
                     } else {
                         newBlocks.push(block)
@@ -416,7 +428,7 @@ export default defineComponent({
                 if (found === true) {
                     this.errorMessage = "Could not undo [REMOVE] operation as the subject already exists within this block"
                 } else {
-                    this.blocks[operation.block].push(operation.subject)
+                    this.blocks[operation.block].push([operation.subject, operation.students])
                     success = true
                 }
             }
@@ -431,21 +443,21 @@ export default defineComponent({
                         // pop from the current block
                         if (index == operation.to) {
                             newBlocks.push(block.filter(subject => {
-                                if (subject === operation.subject && found === false) {
+                                if (subject[0] === operation.subject && found === false) {
                                     found = true
                                 }
-                                return subject !== operation.subject
+                                return subject[0] !== operation.subject
                             }))
                             // add to the original block
                         } else if (index == operation.target) {
-                            block.push(operation.subject)
+                            block.push([operation.subject, operation.students])
                             newBlocks.push(block)
                         } else {
                             newBlocks.push(block)
                         }
                     })
                     if (found === false) {
-                        this.errorMessage = "Could not undo [ADD] operation as the subject no longer exists in the block"
+                        this.errorMessage = "Could not undo [MOVE] operation as the subject no longer exists in the block"
                     } else {
                         this.blocks = newBlocks
                         success = true

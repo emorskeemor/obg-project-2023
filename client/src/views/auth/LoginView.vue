@@ -7,13 +7,19 @@
         </div>
         <div class="text-h5 text-center q-pa-lg main-font">Enter your credentials bellow</div>
         <q-form @submit="handleLogin()" @reset="handleReset()" class="q-gutter-md">
-            <q-input filled v-model="email" label="Your email *" hint="email" lazy-rules type="email" :error="error">
+            <q-input filled v-model="email" label="Your email *" hint="email" lazy-rules type="email" :error="error" :rules="[
+                                val => !!val || 'An email is required']"
+                                :error-message="errMsg"
+                                >
                 <template v-slot:prepend>
                     <q-icon name="mail" />
                 </template>
             </q-input>
 
-            <q-input filled v-model="password" label="Your password *" hint="password" lazy-rules type="password" autocomplete="on" error-message="Password or username was invalid" :error="error">
+            <q-input filled v-model="password" label="Your password *" hint="password" lazy-rules type="password" autocomplete="on"  :error="error" :rules="[
+                                val => !!val || 'A password is required']"
+                                                                :error-message="errMsg"
+>
                 <template v-slot:prepend>
                     <q-icon name="password" />
                 </template>
@@ -49,31 +55,39 @@ export default defineComponent({
         return {
             password: "",
             email: "",
-            error: false
+            error: false,
+            errMsg: ""
         }
     },
     methods: {
         handleLogin() {
+            if (this.email.length > 0 && this.password.length > 0) {
+                login({
+                    'email': this.email,
+                    'password': this.password
+                }).then(
+                    accessToken => {
+                        
+                        const decoded: DecodedTokenObject = jwt_decode(accessToken)
 
-            login({
-                'email': this.email,
-                'password': this.password
-            }).then(
-                accessToken => {
-                    const decoded: DecodedTokenObject = jwt_decode(accessToken)
+                        this.$router.push({
+                            name: "user-dashboard",
+                            params: {
+                                user_id: decoded.user_id
+                            }
+                        
+                        })
 
-                    console.log("successful login");
-                    this.$router.push({
-                        name: "user-dashboard",
-                        params: {
-                            user_id: decoded.user_id
-                        }
-                    })
-
-                }
-            ).catch(err => {
-                this.$data.error = true
-            })
+                    }
+                ).catch(err => {
+                    this.error = true                    
+                    this.errMsg="Password or username was invalid"
+                })
+            }
+            else {
+                this.error = true                    
+                this.errMsg="Password or username was invalid"
+            }
 
         },
         handleReset() {

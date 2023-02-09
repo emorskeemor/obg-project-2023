@@ -332,6 +332,7 @@ export default defineComponent({
                     })
             },
             fetchSettings() {
+                this.clearMessages()
                 this.fetching = true
                 axiosInstance.get(`api-rooms/rooms/${this.$route.params.room_id}/room-with-settings/`).then(
                     (response) => {
@@ -366,6 +367,7 @@ export default defineComponent({
                 )
             },
             saveRoomSettings() {
+                this.clearMessages()
                 if (this.checkAllNotEmpty(
                         [this.domain, this.title, this.emailMatch]
                     ) === false) {
@@ -386,6 +388,7 @@ export default defineComponent({
                 }
             },
             saveGenerationSettings() {
+                this.clearMessages()
                 // save generation settings
                 if (this.checkAllNumbers(
                         [this.blocks, this.classSize, this.allowedReserves, this.maxSubjectsPerBlock]
@@ -408,6 +411,7 @@ export default defineComponent({
             },
             deleteAllStudent() {
                 // deletes all students
+                this.clearMessages()
                 this.fetching = true
                 axiosInstance.delete(`api-rooms/rooms/${this.$route.params.room_id}/delete-all-students/`).then(
                     () => {
@@ -417,6 +421,7 @@ export default defineComponent({
                 )
             },
             bulkCreate() {
+                this.clearMessages()
                 // bulk create students from a csv file
                 this.fetching = true
                 var formData = new FormData()
@@ -498,6 +503,10 @@ export default defineComponent({
             },
             emptyCheck(value) {
                 return value.length == 0
+            },
+            clearMessages() {
+                this.errorMessage = ""
+                this.successMessage = ""
             }
 
         }

@@ -193,15 +193,16 @@ class GerneratorViewset(ViewSet):
             serialized["failed"][value]["name"] = name
             serialized["failed"][value]["email"] = email
             serialized["failed"][value]["uuid"] =  str(value)
-            
+        blocks = generator.evaluation.blocks.with_counts(room_settings.class_size)
         generator_data = {
-            "blocks": generator.evaluation.blocks,
+            "blocks": blocks.raw(),
             "students": serialized,
             "all": generator.data,
             "success": generator.evaluation.success_percentage,
             "debug": generator.debug_data,
-            "rules_followed": True
-
+            "rules_followed": True,
+            "class_size": room_settings.class_size,
+            "blocks_meta": blocks.remaining
         }
         # DEBUG PURPOSES ONLY
         generator.evaluation.pprint()
@@ -292,8 +293,9 @@ class GerneratorViewset(ViewSet):
             report = get_operation_report(
                 operations=get("operations"),
                 blocks=get("initial"),
-                ignore_keys=["id"],
-                linear=get("linear", False)
+                ignore_keys=["id", "students"],
+                linear=get("linear", False),
+                
                 )
         except OperationFailed as error:
             raise exceptions.ValidationError({
@@ -350,7 +352,6 @@ class GerneratorViewset(ViewSet):
                 raise exceptions.ValidationError(
                     {"detail":"target_percentage is required"}
                 )
-            print(form_data.get("target_percentage"))
             return protocol(target_percentage=int(target_percentage))
         elif protocol == protocols.ProtocolE:
             iterations = form_data.get("iterations")

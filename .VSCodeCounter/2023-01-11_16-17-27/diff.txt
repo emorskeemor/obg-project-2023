@@ -1,0 +1,143 @@
+Date : 2023-01-11 16:17:27
+Directory : c:\Users\User\Documents\Projects\Option blocks\website\server\bloc
+Total : 79 files,  -24139 codes, 28 comments, -113 blanks, all -24224 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| Python             |         25 |      2,009 |        148 |        395 |      2,552 |
+| XML                |          1 |        -15 |          0 |         -1 |        -16 |
+| HTML               |          1 |        -17 |         -1 |         -2 |        -20 |
+| Markdown           |          1 |        -19 |          0 |         -6 |        -25 |
+| JSON with Comments |          1 |        -30 |        -11 |         -1 |        -42 |
+| JavaScript         |          4 |       -102 |         -5 |         -7 |       -114 |
+| TypeScript         |          7 |       -211 |        -34 |        -33 |       -278 |
+| Vue                |         37 |     -4,348 |        -69 |       -456 |     -4,873 |
+| JSON               |          2 |    -21,406 |          0 |         -2 |    -21,408 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                              |         79 |    -24,139 |         28 |       -113 |    -24,224 |
+| . (Files)                                                                                                      |          1 |          0 |          0 |          1 |          1 |
+| ..                                                                                                             |         54 |    -26,148 |       -120 |       -508 |    -26,776 |
+| ..\..                                                                                                          |         54 |    -26,148 |       -120 |       -508 |    -26,776 |
+| ..\..\client                                                                                                   |         54 |    -26,148 |       -120 |       -508 |    -26,776 |
+| ..\..\client (Files)                                                                                           |          7 |    -21,490 |        -11 |        -13 |    -21,514 |
+| ..\..\client\public                                                                                            |          1 |        -17 |         -1 |         -2 |        -20 |
+| ..\..\client\src                                                                                               |         46 |     -4,641 |       -108 |       -493 |     -5,242 |
+| ..\..\client\src (Files)                                                                                       |          4 |       -211 |        -11 |        -33 |       -255 |
+| ..\..\client\src\api                                                                                           |          3 |        -51 |        -12 |        -17 |        -80 |
+| ..\..\client\src\assets                                                                                        |          1 |        -15 |          0 |         -1 |        -16 |
+| ..\..\client\src\components                                                                                    |         20 |     -1,782 |         -7 |       -186 |     -1,975 |
+| ..\..\client\src\components\dashboard                                                                          |          1 |        -21 |          0 |         -3 |        -24 |
+| ..\..\client\src\components\generator                                                                          |          6 |     -1,255 |         -6 |       -112 |     -1,373 |
+| ..\..\client\src\components\misc                                                                               |          4 |       -119 |          0 |        -18 |       -137 |
+| ..\..\client\src\components\options                                                                            |          3 |        -63 |          0 |         -9 |        -72 |
+| ..\..\client\src\components\statistics                                                                         |          6 |       -324 |         -1 |        -44 |       -369 |
+| ..\..\client\src\router                                                                                        |          1 |       -133 |        -16 |        -10 |       -159 |
+| ..\..\client\src\store                                                                                         |          1 |        -67 |         -5 |         -3 |        -75 |
+| ..\..\client\src\views                                                                                         |         16 |     -2,382 |        -57 |       -243 |     -2,682 |
+| ..\..\client\src\views\auth                                                                                    |          2 |       -101 |          0 |        -14 |       -115 |
+| ..\..\client\src\views\dashboard                                                                               |          2 |       -349 |         -3 |        -33 |       -385 |
+| ..\..\client\src\views\error                                                                                   |          3 |        -42 |          0 |         -8 |        -50 |
+| ..\..\client\src\views\gen                                                                                     |          2 |       -184 |         -2 |        -32 |       -218 |
+| ..\..\client\src\views\room                                                                                    |          7 |     -1,706 |        -52 |       -156 |     -1,914 |
+| conf                                                                                                           |          2 |         60 |          0 |         16 |         76 |
+| core                                                                                                           |         19 |      1,868 |        148 |        360 |      2,376 |
+| core (Files)                                                                                                   |          3 |        133 |          0 |         34 |        167 |
+| core\generate                                                                                                  |          7 |        882 |         80 |        159 |      1,121 |
+| core\post_generate                                                                                             |          6 |        774 |         68 |        152 |        994 |
+| core\pre_generate                                                                                              |          3 |         79 |          0 |         15 |         94 |
+| static                                                                                                         |          1 |         43 |          0 |          7 |         50 |
+| utils                                                                                                          |          2 |         38 |          0 |         11 |         49 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                       | language           | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\User\Documents\Projects\Option blocks\website\client\.eslintrc.js                                     | JavaScript         |        -18 |          0 |         -1 |        -19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\README.md                                        | Markdown           |        -19 |          0 |         -6 |        -25 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\babel.config.js                                  | JavaScript         |         -5 |          0 |         -1 |         -6 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\package-lock.json                                | JSON               |    -21,366 |          0 |         -1 |    -21,367 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\package.json                                     | JSON               |        -40 |          0 |         -1 |        -41 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\public\index.html                                | HTML               |        -17 |         -1 |         -2 |        -20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\App.vue                                      | Vue                |       -184 |         -5 |        -27 |       -216 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\api\auth.ts                                  | TypeScript         |        -12 |         -3 |         -5 |        -20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\api\axios.ts                                 | TypeScript         |        -24 |         -8 |         -9 |        -41 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\api\interfaces.ts                            | TypeScript         |        -15 |         -1 |         -3 |        -19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\assets\logo.svg                              | XML                |        -15 |          0 |         -1 |        -16 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\dashboard\RoomItem.vue            | Vue                |        -21 |          0 |         -3 |        -24 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\GenerationView.vue      | Vue                |       -137 |         -1 |        -15 |       -153 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\LiveUpdateView.vue      | Vue                |       -503 |          0 |        -36 |       -539 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\OptionProvisionView.vue | Vue                |       -109 |          0 |         -5 |       -114 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\PostStatisticsView.vue  | Vue                |        -84 |          0 |        -12 |        -96 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\PreStatisticsView.vue   | Vue                |       -210 |          0 |        -22 |       -232 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\generator\SettingsView.vue        | Vue                |       -212 |         -5 |        -22 |       -239 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\misc\BannerComponent.vue          | Vue                |        -29 |          0 |         -4 |        -33 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\misc\BlocksList.vue               | Vue                |        -23 |          0 |         -4 |        -27 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\misc\ResultsPopup.vue             | Vue                |        -48 |          0 |         -8 |        -56 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\misc\SkeletonComponent.vue        | Vue                |        -19 |          0 |         -2 |        -21 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\options\AvailableOptionItem.vue   | Vue                |        -17 |          0 |         -2 |        -19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\options\OptionItem.vue            | Vue                |        -22 |          0 |         -2 |        -24 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\options\SubjectInfoDialog.vue     | Vue                |        -24 |          0 |         -5 |        -29 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\Block.vue              | Vue                |        -36 |          0 |         -5 |        -41 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\FailedStudent.vue      | Vue                |        -70 |         -1 |         -7 |        -78 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\FailedStudents.vue     | Vue                |        -72 |          0 |        -11 |        -83 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\Student.vue            | Vue                |        -61 |          0 |         -5 |        -66 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\Subject.vue            | Vue                |        -14 |          0 |         -5 |        -19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\components\statistics\SuccessfulStudents.vue | Vue                |        -71 |          0 |        -11 |        -82 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\main.ts                                      | TypeScript         |        -13 |         -4 |         -3 |        -20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\quasar-user-options.ts                       | TypeScript         |         -9 |         -1 |         -2 |        -12 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\router\index.ts                              | TypeScript         |       -133 |        -16 |        -10 |       -159 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\shims-vue.d.ts                               | TypeScript         |         -5 |         -1 |         -1 |         -7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\store\index.js                               | JavaScript         |        -67 |         -5 |         -3 |        -75 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\auth\LoginView.vue                     | Vue                |        -79 |          0 |         -8 |        -87 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\auth\LogoutView.vue                    | Vue                |        -22 |          0 |         -6 |        -28 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\dashboard\HomeView.vue                 | Vue                |        -59 |          0 |         -8 |        -67 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\dashboard\TeacherDashboardView.vue     | Vue                |       -290 |         -3 |        -25 |       -318 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\error\PermissionDeniedView.vue         | Vue                |        -14 |          0 |         -2 |        -16 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\error\ResourceNotFound.vue             | Vue                |        -14 |          0 |         -3 |        -17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\error\ServerErrorView.vue              | Vue                |        -14 |          0 |         -3 |        -17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\gen\GeneratorTestView.vue              | Vue                |        -87 |         -2 |        -14 |       -103 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\gen\GeneratorView.vue                  | Vue                |        -97 |          0 |        -18 |       -115 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\AvailableOptionsView.vue          | Vue                |       -278 |        -12 |        -40 |       -330 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\ChoicesView.vue                   | Vue                |       -304 |        -16 |        -33 |       -353 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\RoomEditView.vue                  | Vue                |       -466 |        -14 |        -28 |       -508 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\RoomJoinView.vue                  | Vue                |       -110 |         -4 |        -10 |       -124 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\RuleEditorView.vue                | Vue                |       -194 |         -2 |        -16 |       -212 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\StudentAccessView.vue             | Vue                |       -118 |         -3 |        -17 |       -138 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\src\views\room\StudentsView.vue                  | Vue                |       -236 |         -1 |        -12 |       -249 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\tsconfig.json                                    | JSON with Comments |        -30 |        -11 |         -1 |        -42 |
+| c:\Users\User\Documents\Projects\Option blocks\website\client\vue.config.js                                    | JavaScript         |        -12 |          0 |         -2 |        -14 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\__init__.py                                 | Python             |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\conf\__init__.py                            | Python             |         13 |          0 |          4 |         17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\conf\settings.py                            | Python             |         47 |          0 |         12 |         59 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\__init__.py                            | Python             |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\exceptions.py                          | Python             |         84 |          0 |         17 |        101 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\__init__.py                   | Python             |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\clash.py                      | Python             |        120 |          7 |         15 |        142 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\node.py                       | Python             |        200 |         20 |         38 |        258 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\populate.py                   | Python             |        113 |          4 |         15 |        132 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\process.py                    | Python             |        153 |         21 |         45 |        219 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\state.py                      | Python             |         35 |          1 |          8 |         44 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\generate\utility.py                    | Python             |        261 |         27 |         37 |        325 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\__init__.py              | Python             |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\evaluation.py            | Python             |        327 |         55 |         54 |        436 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\graphs.py                | Python             |         97 |          0 |         21 |        118 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\operations.py            | Python             |        151 |          2 |         21 |        174 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\pathway.py               | Python             |        143 |         11 |         39 |        193 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\post_generate\validators.py            | Python             |         56 |          0 |         16 |         72 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\pre_generate\__init__.py               | Python             |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\pre_generate\statistics.py             | Python             |         52 |          0 |         11 |         63 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\pre_generate\validate.py               | Python             |         27 |          0 |          3 |         30 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\core\protocols.py                           | Python             |         49 |          0 |         16 |         65 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\static\dummy.py                             | Python             |         43 |          0 |          7 |         50 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\utils\csv.py                                | Python             |         12 |          0 |          3 |         15 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\bloc\utils\logger.py                             | Python             |         26 |          0 |          8 |         34 |
+| Total                                                                                                          |                    |    -24,139 |         28 |       -113 |    -24,224 |
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -1,0 +1,127 @@
+Date : 2023-01-25 15:56:19
+Directory : c:\Users\User\Documents\Projects\Option blocks\website\server
+Total : 78 files,  2396 codes, 195 comments, 523 blanks, all 3114 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         76 |      2,388 |        189 |        520 |      3,097 |
+| pip requirements |          1 |          7 |          2 |          3 |         12 |
+| Properties       |          1 |          1 |          4 |          0 |          5 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                               |         78 |      2,396 |        195 |        523 |      3,114 |
+| . (Files)                                                                                                                                       |          4 |         24 |          8 |         10 |         42 |
+| apps                                                                                                                                            |         68 |      2,093 |        131 |        422 |      2,646 |
+| apps\environment                                                                                                                                |         20 |        703 |         35 |        116 |        854 |
+| apps\environment (Files)                                                                                                                        |          3 |         17 |          2 |          8 |         27 |
+| apps\environment\api                                                                                                                            |          6 |        373 |         23 |         49 |        445 |
+| apps\environment\migrations                                                                                                                     |          6 |        148 |          5 |         33 |        186 |
+| apps\environment\models                                                                                                                         |          5 |        165 |          5 |         26 |        196 |
+| apps\generator                                                                                                                                  |         15 |        651 |         53 |        111 |        815 |
+| apps\generator (Files)                                                                                                                          |          3 |         16 |          1 |          9 |         26 |
+| apps\generator\api                                                                                                                              |          5 |        446 |         49 |         67 |        562 |
+| apps\generator\migrations                                                                                                                       |          4 |         88 |          3 |         20 |        111 |
+| apps\generator\models                                                                                                                           |          3 |        101 |          0 |         15 |        116 |
+| apps\students                                                                                                                                   |         21 |        572 |         36 |        136 |        744 |
+| apps\students (Files)                                                                                                                           |          3 |         16 |          1 |          9 |         26 |
+| apps\students\api                                                                                                                               |          5 |        303 |         18 |         60 |        381 |
+| apps\students\migrations                                                                                                                        |          8 |        149 |          7 |         44 |        200 |
+| apps\students\models                                                                                                                            |          5 |        104 |         10 |         23 |        137 |
+| apps\users                                                                                                                                      |         12 |        167 |          7 |         59 |        233 |
+| apps\users (Files)                                                                                                                              |          3 |          7 |          1 |          7 |         15 |
+| apps\users\api                                                                                                                                  |          4 |         71 |          0 |         24 |         95 |
+| apps\users\migrations                                                                                                                           |          3 |         46 |          2 |         14 |         62 |
+| apps\users\models                                                                                                                               |          2 |         43 |          4 |         14 |         61 |
+| core                                                                                                                                            |          6 |        279 |         56 |         91 |        426 |
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                                                                        | language         | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\User\Documents\Projects\Option blocks\website\server\.env                                                                              | Properties       |          1 |          4 |          0 |          5 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\__init__.py                                                                       | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\__init__.py                                                      | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\admin.py                                                         | Python           |         13 |          2 |          4 |         19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\__init__.py                                                  | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\api_views.py                                                 | Python           |        266 |         22 |         27 |        315 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\pagination.py                                                | Python           |          5 |          0 |          1 |          6 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\permissions.py                                               | Python           |          7 |          0 |          3 |         10 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\serializers.py                                               | Python           |         80 |          1 |         12 |         93 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\api\urls.py                                                      | Python           |         15 |          0 |          5 |         20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\apps.py                                                          | Python           |          4 |          0 |          3 |          7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\0001_initial.py                                       | Python           |         56 |          1 |          7 |         64 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\0002_initial.py                                       | Python           |         54 |          1 |          7 |         62 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\0003_alter_avalilableoptionchoices_unique_together.py | Python           |         11 |          1 |          6 |         18 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\0004_alter_availableoption_option.py                  | Python           |         14 |          1 |          6 |         21 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\0005_alter_availableoption_option_choices.py          | Python           |         13 |          1 |          6 |         20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\migrations\__init__.py                                           | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\models\__init__.py                                               | Python           |          4 |          0 |          0 |          4 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\models\choices.py                                                | Python           |         29 |          0 |          5 |         34 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\models\options.py                                                | Python           |         36 |          0 |          7 |         43 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\models\rooms.py                                                  | Python           |         43 |          0 |          9 |         52 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\environment\models\settings.py                                               | Python           |         53 |          5 |          5 |         63 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\__init__.py                                                        | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\admin.py                                                           | Python           |         12 |          1 |          5 |         18 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\api\__init__.py                                                    | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\api\api_views.py                                                   | Python           |        382 |         36 |         45 |        463 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\api\serializers.py                                                 | Python           |         48 |         13 |         12 |         73 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\api\translation.py                                                 | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\api\urls.py                                                        | Python           |         16 |          0 |          8 |         24 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\apps.py                                                            | Python           |          4 |          0 |          3 |          7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\migrations\0001_initial.py                                         | Python           |         46 |          1 |          7 |         54 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\migrations\0002_optionblocks_created_by.py                         | Python           |         15 |          1 |          6 |         22 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\migrations\0003_auto_20221230_2333.py                              | Python           |         27 |          1 |          6 |         34 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\migrations\__init__.py                                             | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\models\__init__.py                                                 | Python           |          2 |          0 |          0 |          2 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\models\blocks.py                                                   | Python           |         72 |          0 |         10 |         82 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\generator\models\rule.py                                                     | Python           |         27 |          0 |          5 |         32 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\__init__.py                                                         | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\admin.py                                                            | Python           |         12 |          1 |          5 |         18 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\api\__init__.py                                                     | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\api\api_views.py                                                    | Python           |        246 |         17 |         44 |        307 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\api\pagination.py                                                   | Python           |          4 |          0 |          2 |          6 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\api\serializers.py                                                  | Python           |         38 |          0 |          7 |         45 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\api\urls.py                                                         | Python           |         15 |          1 |          6 |         22 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\apps.py                                                             | Python           |          4 |          0 |          3 |          7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0001_initial.py                                          | Python           |         63 |          1 |          7 |         71 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0002_alter_choice_student.py                             | Python           |         13 |          1 |          6 |         20 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0003_alter_choice_student.py                             | Python           |         14 |          1 |          6 |         21 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0004_alter_student_room.py                               | Python           |         15 |          1 |          6 |         22 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0005_auto_20221222_1115.py                               | Python           |         18 |          1 |          6 |         25 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0006_alter_student_room.py                               | Python           |         14 |          1 |          6 |         21 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\0007_student_max_reserves.py                             | Python           |         12 |          1 |          6 |         19 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\migrations\__init__.py                                              | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\models\__init__.py                                                  | Python           |          4 |          0 |          0 |          4 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\models\choices.py                                                   | Python           |         17 |          7 |          6 |         30 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\models\options.py                                                   | Python           |         25 |          0 |          5 |         30 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\models\requirement.py                                               | Python           |         33 |          1 |          8 |         42 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\students\models\students.py                                                  | Python           |         25 |          2 |          4 |         31 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\__init__.py                                                            | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\admin.py                                                               | Python           |          3 |          1 |          3 |          7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\api\__init__.py                                                        | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\api\api_views.py                                                       | Python           |         52 |          0 |         11 |         63 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\api\serializers.py                                                     | Python           |         11 |          0 |          6 |         17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\api\urls.py                                                            | Python           |          8 |          0 |          6 |         14 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\apps.py                                                                | Python           |          4 |          0 |          3 |          7 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\migrations\0001_initial.py                                             | Python           |         29 |          1 |          7 |         37 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\migrations\0002_auto_20221229_1122.py                                  | Python           |         17 |          1 |          6 |         24 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\migrations\__init__.py                                                 | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\models\__init__.py                                                     | Python           |          1 |          0 |          0 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\apps\users\models\user.py                                                         | Python           |         42 |          4 |         14 |         60 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\__init__.py                                                                  | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\asgi.py                                                                      | Python           |          4 |          8 |          5 |         17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\settings.py                                                                  | Python           |        154 |         32 |         62 |        248 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\urls.py                                                                      | Python           |         43 |          8 |          8 |         59 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\utils.py                                                                     | Python           |         74 |          0 |         10 |         84 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\core\wsgi.py                                                                      | Python           |          4 |          8 |          5 |         17 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\manage.py                                                                         | Python           |         16 |          2 |          6 |         24 |
+| c:\Users\User\Documents\Projects\Option blocks\website\server\requirements.txt                                                                  | pip requirements |          7 |          2 |          3 |         12 |
+| Total                                                                                                                                           |                  |      2,396 |        195 |        523 |      3,114 |
++-------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

@@ -112,7 +112,10 @@ export default defineComponent({
                             this.serverErrorMessage = response.data.detail
                         }
                     }
-                )
+                ).catch(err=>{
+                    this.serverError = true
+                    this.serverErrorMessage = err.response.data.detail
+                })
 
             } else {
                 // handle the error

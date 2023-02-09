@@ -4,7 +4,8 @@
         <div class="row">
             <div class="col-5 bg-grey-4">
                 <div class="text-h4 bg-grey-3 q-pa-sm">
-                    Generated blocks <q-chip icon="grid_view" :label='$store.state.generated_blocks.length'/>
+                    Generated blocks
+                    <q-chip icon="grid_view" :label='$store.state.generated_blocks.length' />
                 </div>
                 <q-scroll-area style="height:60vh">
                     <q-card square class="q-pa-md bg-grey-4" flat>

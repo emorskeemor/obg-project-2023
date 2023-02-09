@@ -74,10 +74,9 @@ class StudentViewset(ModelViewSet):
         room = get_object_or_404(Room, code=room_code)
         self.check_object_permissions(request, room)
         options_using = get("options_using")
-        
         choices = get_object_or_404(
             AvalilableOptionChoices,
-            title=options_using,
+            # title=options_using,
             room=room
             )
         available_options = choices.options.all()

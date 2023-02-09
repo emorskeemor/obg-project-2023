@@ -74,6 +74,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         email = cleaned_get("email")
         # validate the email domain matches requirement
         if room.email_domain and room.check_email_domain:
+            # TODO THIS WILL BREAK IF MULTIPLE @ signs are PRESENT
             _, domain = email.split("@")
             if domain != room.email_domain:
                 raise exceptions.ValidationError(
@@ -81,7 +82,7 @@ class RoomViewSet(viewsets.ModelViewSet):
                 )
         # if the student already exists in the room, just return the student
         existing = Student.objects.filter(room=room, email=email)
-        if existing.exists():
+        if existing.exists():  
             return response.Response(
                 {"student_uuid":get_object_or_404(existing, email=email).uuid}, 
                 status=status.HTTP_200_OK
@@ -207,7 +208,6 @@ class RoomViewSet(viewsets.ModelViewSet):
         for student in Student.objects.filter(room=room):
             student.delete()
         return response.Response({"detail":"all students deleted successfully"}, status=status.HTTP_200_OK )
-         
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room
         serialized = self.serializer_class(data=request.data)
@@ -218,7 +218,6 @@ class RoomViewSet(viewsets.ModelViewSet):
         serialized.save(admin=request.user, settings_title=settings_title)
         return response.Response({"detail":"success"}, status=status.HTTP_200_OK)
         
-
 class SettingsViewset(viewsets.ModelViewSet):
     '''
     views to access settings
@@ -312,3 +311,6 @@ class AvailableOptionViewset(viewsets.ModelViewSet):
     serializer_class = AvailableOptionSerializer
     queryset = AvailableOption.objects.all() 
     permission_classes = [permissions.IsAuthenticated]
+    
+    
+
