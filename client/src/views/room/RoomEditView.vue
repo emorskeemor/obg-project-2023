@@ -66,6 +66,8 @@
                                     </div>
                                     <div class="col">
                                         <q-toggle v-model="dummyNames" label="dummy names" />
+                                        <q-toggle v-model="useSubjectCode" label="use subject codes" />
+                                        <q-toggle v-model="showFailed" label="show failed" />
                                     </div>
                                 </div>
                             </div>
@@ -285,6 +287,8 @@ export default defineComponent({
                 // to the database
                 dataFile: ref(null),
                 dummyNames: true,
+                useSubjectCode: true,
+                showFailed: false,
                 // used for showing blocks linked
                 // to this room
                 displayBlocksPopup: false,
@@ -433,7 +437,9 @@ export default defineComponent({
                     "options_using": this.settingsTitle,
                     "allowed_reserves": this.allowedReserves,
                     "max_opts_per_student": this.blocks,
-                    "generate_dummy_names": this.dummyNames
+                    "generate_dummy_names": this.dummyNames,
+                    "show_failed": this.showFailed,
+                    "use_subject_code": this.useSubjectCode
 
                 }
                 formData.append("payload", JSON.stringify(payload))
@@ -447,7 +453,10 @@ export default defineComponent({
                         this.successMessage = "student options have been saved to the database"
                         this.fetching = false
                     }
-                )
+                ).catch(err=>{
+                    this.errorMessage = err.response.data.detail
+                    this.fetching = false
+                })
             },
             // REDIRECT METHODS
 

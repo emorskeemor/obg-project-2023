@@ -186,7 +186,9 @@ class RoomViewSet(viewsets.ModelViewSet):
         room_opts_data = []
         for option in room_opts_serialized.data.copy():
             opt = option.pop("option")
+            orignal = opt.pop("title")
             room_opts_data.append({
+                "original":orignal,
                 **option,
                 **opt, 
             })
@@ -271,24 +273,34 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
         # then we just need to update them.
         new_options = []
         for option in options:
-            pk = option.get("id")
-            classes = option.get("classes", None)
+            pk = option.get("id", None)
+            serialized = AvailableOptionSerializer(data=option)
+            serialized.is_valid()
+            
+            classes = serialized.data.get("classes", None)
+            title = serialized.data.get("title", None)
             individual = available.options.filter(pk=pk)
+            # continue
             if not individual.exists():
+                print("creating new")
                 # create a new available option
+                base = all_options.get(pk=pk)
                 new_options.append(
                     AvailableOption(
-                        option=all_options.get(pk=pk), 
+                        option=base, 
                         option_choices=available,
                         classes=classes,
+                        title=base.title
                         )
                     )
             else:
+                print("updating previous")
                 # update
                 to_update = current.filter(option__pk=pk)[0]
                 if not classes:
                     classes = None
                 to_update.classes = classes
+                to_update.title = title
                 to_update.save()
                 
         # delete any available options if they have been removed.

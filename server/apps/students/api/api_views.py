@@ -73,13 +73,15 @@ class StudentViewset(ModelViewSet):
         room_code = get("room_code")
         room = get_object_or_404(Room, code=room_code)
         self.check_object_permissions(request, room)
-        options_using = get("options_using")
         choices = get_object_or_404(
             AvalilableOptionChoices,
             # title=options_using,
             room=room
             )
-        available_options = choices.options.all()
+        available_options = AvailableOption.objects.filter(option_choices=choices)
+        students_to_create = []
+        choices_to_create = []
+        failed = set()
         for options in data:
             options = clean_options(options, max_opts=get("max_opts_per_student"))
             first_name = "anonymous"
@@ -87,7 +89,7 @@ class StudentViewset(ModelViewSet):
             if get("generate_dummy_names"):
                 first_name = names.get_first_name()
                 last_name = names.get_last_name()
-            student = Student.objects.create(
+            student = Student(
                 first_name=first_name,
                 last_name=last_name,
                 room=room,
@@ -95,18 +97,36 @@ class StudentViewset(ModelViewSet):
                 max_choices=get("max_opts_per_student"),
                 email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
             )
-            student.save()
             
             student_choices = []
             for option_code in options:
-                # warning: ambiguous 404
-                option = get_object_or_404(available_options, subject_code=option_code)
+                if get("use_subject_code"):
+                    option = available_options.filter(option__subject_code=option_code)
+                else:
+                    option = available_options.filter(title=option_code)
+                
+                if not option.exists():
+                    if get("show_failed") is True:
+                        failed.add(option_code)
+                        continue
+                    else:
+                        raise exceptions.ValidationError(
+                            {"detail": "subject provided in CSV file with code '%s' was not found in the available options for this room." % option_code}
+                            )
                 new_choice = Choice(
-                    option=option,
+                    option=option[0].option,
                     student =student
                 )
                 student_choices.append(new_choice)
-            Choice.objects.bulk_create(student_choices)
+            students_to_create.append(student)
+            # Choice.objects.bulk_create(student_choices)
+            choices_to_create.extend(student_choices)
+        if failed:
+            raise exceptions.ValidationError(
+                {"detail": "unresolved options '%s'" % ",".join(failed)
+                 })
+        Student.objects.bulk_create(students_to_create)
+        Choice.objects.bulk_create(choices_to_create)
             
         return Response({"message":"successful"}, status=status.HTTP_200_OK)
         

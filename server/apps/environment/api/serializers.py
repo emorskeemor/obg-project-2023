@@ -70,7 +70,7 @@ class AvailableOptionSerializer(serializers.ModelSerializer):
     classes = serializers.IntegerField(help_text="classes delegated to this subject")
     class Meta:
         model = AvailableOption
-        fields = ["option", "option_choices", "classes", "pk"]
+        fields = ["option", "option_choices", "classes", "pk", "title"]
         
 class SettingsSerializer(serializers.ModelSerializer):
     '''

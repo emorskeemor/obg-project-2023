@@ -17,6 +17,12 @@ class AvailableOption(models.Model):
         verbose_name=_("option connected to"), 
         on_delete=models.SET_NULL, null=True
         )
+    
+    title = models.CharField(
+        max_length=50, verbose_name=_("override title for available option"), 
+        null=True, blank=True
+        )
+    
     option_choices = models.ForeignKey(
         AvalilableOptionChoices, 
         verbose_name=_("available options"), 
@@ -41,3 +47,9 @@ class AvailableOption(models.Model):
     
     def __str__(self) -> str:
         return "[%s]|%s|" % (self.option.title, self.option_choices.title)
+    
+    def save(self, *args, **kwargs):
+        if self.title is None:
+            self.title = self.option.title
+        
+        return super(AvailableOption, self).save(*args, **kwargs)
