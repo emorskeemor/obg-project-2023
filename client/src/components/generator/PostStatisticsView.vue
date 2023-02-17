@@ -22,7 +22,8 @@
                 <q-btn-group class="q-ma-sm">
                     <q-btn push class="bg-teal-4 text-white" size="md" label="pre statistics" icon="trending_up" @click="$emit('back')" />
                     <q-btn push class="bg-teal-4 text-white" size="md" label="live update" icon="update" @click="$emit('next')" />
-                    <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" />
+                    <q-btn push class="bg-teal-3 text-white" size="md" :label="toggle ? 'successful students' : 'unsuccessful students'" @click="toggle=!toggle" 
+                    v-if='!$store.state.failed_students.length < 1' />
 
                 </q-btn-group>
             </div>

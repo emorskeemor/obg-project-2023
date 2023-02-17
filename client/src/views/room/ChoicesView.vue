@@ -4,7 +4,7 @@
 
         <!-- available options that the student can choose from -->
         <div class="col-4 q-gutter-md">
-            <q-card class="bg-grey-3 shadow-15" style="min-height:77vh" >
+            <q-card class="bg-grey-3 shadow-15" style="min-height:77vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 text-black main-font text-weight-medium" style="padding-bottom:1vh">Available options</div>
                     <!-- search bar -->
@@ -18,7 +18,9 @@
                 <draggable v-if="!fetching" class="list-group" :list="getSearchedPages()" :group="{name:'availableOptions', pull:'clone', put:false}" :clone="cloneOption" itemKey="title" :move="moveOption" id="availableOptions">
                     <!-- iterate over all available options in pagination -->
                     <template #item="{element}">
-                        <AvailableOptionItem :element="element" @showInfo="loadSubjectInfo" />
+                        <div>
+                            <AvailableOptionItem :element="element" @showInfo="loadSubjectInfo" />
+                        </div>
                     </template>
                 </draggable>
 
@@ -52,6 +54,7 @@
                 <!-- <q-separator color="black" spaced /> -->
                 <div class="text-h6 text-black main-font text-weight-medium">You are able to take [{{maximumAllowedOptions}}] subjects</div>
                 <div class="text-h6 text-black main-font text-weight-medium">and [{{maximumReserveOptions}}] reserve options</div>
+                <div class="text-body1 text-black main-font">You must take your given number of main and reserve subjects before you can save your options</div>
 
                 <q-separator color="black" spaced />
                 <!-- reserve options -->
@@ -66,13 +69,17 @@
                             </draggable>
                         </div>
                     </transition>
+                    <div v-if="reserveOptions.length == 0 && !fetching">
+                        <q-card class="bg-grey-4 rounded-borders" style="padding:1vh;margin-inline:3vh;margin-top: 10px;">
+                            <div class="text-h5 text-black main-font">Drag in an option <div class="text-weight-bold">above</div> this box</div>
+                        </q-card>
+                    </div>
                 </q-card-section>
                 <!-- save options and reserves -->
                 <div class="absolute-bottom justify-center bg-grey-4" style="padding:10px">
                     <q-btn-group>
                         <q-btn class="bg-red-5 text-white" icon-right="check_circle" size="small" label="save" @click="saveChoices()" :disable="chosenOptions.length != maximumAllowedOptions || reserveOptions.length !== maximumReserveOptions" />
-                        <q-btn class="bg-blue text-white" icon-right="help" size="small" label="help" />
-                        <q-btn class="bg-light-blue text-white" icon-right="route" size="small" label="pathways" />
+                        <q-btn class="bg-light-blue text-white" icon-right="route" size="small" label="pathways"   @click="displayHelp=true"/>
 
                     </q-btn-group>
                 </div>
@@ -110,11 +117,13 @@
             </q-card>
         </div>
     </div>
-
     <BannerComponent colour="green" :message="successMessage" @dismiss="this.successMessage=''" v-if="successMessage.length !== 0" />
     <BannerComponent colour="red" :message="errorMessage" @dismiss="this.errorMessage=''" v-if="errorMessage.length !== 0" />
     <q-dialog v-model="displaySubjectInfo">
         <SubjectInfoDialog :details="displaySubjectDetails" />
+    </q-dialog>
+    <q-dialog v-model="displayHelp">
+        <HelpDialog />
     </q-dialog>
 </q-page>
 </template>
@@ -130,6 +139,7 @@ import BannerComponent from '@/components/misc/BannerComponent.vue';
 import AvailableOptionItem from '@/components/options/AvailableOptionItem.vue';
 import OptionItem from '@/components/options/OptionItem.vue';
 import SubjectInfoDialog from '@/components/options/SubjectInfoDialog.vue';
+import HelpDialog from '@/components/options/HelpDialog.vue';
 
 import draggable from "vuedraggable";
 
@@ -143,6 +153,7 @@ export default defineComponent({
         AvailableOptionItem,
         OptionItem,
         SubjectInfoDialog,
+        HelpDialog
     },
     display: "Custom Clone",
     order: 3,
@@ -170,6 +181,7 @@ export default defineComponent({
             search: "",
             displaySubjectInfo: false,
             displaySubjectDetails: {},
+            displayHelp: false,
             // messages
             errorMessage: "",
             successMessage: "",
