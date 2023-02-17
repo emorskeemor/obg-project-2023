@@ -8,7 +8,7 @@
                     <div class="text-h4 main-font text-weight-medium">Room Settings</div>
                 </q-card-section>
                 <q-card-section>
-                    <div class="text-body2">
+                    <div class="text-body2 q-pb-sm">
                         Room settings will be responsible for how students access the room and its identification
                     </div>
                     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="row q-ma-md">
                                     <q-input v-model="emailMatch" autofocus outlined label="email match" hint="A student's email domain must match a required room domain" :readonly="!checkEmailDomain" :rules="[
-                                val => !!val || 'An email match is required']">
+                                val => !!val || 'An email match is required']" v-if="checkEmailDomain">
                                         <template v-slot:prepend>
                                             <q-icon name="email" />
                                         </template>
@@ -66,8 +66,8 @@
                                     </div>
                                     <div class="col">
                                         <q-toggle v-model="dummyNames" label="dummy names" />
-                                        <q-toggle v-model="useSubjectCode" label="use subject codes" />
-                                        <q-toggle v-model="showFailed" label="show failed" />
+                                        <!-- <q-toggle v-model="useSubjectCode" label="use subject codes" /> -->
+                                        <q-toggle v-model="showFailed" label="deffer failure" />
                                     </div>
                                 </div>
                             </div>

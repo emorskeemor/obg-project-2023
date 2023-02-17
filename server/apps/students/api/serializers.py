@@ -43,6 +43,6 @@ class StudentDumpSerializer(serializers.Serializer):
     allowed_reserves = serializers.IntegerField(default=2, required=False)
     data = serializers.FileField(write_only=True, required=False)
     
-    use_subject_code = serializers.BooleanField(default=True)
+    use_subject_code = serializers.BooleanField(default=False)
     show_failed = serializers.BooleanField(default=False)
     

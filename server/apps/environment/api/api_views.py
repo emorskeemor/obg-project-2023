@@ -171,7 +171,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         '''
         room = get_object_or_404(Room, code=pk)
         room_opts = get_object_or_404(AvalilableOptionChoices, room=room)
-        current_opts = room_opts.options.all().order_by("title")
+        current_opts = room_opts.options.all().order_by("option.title")
         # serialize all the vailable options that the user can pick. Filter out
         # those that already have been chosen. 
         all_opts = []
@@ -179,7 +179,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         for available in all_available_opts:
             if not current_opts.filter(pk=available.pk).exists():
                 all_opts.append(available)
-        all_opts_serializeed = OptionSerializer(all_opts, many=True)
+        all_options_serialized = OptionSerializer(all_opts, many=True)
         # serialize the current chosen options
         opts = AvailableOption.objects.filter(option_choices=room_opts)
         room_opts_serialized = AvailableOptionSerializer(opts, many=True)
@@ -187,15 +187,28 @@ class RoomViewSet(viewsets.ModelViewSet):
         for option in room_opts_serialized.data.copy():
             opt = option.pop("option")
             orignal = opt.pop("title")
+            ebacc = option.pop("ebacc")
             room_opts_data.append({
-                "original":orignal,
+                "title": orignal,
+                "original": orignal,
+                "ebacc": AvailableOption.EBACC(ebacc).label,
+                "show_classes": False,
                 **option,
                 **opt, 
             })
             
+        all_opts = []
+        for option in all_options_serialized.data.copy():
+            title = option.get("title")
+            all_opts.append({
+                "original":title,
+                **option
+            })
+            
         payload = {
             "room": room_opts_data,
-            "all": all_opts_serializeed.data
+            "all": all_opts, 
+            "ebacc": [subj[1] for subj in AvailableOption.EBACC.choices]
         }
         return response.Response(payload, status=status.HTTP_200_OK)
     
@@ -210,6 +223,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         for student in Student.objects.filter(room=room):
             student.delete()
         return response.Response({"detail":"all students deleted successfully"}, status=status.HTTP_200_OK )
+    
     def create(self, request):
         # overide create to ensure a pair of settings is also created with the room
         serialized = self.serializer_class(data=request.data)
@@ -279,28 +293,33 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             
             classes = serialized.data.get("classes", None)
             title = serialized.data.get("title", None)
+            ebacc = serialized.data.get("ebacc", None)
+            if ebacc is None:
+                ebacc = AvailableOption._meta.get_field("ebacc").get_default().label
+            ebacc = AvailableOption.EBACC({i.label: i.value for i in AvailableOption.EBACC}[ebacc])
             individual = available.options.filter(pk=pk)
             # continue
             if not individual.exists():
-                print("creating new")
                 # create a new available option
                 base = all_options.get(pk=pk)
+                name = title or base.title
                 new_options.append(
                     AvailableOption(
                         option=base, 
                         option_choices=available,
                         classes=classes,
-                        title=base.title
+                        title=name, 
+                        ebacc=ebacc
                         )
                     )
             else:
-                print("updating previous")
                 # update
                 to_update = current.filter(option__pk=pk)[0]
                 if not classes:
                     classes = None
                 to_update.classes = classes
                 to_update.title = title
+                to_update.ebacc = ebacc
                 to_update.save()
                 
         # delete any available options if they have been removed.

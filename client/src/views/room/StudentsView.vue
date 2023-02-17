@@ -2,6 +2,7 @@
 <q-page class="q-pa-none" padding>
     <div class="q-pa-md" style="width:100%">
         <q-card class="bg-grey-3 q-mt-md" style="min-height:77vh">
+
             <div class="row">
                 <div class="col-10">
                     <q-input filled v-model="search" label="Search for students" lazy-rules type="text">
@@ -17,7 +18,8 @@
             </div>
             <div class="row justify-center items-center q-pa-md">
                 <div class="col-1">
-                    id
+                    ID <q-chip dense icon="account_circle">{{ students.length }}</q-chip>
+
                 </div>
                 <div class="col-2">
                     email
@@ -45,6 +47,9 @@
                 </div>
                 <div class="col-1">
                     actions
+                </div>
+                <div class="col-1">
+                    ignore
                 </div>
             </div>
             <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
@@ -111,7 +116,7 @@
                             </div>
                             <div class="col">
                                 <div class="row">
-                                    <!-- {{ student.reserves }} -->
+                                    
                                     <div v-for="option in student.reserves" :key="option.uuid" class="col">
                                         <q-btn color="black" :label="option.subject_code" size="sm" square style="width:10vh" class="bg-grey">
                                             <q-popup-proxy>
@@ -129,6 +134,9 @@
                                             </q-popup-proxy>
                                         </q-btn>
                                     </div>
+                                    <div v-if="student.reserves.length <= 0">
+                                        no reserves
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-1">
@@ -138,7 +146,11 @@
 
                             </div>
                             <div class="col-1">
-                                <q-btn flat dense class="bg-red q-ma-xs" color="white" icon="delete" />
+                                <q-btn flat dense class="bg-red q-ma-xs" color="white" icon="delete" @click="deleteStudent(student)"/>
+
+                            </div>
+                            <div class="col-1">
+                                <q-checkbox v-model="student.ignore" />
 
                             </div>
                         </div>
@@ -233,12 +245,23 @@ export default defineComponent({
             )
         },
         saveStudents() {
+            this.fetching = true
             axiosInstance.put(`api-students/students/${this.$route.params.room_id}/room-students/`, {
                 students: this.students
             }).then(
                 response => {
-                    this.students = response.data
                     this.fetching = false
+
+                }
+            )
+        },
+        deleteStudent(student) {
+            this.fetching = true
+            axiosInstance.delete(`api-students/students/${student.id}/`).then(
+                response => {
+                    
+                    this.fetching = false
+                    this.students = this.students.filter(val=>val.id !== student.id)
 
                 }
             )

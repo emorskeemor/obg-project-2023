@@ -40,6 +40,14 @@ class AvailableOption(models.Model):
             null=True
         )
     
+    class EBACC(models.TextChoices):
+        HUMANITIES = 1, "Humanities"
+        LANGUAGES = 2, "Languages"
+        SCIENCES = 3, "Sciences"
+        VOCATIONAL = 4, "Vocational"
+        NONE = 5, "Not-applicable"
+        
+    ebacc = models.CharField(max_length=5, choices=EBACC.choices, blank=True, null=True, default=EBACC.NONE)    
     
     class Meta:
         verbose_name_plural = "Available Options"

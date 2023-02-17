@@ -97,13 +97,13 @@ class StudentViewset(ModelViewSet):
                 max_choices=get("max_opts_per_student"),
                 email="%s.%s@%s.co.uk" % (first_name, last_name, room.domain)
             )
-            
+            # print(available_options.filter(title="Science").exists())
             student_choices = []
             for option_code in options:
-                if get("use_subject_code"):
-                    option = available_options.filter(option__subject_code=option_code)
-                else:
-                    option = available_options.filter(title=option_code)
+                # if get("use_subject_code"):
+                #     option = available_options.filter(option__subject_code=option_code)
+                # else:
+                option = available_options.filter(title=option_code)
                 
                 if not option.exists():
                     if get("show_failed") is True:
@@ -160,23 +160,9 @@ class StudentViewset(ModelViewSet):
         '''
         if request.method == "GET":
             room = get_object_or_404(Room, code=pk)
-            data = []
-            for student in room.students.all().prefetch_related("choices"):
-                # separate the reserves from the actual options
-                reserves, main = [], []
-                for choice in student.choices.all():
-                    opt_serialized = OptionSerializer(choice.option).data
-                    if choice.reserve:
-                        reserves.append(opt_serialized)
-                    else:
-                        main.append(opt_serialized)
-                serialized = self.serializer_class(student)
-                to_add = serialized.data.copy()
-                to_add["reserves"] = reserves
-                to_add["options"] = main
-                data.append(to_add)                
+                          
                 
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(self._get_students_from_room(room), status=status.HTTP_200_OK)
         elif request.method == "PUT":
             room = get_object_or_404(Room, code=pk)
             students = room.students.all()
@@ -187,8 +173,31 @@ class StudentViewset(ModelViewSet):
                 serialized.is_valid(raise_exception=True)
                 serialized.save()
             
-            return Response({}, status=status.HTTP_200_OK)
-
+            return Response(self._get_students_from_room(room), status=status.HTTP_200_OK)
+        
+    def _get_students_from_room(self, room):
+        data = []
+        choices = Choice.objects.filter(student__room=room)
+        for student in room.students.all().order_by("email"):
+            # separate the reserves from the actual options
+            reserves, main = [], []
+            for choice in choices.filter(student=student):
+                opt_serialized = OptionSerializer(choice.option).data
+                if choice.reserve:
+                    reserves.append(opt_serialized)
+                else:
+                    main.append(opt_serialized)
+            serialized = self.serializer_class(student)
+            to_add = serialized.data.copy()
+            to_add["reserves"] = reserves
+            to_add["options"] = main
+            data.append(to_add)  
+        return data
+    
+    def destroy(self, request, pk, *args, **kwargs):
+        student = get_object_or_404(Student, pk=pk)
+        student.delete()
+        return Response({}, status=status.HTTP_200_OK)
     
 class ChoiceViewset(ModelViewSet):
     '''

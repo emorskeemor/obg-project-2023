@@ -17,7 +17,7 @@
                                             <q-card :class="current == element[0] ? 'bg-red-6 q-pa-xs' : 'bg-grey-4 q-pa-xs'" @click="current=element[0]" square style="min-height:5vh">
                                                 <div class="row">
                                                     <div class="col-2 main-font">
-                                                        <div class="text-bold">{{element[0]}}</div>
+                                                        <div class="text-bold">{{element[0].slice(0, 2)}}</div>
                                                     </div>
                                                     <div class="col-7 text-body2 main-font">
                                                         {{this.$store.state.options[element[0]]}}

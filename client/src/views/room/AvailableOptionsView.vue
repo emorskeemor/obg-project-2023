@@ -5,6 +5,7 @@
         <!-- available options that the student can choose from -->
 
         <div class="col-4 q-gutter-md">
+
             <q-card class="bg-grey-3" style="min-height:77vh">
                 <q-card-section class="bg-grey-4">
                     <div class="text-h4 text-black main-font q-pa-md text-weight-medium">Available options</div>
@@ -16,7 +17,7 @@
                     </q-input>
                 </q-card-section>
                 <!-- available options draggable zone -->
-                <draggable v-if="!fetching" class="list-group" :list="getFilteredAOptions" :group="{name:'availableOptions', pull:true, put:false}" itemKey="title" :move="checkMoveOption" id="availableOptions" @change="changeAvailableOptions">
+                <draggable v-if="!fetching" class="list-group" :list="filterAvailableOptions" :group="{name:'availableOptions', pull:true, put:false}" itemKey="title" :move="checkMoveOption" id="availableOptions" @change="changeAvailableOptions">
                     <!-- iterate over all available options in pagination -->
                     <template #item="{element}">
                         <AvailableOptionItem :element="element" @showInfo="loadSubjectInfo" />
@@ -24,13 +25,13 @@
                 </draggable>
 
                 <!-- display a message to display if no searched pages are found -->
-                <div v-if="getFilteredAOptions.length <= 0 && !fetching && availableOptions.length != 0">
+                <div v-if="filterAvailableOptions.length <= 0 && !fetching && availableOptions.length != 0">
                     <q-card class="bg-grey-5 rounded-borders" style="padding:5vh;margin:3vh">
                         <div class="text-h4 text-black main-font">Whoopsie!</div>
                         <div class="text-h6">We could not find the subject you are looking for.</div>
                     </q-card>
                 </div>
-                <div v-if="getFilteredAOptions.length <= 0 && !fetching && availableOptions.length == 0">
+                <div v-if="filterAvailableOptions.length <= 0 && !fetching && availableOptions.length == 0">
                     <q-card class="bg-grey-5 rounded-borders" style="padding:5vh;margin:3vh">
                         <div class="text-h4 text-black main-font">There is no more!</div>
                         <div class="text-h6">There are no more subjects which you can choose</div>
@@ -42,7 +43,7 @@
 
                 <!-- pagination  -->
                 <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
-                    <q-pagination v-model="availableOptionsPage" :max=getFAMPagination :max-pages=5 direction-links push color="teal" active-design="push" active-color="red-5" />
+                    <q-pagination v-model="availableOptionsPage" :max=availableOptionsPagination :max-pages=5 direction-links push color="teal" active-design="push" active-color="red-5" />
                 </div>
 
             </q-card>
@@ -53,21 +54,26 @@
         <div class="col">
             <q-card class="bg-grey-3" style="padding:20px;min-height:75vh">
                 <!-- details about how to choose the options -->
-                <div class="text-h4 maint-font text-weight-bold">Room Options</div>
+                <div class="text-h4 maint-font text-weight-bold">Room Options </div>
+                <div class="text-h6 maint-font">Room code [{{ this.$route.params.room_id }}]</div>
                 <q-separator color="black" spaced />
 
                 <div class="text-body1"><b>Drag</b> the subjects you would like to take into the chosen subjects section to the <b>right</b></div>
 
-                <div class="text-body1 q-mt-md">These subjects on the right will be available to the students and will be used during generation</div>
                 <div class="text-body1 q-mt-md">
-                    <div class="text-weight-bold">Use all</div> will make all the possible option choices available to the students
+                    The <b>Readable ID</b> is the ID the system will use to link student options to these subjects. This will need to be configured
+                    to match the codes in your CSV file if you choose to provide one.
                 </div>
-                <q-btn class="bg-teal-4 text-white" size="md" label="use all" @click="useAllSubjects" icon-right="arrow_forwards" :disable="availableOptions.length==0" />
+                <div class="text-body1 q-mt-md">
+                    The <b>Classes</b> can be changed per subject and will define the number of times this subject is allowed.
+                </div>
+                <div class="row justify-center items-center q-pa-sm">
+                    <q-btn class="bg-red text-white" size="md" label="remove all subjects" @click="removeAllSubjects" icon="arrow_backwards" :disable="chosenOptions.length==0" />
+                </div>
+                <div class="row justify-center items-center q-pa-sm">
 
-                <div class="text-body1 q-mt-md">
-                    <div class="text-weight-bold">Remove all</div> will make remove all the possible option choices available to the students
+                    <q-btn class="bg-teal-4 text-white" size="md" label="use all subjects" @click="useAllSubjects" icon-right="arrow_forwards" :disable="availableOptions.length==0" />
                 </div>
-                <q-btn class="bg-red text-white" size="md" label="remove all" @click="removeAllSubjects" icon="arrow_backwards" :disable="chosenOptions.length==0" />
 
                 <div class="absolute-bottom justify-center bg-grey-4" style="padding:5px">
                     <q-btn-group>
@@ -91,24 +97,42 @@
                         </template>
                     </q-input>
                 </q-card-section>
-                <draggable class="list-group" :list="getFilteredCOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
+                <draggable class="list-group" :list="filterCurrentOptions" :group="{name:'chosenOptions', pull:true, put:true}" @change="appendToChosenOptions" itemKey="name" id="chosenOptions">
                     <template #item="{element}">
                         <div class="row justify-center items-center">
-                            <q-card style="width:55vh;margin:4px;max-height:15vh;" class="bg-teal-3">
-                                <q-card-section style="padding:5px">
-                                    <div class="text-h5 text-white">{{element.original}}, {{ element.subject_code }}</div>
-                                </q-card-section>
-                                <q-card-actions>
-                                    <div class="row full-width items-center justify-center q-gutter-md">
-                                        <div class="col q-ml-sm">
-                                            <q-input standout outlined filled label="classes" v-model="element.classes" clear-icon="close" type="number" dense :rules="[ val => val > 0|val === null|val==='' || 'classes must be greater than 0']" />
-                                                
-                                            </div>
-                                        <div class="col q-ml-sm">
-                                            <q-input standout outlined filled label="title" v-model="element.title" clear-icon="close" type="text" dense :rules="[ val => val.length > 0|val === null || 'classes must be greater than 0']" />
-                                                
-                                            </div>
-                                        <div class="col-3 q-mb-md">
+                            <!-- represents an already existing option that a room has -->
+                            <q-card style="width:55vh;margin:4px;max-height:20vh;" class="bg-teal-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-h6 text-white q-pa-sm">{{element.original}}, {{ element.subject_code }}</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <q-input standout filled 
+                                            label="Readable ID" 
+                                            v-model="element.title" clear-icon="close" 
+                                            type="text" dense 
+                                            :rules="[ val => val.length > 0|| 'classes must be greater than 0']" />
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row full-width q-gutter-md">
+                                        <!-- override classes for the subject -->
+                                        <div class="col-3 q-ml-sm">
+                                            <q-input 
+                                            v-if="element.show_classes"
+                                            standout outlined filled 
+                                            label="classes" 
+                                            v-model="element.classes" 
+                                            clear-icon="close" type="number" dense
+                                             :rules="[ val => val > 0 || 'must be greater than 0']" />
+                                            <q-btn v-model="element.show_classes" @click="element.show_classes = true" v-if="!element.show_classes" label="classes" color="blue-grey"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <q-select v-model="element.ebacc" style="width:20vh" :options="ebacc" stack-label label="EBacc" dense />
+
+                                        </div>
+                                        <div class="col-3 q-mb-md q-ml-lg">
                                             <q-btn-group>
                                                 <q-btn class="bg-blue-grey text-white" @click="removeChosenOption(element)" icon="highlight_off" />
                                                 <q-btn class="bg-blue text-white" @click="displaySubjectDetails(element)" icon="info" />
@@ -116,8 +140,6 @@
                                         </div>
 
                                     </div>
-
-                                </q-card-actions>
                             </q-card>
                         </div>
                     </template>
@@ -135,9 +157,9 @@
                 <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
                 </div>
                 <div class="row justify-center bg-grey-4 absolute-bottom" style="padding:1vh">
-                    <q-pagination v-model="chosenOptionsPage" :max=getFOMPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
+                    <q-pagination v-model="chosenOptionsPage" :max=currentOptionsPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
                 </div>
-                <div v-if="getFilteredCOptions.length == 0 && !fetching && chosenOptionsSearch.length != 0">
+                <div v-if="filterCurrentOptions.length == 0 && !fetching && chosenOptionsSearch.length != 0">
                     <q-card class="bg-grey-5 rounded-borders" style="padding:5vh;margin:3vh">
                         <div class="text-h4 text-black main-font">Whoopsie!</div>
                         <div class="text-h6">We could not find the subject you are looking for.</div>
@@ -147,6 +169,7 @@
         </div>
     </div>
 
+    <!-- error components and dialog boxes -->
     <BannerComponent colour="green" :message="successMessage" @dismiss="this.successMessage=''" v-if="successMessage.length !== 0" />
     <BannerComponent colour="red" :message="errorMessage" @dismiss="this.errorMessage=''" v-if="errorMessage.length !== 0" />
     <q-dialog v-model="displaySubjectInfo">
@@ -198,6 +221,7 @@ export default defineComponent({
             chosenOptionsSearch: "",
             displaySubjectInfo: false,
             displaySubjectDetails: {},
+            ebacc: [],
             // messages
             errorMessage: "",
             successMessage: "",
@@ -209,22 +233,22 @@ export default defineComponent({
         this.getData()
     },
     computed: {
-        getFilteredAOptions() {
+        filterAvailableOptions() {
             // filter available options through the search
             if (this.fetching) {
                 return []
             } else {
                 let startingPage = (this.availableOptionsPage - 1) * AVAILABLE_OPTIONS_PER_PAGE
                 return [...[...this.availableOptions].filter(
-                    option => option.title.toLowerCase().includes(this.availableOptionsSearch.toLowerCase())
+                    option => option.original.toLowerCase().includes(this.availableOptionsSearch.toLowerCase())
                 )].slice(startingPage, startingPage + AVAILABLE_OPTIONS_PER_PAGE)
             }
         },
-        getFOMPagination() {
-            return Math.floor(this.chosenOptions.length / CHOSEN_OPTIONS_PER_PAGE)
+        currentOptionsPagination() {
+            return Math.floor(this.chosenOptions.length / CHOSEN_OPTIONS_PER_PAGE) + 1
 
         },
-        getFilteredCOptions() {
+        filterCurrentOptions() {
             // get chosen options through the search
             if (this.fetching) {
                 return []
@@ -232,12 +256,12 @@ export default defineComponent({
 
                 let startingPage = (this.chosenOptionsPage - 1) * CHOSEN_OPTIONS_PER_PAGE
                 return [...[...this.chosenOptions].filter(
-                    option => option.title.toLowerCase().includes(this.chosenOptionsSearch.toLowerCase())
+                    option => option.original.toLowerCase().includes(this.chosenOptionsSearch.toLowerCase())
                 )].slice(startingPage, startingPage + CHOSEN_OPTIONS_PER_PAGE)
             }
         },
-        getFAMPagination() {
-            return Math.floor(this.availableOptions.length / AVAILABLE_OPTIONS_PER_PAGE)
+        availableOptionsPagination() {
+            return Math.floor(this.availableOptions.length / AVAILABLE_OPTIONS_PER_PAGE) + 1
 
         },
     },
@@ -252,6 +276,7 @@ export default defineComponent({
 
                     this.chosenOptions = response.data.room
                     this.chosenOptionsCount = response.data.room.length
+                    this.ebacc = response.data.ebacc
                     this.fetching = false
                 }
 

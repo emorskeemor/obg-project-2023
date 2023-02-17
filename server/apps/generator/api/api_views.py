@@ -43,6 +43,9 @@ from core.utils import csv_file_to_list
 
 import operator
 
+SUBJECT_CODE_ATTR = "title"
+EBACC_FIELD_LOOKUP = "title"
+
 def get_data_from_csv(request):
     return csv_file_to_list(
         request,
@@ -99,7 +102,7 @@ class GerneratorViewset(ViewSet):
         if get("subjects_using_csv"):
             options = get_options_from_csv(request)
         else:
-            options, override = self._get_room_subjects(room)
+            options, override = self._get_room_subjects(room, use=SUBJECT_CODE_ATTR)
         # handle validators
         validate = [
             validators.MaxOptionsValidator(
@@ -209,20 +212,32 @@ class GerneratorViewset(ViewSet):
         generator.reset()
        
         return response.Response(generator_data, status=status.HTTP_200_OK)
+    
 
     @action(methods=["post"], detail=False, url_path="pre-generate-statistics")
     def pre_generate_statitics(self, request):
         '''
         return pre-generate statistics e.g. popularity of each subjects and pathways
         '''
-        # get some initial data
+        # define some initial data
         get = self._load_form_data(request).get
         room = get_object_or_404(Room, code=get("room_id"))
+        available_choices = get_object_or_404(AvalilableOptionChoices, room=room)
         options = {}
-        for available_option in AvailableOption.objects.all():
-            code = available_option.option.subject_code
-            options[code] = available_option.option.title
+        ebacc_subjects = {
+            "humanities":[],
+            "languages":[],
+            "sciences":[],
+            "vocational":[],
+            "not-applicable": [],
+        }
+        # get the option codes to be used
+        for available_option in AvailableOption.objects.filter(option_choices=available_choices):
             
+            code = getattr(available_option, SUBJECT_CODE_ATTR)
+            options[code] = getattr(available_option, EBACC_FIELD_LOOKUP)
+            ebacc_subjects[AvailableOption.EBACC(available_option.ebacc).label.lower()].append(code)
+        ebacc_subjects.pop("not-applicable")
         # get the data either using a csv or database
         if get("using_database") is False:
             data_opts = get_data_from_csv(request)
@@ -242,6 +257,7 @@ class GerneratorViewset(ViewSet):
         clash_heat_map.ignore(*get("ignore_subjects", []))
         clash_heat_map.level = int(get("max_clashes"))
         clash_heat_map.serialize()
+        
         # SUBJECT POPULARITY BAR CHART
         popularity_bar_chart = graphs.SubjectPopularityBarChart(
             data=data,
@@ -249,8 +265,10 @@ class GerneratorViewset(ViewSet):
         )
         popularity_bar_chart.serialize()
         # PATHWAY PIE CHART
-        pathway_pie_chart = graphs.PathwayPieChart(data=data, ebacc=settings.EBACC_SUBJECTS)
+        pathway_pie_chart = graphs.PathwayPieChart(data=data, ebacc=ebacc_subjects)
         pathway_pie_chart.serialize()
+        
+        # define our context to send over
         context = {
             # heat map
             "clash_heat_map": clash_heat_map.as_dict(),
@@ -271,7 +289,8 @@ class GerneratorViewset(ViewSet):
         '''
         get = self._load_form_data(request).get
         opts, _ = self._get_room_subjects(
-            room=get_object_or_404(Room, code=get("code"))
+            room=get_object_or_404(Room, code=get("code")),
+            use=SUBJECT_CODE_ATTR
             )
         for student_opts in get_data_from_csv(request):
             for subject in student_opts:
@@ -308,7 +327,7 @@ class GerneratorViewset(ViewSet):
     ##############################################
 
     @staticmethod
-    def _students_from_room(room) -> Dict:
+    def _students_from_room(room: Room) -> Dict:
         '''gets the students from a given room in the database and return it as a dict'''
         data = {}
         students = Student.objects.prefetch_related("choices").filter(room=room).order_by("first_name")
@@ -316,11 +335,13 @@ class GerneratorViewset(ViewSet):
             options = []
             for choice in student.choices.all():
                 if not choice.reserve:
-                    options.append(choice.option.subject_code)
+                    options.append(getattr(choice, SUBJECT_CODE_ATTR))
             data[str(student.uuid)] = options
         return data
       
-    def _get_room_subjects(self, room):
+    @staticmethod
+    def _get_room_subjects(room: Room, use="subject_code"):
+        '''returns the subjects that link to a given room'''
         override = {}
         choices = get_object_or_404(
             AvalilableOptionChoices,
@@ -328,7 +349,8 @@ class GerneratorViewset(ViewSet):
             )
         options = []
         for available_option in AvailableOption.objects.filter(option_choices=choices):
-            code = available_option.option.subject_code
+            # uses subject code as reference
+            code = getattr(available_option, use)
             options.append(code)
             if available_option.classes is not None:
                 override[code] = available_option.classes

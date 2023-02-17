@@ -31,4 +31,4 @@ class AvalilableOptionChoices(models.Model):
         unique_together = ["room","title"]
         
     def __str__(self) -> str:
-        return "%s <opts>" % (self.title)
+        return "[%s] choices" % (self.room.code)
