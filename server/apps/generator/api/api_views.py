@@ -13,7 +13,7 @@ OptionBlocksSerializer,BlockSerializer,
 )
 # models
 from apps.generator.models import (
-    OptionBlocks,Block,InsertTogether
+    OptionBlocks,Block,InsertTogether, BlockSubject
     )
 from apps.environment.models import (
     GenerationSettings,Room, AvalilableOptionChoices, AvailableOption
@@ -210,7 +210,6 @@ class GerneratorViewset(ViewSet):
             "blocks_meta": blocks.remaining
         }
         # DEBUG PURPOSES ONLY
-        generator.evaluation.pprint()
         generator.reset()
        
         return response.Response(generator_data, status=status.HTTP_200_OK)
@@ -420,7 +419,8 @@ class OptionBlockViewset(ModelViewSet):
             generated_nodes=request.data.get("generated_nodes"),
             created_by=request.user
         )
-        subjects = get_object_or_404(AvalilableOptionChoices, room=room).options.all()
+        # subjects = get_object_or_404(AvalilableOptionChoices, room=room).options.all()
+        subjects = AvailableOption.objects.filter(option_choices__room=room)
         
         for index, block in enumerate(blocks):
             new_block = Block(
@@ -430,8 +430,16 @@ class OptionBlockViewset(ModelViewSet):
             )
             new_block.save()
             for subject in block:
-                subject = get_object_or_404(subjects, subject_code=subject)
-                new_block.options.add(subject)
+                obj = subjects.filter(**{SUBJECT_CODE_ATTR:subject[0]})
+                if not obj.exists():
+                    raise exceptions.ValidationError({"detail": "subject '%s' was not found as an available subject" % subject})
+                obj = obj[0].option
+                # new_block.options.add(obj)
+                BlockSubject.objects.create(
+                    option=obj,
+                    block=new_block,
+                    students=subject[1]
+                )
     
         return response.Response({"detail":"blocks created"}, status=status.HTTP_200_OK)
     

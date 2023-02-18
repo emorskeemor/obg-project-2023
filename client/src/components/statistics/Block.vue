@@ -32,7 +32,7 @@ export default defineComponent({
     },
     data() {
         return {
-            colours: ["bg-red", "bg-orange", "bg-yellow", "bg-green"]
+            colours: this.$store.state.colours
         }
     }
 

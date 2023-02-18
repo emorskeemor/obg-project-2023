@@ -22,10 +22,19 @@
                     </div>
 
                 </q-card-section>
-                <q-scroll-area style="height:50vh">
+                <div v-if="currentRooms.length <= 0">
+                    <q-card>
+                        <q-card-section>
+                            <div class="text-h6">You have no rooms at the moment.</div>
+                            <div>Use the 'Create' button to create a new room</div>
+                        </q-card-section>
+                    </q-card>
+                </div>
+                <q-scroll-area style="height:50vh" v-else>
                     <RoomItem v-for="room in getFilteredRooms" :key='room' :room='room' @onDelete="deleteRoom" @onEdit="editRoom" />
 
                 </q-scroll-area>
+               
                 <q-card-section class="row justify-center bg-grey-4 absolute-bottom">
                     <q-pagination v-model="page" :max=roomPagination :max-pages=4 direction-links push color="teal" active-design="push" active-color="red-5" />
 
@@ -75,7 +84,15 @@
                         </template>
                     </q-input>
                 </q-card-section>
-                <q-card-section>
+                <div v-if="currentBlocks.length <= 0">
+                    <q-card>
+                        <q-card-section>
+                            <div class="text-h6">You have no blocks at the moment.</div>
+                            <div>All saved blocks from your rooms will show up here</div>
+                        </q-card-section>
+                    </q-card>
+                </div>
+                <q-card-section v-else>
                     <BlocksList :blocks=getFilteredBlocks @delete="deleteBlock" @info="blockInfo" />
                 </q-card-section>
                 <q-card-section class="row justify-center bg-grey-4 absolute-bottom">
@@ -244,6 +261,9 @@ export default defineComponent({
                     this.userDetails = response.data.user
                     this.currentBlocks = response.data.blocks
                     this.fetching = false
+
+                }).catch(error=>{
+                    this.$router.push({'name':'E401'})
                 })
         },
         createRoom() {

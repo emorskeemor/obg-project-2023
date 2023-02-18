@@ -120,7 +120,7 @@
                                         <!-- override classes for the subject -->
                                         <div class="col-3 q-ml-sm">
                                             <q-input 
-                                            v-if="element.show_classes"
+                                            v-if="element.show_classes || element.classes >= 1"
                                             standout outlined filled 
                                             label="classes" 
                                             v-model="element.classes" 

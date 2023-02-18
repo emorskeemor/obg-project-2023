@@ -51,6 +51,13 @@ class OptionBlocks(models.Model):
             self.title = "%s[%i]" % (self.title, self.pk)
         super().save(*args, **kwargs)
         
+class BlockSubject(models.Model):
+    
+    option = models.ForeignKey(Option, related_name="block_subjects", on_delete=models.CASCADE)
+    block = models.ForeignKey("Block", related_name="block_subjects", on_delete=models.CASCADE)
+    students = models.IntegerField(_("number of students for this room"))
+    
+        
 class Block(models.Model):
     '''
     represents a single block connected to a given set of option blocks
@@ -58,7 +65,8 @@ class Block(models.Model):
     options = models.ManyToManyField(
         Option,
         verbose_name=_("options connected to the block"),
-        related_name="options"
+        related_name="options",
+        through=BlockSubject,
         )
     number_of_subjects = models.IntegerField(
         _("number of subjects")

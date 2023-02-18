@@ -27,13 +27,24 @@
             {{student.pathway}}
         </div>
 
-        <div class="col-3" >
+        <div class="col-3">
             <div class="row float-right">
                 <div v-for="(option) in student.options" :key="option">
-                    <div :class="getOptionStyle(option[1]-1)" style="width:6vh;height:5.5vh">
-                        {{option[0]}}
-                    </div>
+                    <!-- <div :class="getOptionStyle(option[1]-1)" style="width:6vh;height:5.5vh">
+                        {{option[0].slice(0,2)}}
+                    </div> -->
+                    <q-btn square :class="getOptionStyle(option[1]-1)" :label="option[0].slice(0,2)" style="width:6vh;height:5.5vh" flat>
+                        <q-popup-proxy>
+                            <q-banner>
+                                <template v-slot:avatar>
+                                    <q-icon name="grid_view" color="primary" />
+                                </template>
+                                {{ option[0] }}
+                            </q-banner>
+                        </q-popup-proxy>
+                    </q-btn>
                 </div>
+
             </div>
         </div>
     </div>
@@ -51,7 +62,7 @@ export default defineComponent({
     data() {
         return {
             base: "bg-yellow",
-            colours: ["bg-red", "bg-orange", "bg-yellow", "bg-green"]
+            colours: this.$store.state.colours
         }
     },
     methods: {

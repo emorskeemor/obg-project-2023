@@ -28,7 +28,9 @@ export default createStore({
 
     // subjects
     subjects:[],
-    options:{}
+    options:{},
+
+    colours: ["bg-red", "bg-orange", "bg-yellow", "bg-green", "bg-light-blue"]
   },
   getters: {
   },

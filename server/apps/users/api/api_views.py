@@ -6,7 +6,7 @@ from rest_framework import status, permissions
 from .serializers import UserSerializer
 
 from apps.users.models import User
-from apps.generator.models import OptionBlocks
+from apps.generator.models import OptionBlocks, BlockSubject
 
 from apps.environment.models import Room
 from apps.environment.api.serializers import RoomSerializer
@@ -46,9 +46,9 @@ class UserViewSet(ModelViewSet):
             opt_block_codes = []
             for block in option_blocks.blocks.all():
                 block_codes = []
-                for subject in block.options.all():
+                for subject in BlockSubject.objects.filter(block=block):
                     block_codes.append(
-                        (subject.subject_code, subject.title)
+                        (subject.option.subject_code, subject.option.title, subject.students)
                     )
                 opt_block_codes.append(block_codes)
             data = serialized_opt_blocks.data.copy()
