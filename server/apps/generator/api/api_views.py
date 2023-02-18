@@ -148,12 +148,14 @@ class GerneratorViewset(ViewSet):
         generator.classes.update(**override)
         
         # handle double inserts
+        available_options = AvailableOption.objects.filter(option_choices__room=room)
+        
         double_inserts = InsertTogether.objects.filter(settings=room_settings)
         for double_insert in double_inserts:
-            target = double_insert.target.subject_code
-            targets = [
-                opt["subject_code"] for opt in double_insert.targets.values("subject_code")
-                ]
+            # target = double_insert.target.subject_code
+            target = getattr(available_options.get(option=double_insert.target), SUBJECT_CODE_ATTR)
+   
+            targets = [getattr(available_options.get(option=opt), SUBJECT_CODE_ATTR) for opt in double_insert.targets.all()]
             generator.insert_together(target,*targets)
         # EXECUTE THE GENERATION PROCESS
         generator.freeze()
@@ -458,9 +460,9 @@ class InsertTogetherViewset(ModelViewSet):
         options = []
         # also attach the available options so it can be used to create
         # a new room later
-        for available_option in AvailableOption.objects.all():
+        for available_option in AvailableOption.objects.filter(option_choices__room=room):
             options.append({
-                "label": available_option.option.title,
+                "label": available_option.title,
                 "value": available_option.pk
             })
             

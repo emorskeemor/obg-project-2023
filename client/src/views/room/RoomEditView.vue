@@ -111,7 +111,7 @@
                     <div class="text-body2 full-width justify-center q-mb-md">Edit the available options, students and the generation rules</div>
                     <q-btn-group class="row">
                         <q-btn label="Options" color="teal-4" @click="editAvailableChoices" size="md" icon="subject" :disable="fetching" />
-                        <q-btn label="Students" color="teal-4" @click="changeRoute('students-view')" size="md" icon="account_circle" :disable="fetching" />
+                        <q-btn label="Students" color="teal-3" @click="changeRoute('students-view')" size="md" icon="account_circle" :disable="fetching" />
                         <q-btn label="Rules" color="teal-4" @click="changeRoute('rules-edit')" size="md" icon="rule" :disable="fetching" />
                     </q-btn-group>
                     <q-btn-group class="q-mt-md">

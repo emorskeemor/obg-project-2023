@@ -356,7 +356,11 @@ export default defineComponent({
                     this.successMessage = ""
                     this.errorMessage = response.data.detail
                 }
-            })
+            }).catch(
+                error=>{
+                    this.errorMessage = error.response.data.detail
+                }
+            )
         }
     }
 

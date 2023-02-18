@@ -72,17 +72,23 @@
                                             </div>
                                             <div class="col">
                                                 <q-btn label="delete" push color="red" @click="deleteInserts(insert.pk)"/>
-                                                <!-- <q-toggle v-model="" /> -->
-
                                             </div>
                                         </div>
                                     </q-card>
+                                    <q-card v-if="inserts.length <= 0" style="min-height:10vh">
+                                        <q-card-section>
+                                            <div class="text-h5 main-font">No rules have been defined for this room</div>
+                                        </q-card-section>
+                                    </q-card>
                                 </q-scroll-area>
+                                
+                               
                             </div>
                         </transition>
 
                     </q-card-section>
                     <q-card-section class="bg-grey-4 absolute-bottom">
+ 
                     </q-card-section>
                     <q-inner-loading :showing="fetching" label="Please wait..." label-class="text-teal" />
 
@@ -99,8 +105,8 @@
                             <div v-show="!fetching" class="full-height">
                                 <div class="row items-center justify-center q-gutter-md">
                                     <div class="main-font text-body1">
-                                        Any time the target subject will be inserted into the block, we can also insert other
-                                        subjects to be inserted at the same time.
+                                        Any time the <b>'primary target'</b> subject will be inserted into the block, we can also insert other
+                                        <b>'targets'</b> subjects to be inserted at the same time. 
                                     </div>
 
                                     <div class="row full-width justify-center ">
@@ -119,12 +125,15 @@
                                         hint="select subjects that will be inserted with the target" map-options />
                                     </div>
                                     <div class="row full-width justify-center items-center">
-                                        <div class="row main-font text-body1 q-pa-sm">
-                                            This prevents students from being able to pick the target subject with all the targets.
-                                        </div>
                                         <div class="row">
                                             <q-toggle v-model="strict" label="Strict Insertion" checked-icon="check" unchecked-icon="clear" />
                                         </div>
+                                        <div class="main-font text-body2 q-pa-sm">
+                                           <b>'Strict Insertion'</b> will prevent students from being able to pick the primary target with the target subjects
+                                            when the student enters their options. If this is <b>disabled</b> it will only affect the generation process and not directly
+                                            enforce it when students are picking their options.
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
