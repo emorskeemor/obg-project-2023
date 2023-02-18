@@ -34,8 +34,7 @@ from bloc.core.generate.utility import Generator, Node
 from bloc.core.exceptions import OperationFailed
 from bloc.core import protocols
 from bloc.core.post_generate.operations import get_operation_report
-from bloc.core.post_generate import validators
-from bloc.core.post_generate import graphs
+from bloc.core.post_generate import validators, graphs, blocks
 
 from drf_yasg.utils import swagger_auto_schema
 
@@ -198,7 +197,9 @@ class GerneratorViewset(ViewSet):
             serialized["failed"][value]["name"] = name
             serialized["failed"][value]["email"] = email
             serialized["failed"][value]["uuid"] =  str(value)
+            
         blocks = generator.evaluation.blocks.with_counts(room_settings.class_size)
+        generator.debug_data["generation_time"] = round(generator.debug_data["generation_time"], 4)
         generator_data = {
             "blocks": blocks.raw(),
             "students": serialized,
@@ -321,7 +322,22 @@ class GerneratorViewset(ViewSet):
             raise exceptions.ValidationError({
                 "detail": error.message
             })
-        return response.Response(report, status=status.HTTP_200_OK)
+        blocks.Blocks._data = get("all_students", {})
+        blocks.Blocks._options = list(get("options", {}).keys())
+        new_blocks = blocks.Blocks.load_exisiting(get("initial"))    
+        new_blocks._counts = get("meta")
+        counts = new_blocks.count_difference_using_initial()
+        new_blocks._counts["remaining"] = counts
+        new_blocks._counts["counts"] = new_blocks.total_counts()
+        new_blocks._counts["failed"] = new_blocks.total_failed_counts()
+        
+        payload = {
+            "report": report,
+            "meta": new_blocks.remaining
+        }
+        
+
+        return response.Response(payload, status=status.HTTP_200_OK)
     
     ##############################################
     # PRVIVATE METHODS

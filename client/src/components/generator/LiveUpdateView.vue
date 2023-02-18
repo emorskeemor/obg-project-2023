@@ -24,7 +24,7 @@
                                                     </div>
                                                     <div class="col">
                                                         <!-- <q-chip icon="account_circle">{{element[1]}}</q-chip> -->
-                                                        <q-input v-model="element[1]" dense filled/>
+                                                        <q-input v-model="element[1]" dense filled />
                                                     </div>
                                                 </div>
                                             </q-card>
@@ -77,28 +77,27 @@
                     <q-card-section>
                         <div class="row">
                             <div class="col-7">
+
                                 <div class="row">
-                                    <q-chip icon="account_circle"> success : {{ this.$store.state.success_percentage }}</q-chip>
+                                    <q-chip icon="schedule">Generation time : {{ this.$store.state.debug_data.generation_time }} seconds</q-chip>
                                 </div>
                                 <div class="row">
                                     <q-chip icon="subjects">Total subjects : {{ totalSubjects }}</q-chip>
                                 </div>
+
                                 <div class="row">
-                                    <q-chip icon="schedule">Generation time : {{ this.$store.state.debug_data.generation_time }} seconds</q-chip>
+                                    <q-chip icon="subject">Students per subject total : {{ this.blockMeta.failed + this.blockMeta.counts}}</q-chip>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="row">
+                                    <q-chip icon="account_circle"> success : {{ this.$store.state.success_percentage }} % </q-chip>
+                                </div>
+                                <div class="row">
                                     <q-chip icon="emoji_objects">Completed nodes : {{ this.$store.state.debug_data.completed_nodes }}</q-chip>
 
                                 </div>
-                                <div class="row">
-                                    <q-chip icon="emoji_objects">Generated nodes : {{ this.$store.state.debug_data.generated_nodes }}</q-chip>
-                                </div>
-                                <div class="row">
-                                    <q-chip icon="emoji_objects">Generated states : {{ this.$store.state.debug_data.generated_states }}</q-chip>
 
-                                </div>
                             </div>
                         </div>
 
@@ -182,6 +181,7 @@
                     <q-btn-group class="bg-grey-4 full-width row justify-center q-pa-sm">
                         <q-btn push class="bg-teal-4 text-white" size="md" label="evaluate blocks" @click="evaluate" />
                         <q-btn push class="bg-blue text-white" size="md" label="reset blocks" @click="reset" />
+                        <q-btn push class="bg-blue text-white" size="md" label="remaining students" @click="remainingStudentsPopup = true" />
                     </q-btn-group>
 
                     <q-separator />
@@ -265,6 +265,49 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
+    <q-dialog v-model="remainingStudentsPopup">
+        <q-card>
+            <q-card-section>
+                <div class="text-h6 text-center main-font">Here are students we could not assign classes to</div>
+                <div class="text-body2 text-center main-font">
+                    This happens when there are not enough classes and we have placed the max number of students in a given class.
+                    You will need to decide if more classes are needed or you can increase the number of students in a given class.
+                
+                </div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none text-body1">
+                <div class="row q-pa-sm bg-grey-3 justify-center items-center">
+                    <div class="col-2 text-center main-font">
+                        Subject
+                    </div>
+                    <div class="col text-center main-font">
+                        Number of students unassigned
+                    </div>
+                </div>
+                <q-scroll-area style="height:30vh">
+
+                <div v-for="subject in Object.entries(this.blockMeta.remaining) " :key="subject">
+                    <q-card v-if="subject[1] > 0" flat class="q-pa-md bg-grey-4">
+                        <div class="row q-pa-smjustify-center items-center">
+                            <div class="col-2 text-center main-font">
+                                {{subject[0]}}
+                            </div>
+                            <div class="col text-center main-font">
+                                {{ subject[1] }} students
+                            </div>
+                        </div>
+                    </q-card>
+                </div>
+                </q-scroll-area>
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn label="ok" v-close-popup flat/>
+
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
     <div class="absolute-bottom-right q-mb-lg q-mr-xl">
 
     </div>
@@ -303,9 +346,11 @@ export default defineComponent({
             operations: [],
             errorMessage: "",
             successMessage: "",
+            blockMeta: this.$store.state.blocks_meta,
             linear: false,
             evaluationPopup: false,
             savePopup: false,
+            remainingStudentsPopup: false,
             useCurrentBlocks: false,
             title: "",
             evaluationResults: []
@@ -490,10 +535,13 @@ export default defineComponent({
                 all_students: this.$store.state.all_students,
                 new: this.blocks,
                 operations: this.operations,
-                linear: this.linear
+                linear: this.linear,
+                meta: this.blockMeta,
+                options: this.$store.state.options,
             }).then(response => {
                 this.evaluationPopup = true
-                this.evaluationResults = response.data
+                this.evaluationResults = response.data.report
+                this.blockMeta = response.data.meta
             }).catch(
                 error => {
                     this.errorMessage = error.response.data.detail

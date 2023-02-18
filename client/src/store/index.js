@@ -24,6 +24,8 @@ export default createStore({
     settings_title: "",
     settings_id: 0,
     options_id: 0,
+
+    blocks_meta: {},
     // evluation details
 
     // subjects
@@ -44,8 +46,9 @@ export default createStore({
       state.initial_blocks = state.generated_blocks.map(function (arr) {
         return arr.slice();
     })
-    state.debug_data = evaluation.debug
-    state.success_percentage = evaluation.success
+      state.debug_data = evaluation.debug
+      state.success_percentage = evaluation.success
+      state.blocks_meta = evaluation.blocks_meta
     },
     setDataProvision(state, data){
       console.log(data);
