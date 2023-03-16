@@ -4,7 +4,7 @@ import router from '@/router'
 
 
 // base url of the server
-const BASE_URL = 'http://127.0.0.1:8000'
+const BASE_URL = 'http://10.20.12.92:8080'
 
 export const axiosInstance = axios.create({ baseURL: BASE_URL })
 
