@@ -68,6 +68,13 @@
                                         <q-toggle v-model="dummyNames" label="dummy names" />
                                         <!-- <q-toggle v-model="useSubjectCode" label="use subject codes" /> -->
                                         <q-toggle v-model="showFailed" label="deffer failure" />
+
+                                        <div class="row justify-center items-center">
+                                            Delete all students
+
+                                            <q-btn round dense flat icon="delete" @click="deleteAllStudent" />
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -373,7 +380,7 @@ export default defineComponent({
             saveRoomSettings() {
                 this.clearMessages()
                 if (this.checkAllNotEmpty(
-                        [this.domain, this.title, this.emailMatch]
+                        [this.domain, this.title]
                     ) === false) {
                     this.errorMessage = "please fix any outstanding errors"
                 } else {
@@ -453,7 +460,8 @@ export default defineComponent({
                         this.successMessage = "student options have been saved to the database"
                         this.fetching = false
                     }
-                ).catch(err=>{
+                ).catch(err => {
+                    console.log(err);
                     this.errorMessage = err.response.data.detail
                     this.fetching = false
                 })

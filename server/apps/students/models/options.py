@@ -13,12 +13,7 @@ class Option(models.Model):
     title = models.CharField(_("subject name"), max_length=100)
     subject_code = models.CharField(_("subject code"), max_length=2, blank=True)
     description = models.TextField(max_length=400, blank=True)
-    slug = models.SlugField(max_length=250, blank=True)
-    requirements = models.CharField(
-        _("subject requirements"), 
-        max_length=50,
-        blank=True
-        )
+
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

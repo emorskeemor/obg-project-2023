@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.students.models import Student, Choice, Option, Requirement
+from apps.students.models import Student, Choice, Option
 
 class ChoiceSerializer(serializers.ModelSerializer):
     '''serialize choice objects'''

@@ -24,7 +24,7 @@ class GenerationSettings(models.Model):
     # constraints and settings
     blocks_must_align = models.BooleanField(default=False)
     max_subjects_per_block = models.PositiveIntegerField(
-        default=12,
+        default=20,
         validators=[
             validators.MaxValueValidator(30),
         ]

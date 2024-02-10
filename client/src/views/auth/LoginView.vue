@@ -81,12 +81,12 @@ export default defineComponent({
                     }
                 ).catch(err => {
                     this.error = true                    
-                    this.errMsg="Password or username was invalid"
+                    this.errMsg="Password or email was invalid"
                 })
             }
             else {
                 this.error = true                    
-                this.errMsg="Password or username was invalid"
+                this.errMsg="Password or email was invalid"
             }
 
         },
@@ -94,6 +94,7 @@ export default defineComponent({
             this.password = ""
             this.email = ""
             this.error = false
+            this.errMsg = ""
         }
     }
 })

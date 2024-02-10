@@ -24,6 +24,7 @@ export default createStore({
     settings_title: "",
     settings_id: 0,
     options_id: 0,
+    total_cost:0, 
 
     blocks_meta: {},
     // evluation details
@@ -43,6 +44,7 @@ export default createStore({
       state.failed_students = evaluation.students.failed
       state.all_students = evaluation.all
       state.rules_followed = evaluation.rules_followed
+      state.total_cost = evaluation.cost
       state.initial_blocks = state.generated_blocks.map(function (arr) {
         return arr.slice();
     })
@@ -51,7 +53,6 @@ export default createStore({
       state.blocks_meta = evaluation.blocks_meta
     },
     setDataProvision(state, data){
-      console.log(data);
       state.using_database = data.usingDatabase
       if (!data.usingDatabase){
         state.data_file = data.file

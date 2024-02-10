@@ -140,10 +140,12 @@ export default defineComponent({
                 }).then(
                     response => {
                         this.toggleTimer()
+                        console.log(response.data);
                         this.$store.commit("setEvaluation", response.data)
                         this.$emit("finished", response.data)
                     }
                 ).catch(error=> {
+                    console.log(error);
                     if (error.response.status=="500") {
                         this.$router.push({
                                 name: "E500"

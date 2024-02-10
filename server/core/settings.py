@@ -213,7 +213,7 @@ REST_USE_JWT = True
 # CORS
 # crucial to define so that the frontend can communitcate
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080'
+    'http://localhost:8080',
 ]
 
 BLOCK_GENERATOR_OPTIONS = {
@@ -236,8 +236,8 @@ DATA_CSV_LOOKUP = "data"
 OPTIONS_CSV_LOOKUP = "options"
 
 # generator settings (DEBUG ONLY)
-NODE_DEBUG = False
-GENERATOR_DEBUG = False
+NODE_DEBUG = True
+GENERATOR_DEBUG = True
 
 EBACC_SUBJECTS = {
         "humanities":["Hi","Ge"],

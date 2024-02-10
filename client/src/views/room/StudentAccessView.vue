@@ -109,6 +109,7 @@ export default defineComponent({
                         } else {
                             // raise error message from the server
                             this.serverError = true
+                            
                             this.serverErrorMessage = response.data.detail
                         }
                     }

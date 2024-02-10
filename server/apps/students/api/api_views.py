@@ -10,7 +10,7 @@ from rest_framework.request import Request
 from django.shortcuts import get_object_or_404
 from copy import deepcopy
 
-from apps.students.models import Student, Choice, Option, Requirement
+from apps.students.models import Student, Choice, Option
 from apps.generator.models import InsertTogether
 
 from apps.environment.api import (
@@ -35,17 +35,7 @@ from bloc.core.pre_generate.validate import clean_options
 
 import names
 
-# implmeneted the serializer here to avoid circular imports
-class RequirementSerializer(ModelSerializer):
-    '''
-    serialize requirement 
-    '''
-    room = env_serializers.RoomSerializer(read_only=True)
-    option = OptionSerializer(read_only=True)
-    
-    class Meta:
-        model = Requirement
-        fields = "__all__"
+
 
 class StudentViewset(ModelViewSet):
     '''
@@ -82,6 +72,8 @@ class StudentViewset(ModelViewSet):
         students_to_create = []
         choices_to_create = []
         failed = set()
+        if len(data) <= 0:
+            raise exceptions.ValidationError({"details":"cannot upload file with no students"})
         for options in data:
             options = clean_options(options, max_opts=get("max_opts_per_student"))
             first_name = "anonymous"
@@ -324,11 +316,3 @@ class OptionViewset(ModelViewSet):
             
         return Response({"message":"successful"}, status=status.HTTP_200_OK)
     
-class RequirementViewSet(ModelViewSet):
-    '''
-    views to access requirements that are linked to options
-    '''
-    permission_classes = [permissions.IsAuthenticated]
-
-    serializer_class = RequirementSerializer
-    queryset = Requirement.objects.all()

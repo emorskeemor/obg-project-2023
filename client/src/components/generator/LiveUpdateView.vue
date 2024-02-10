@@ -91,11 +91,16 @@
                             </div>
                             <div class="col">
                                 <div class="row">
-                                    <q-chip icon="account_circle"> success : {{ this.$store.state.success_percentage }} % </q-chip>
+                                    <q-chip icon="account_circle">Success : {{ this.$store.state.success_percentage }} % </q-chip>
                                 </div>
                                 <div class="row">
                                     <q-chip icon="emoji_objects">Completed nodes : {{ this.$store.state.debug_data.completed_nodes }}</q-chip>
 
+                                </div>
+                                <div class="row">
+                                    <q-chip icon="currency_pound">Total cost : {{ new Intl.NumberFormat('en-US', {style: 'currency',currency: 'GBP',}).format(this.$store.state.total_cost) }}</q-chip>
+
+                                    
                                 </div>
 
                             </div>
@@ -375,10 +380,15 @@ export default defineComponent({
     methods: {
         moveSubject(event, _og) {
             // move subject
-            if (event.relatedContext.list.includes(event.draggedContext.element) && event.from !== event.to) {
-                this.errorMessage = `'${event.draggedContext.element}' already exists in this block`
-                return false
-            }
+
+            let allow = true
+            event.relatedContext.list.forEach(items=> {
+                if (items[0] == event.draggedContext.element[0]) {
+                    this.errorMessage = `'${event.draggedContext.element}' already exists in this block`
+                    allow = false
+                }
+            })
+            return allow
         },
         changeSubject(event) {
             // NOTE: used for debug only

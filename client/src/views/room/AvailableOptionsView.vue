@@ -349,6 +349,10 @@ export default defineComponent({
                     this.errorMessage = response.data.detail
                 }
 
+            }).catch(error=>{
+                this.successMessage = ""
+                this.errorMessage = error.response.data.detail
+                this.fetching = false
             })
         }
 

@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: option-block-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Cringemaster45@
+    ports:
+      - "5432:5432"
+
+  django:
+    build: ./server
+    container_name: django
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+  vue:
+    build: ./client
+    container_name: vue
+    depends_on:
+      - django
+    ports:
+      - "8080:8080"

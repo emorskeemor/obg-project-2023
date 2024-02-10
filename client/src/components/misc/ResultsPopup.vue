@@ -30,7 +30,6 @@
                                                     <b>{{code[0]}} </b>
                                                     {{ code[1] }}
                                                     <q-badge>
-                                                        <q-icon name="account_circle" />
                                                         {{ code[2] }}
                                                     </q-badge>
                                                 </div>

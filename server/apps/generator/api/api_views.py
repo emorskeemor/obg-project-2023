@@ -93,6 +93,7 @@ class GerneratorViewset(ViewSet):
         data_using_csv = get("data_using_csv")
         if data_using_csv is True:
             options = get_data_from_csv(request)
+
             data = populate_with_id([clean_options(opts, 4) for opts in options])
         else:
             data = self._students_from_room(room)
@@ -126,7 +127,6 @@ class GerneratorViewset(ViewSet):
             raise exceptions.ValidationError({"detail":"unknown protocol"})
         protocol = self._handle_protocol(protocol, form_data)
         if protocol == protocols.ProtocolC and get("order_options", False):
-            print("ordering")
             options = sorted(options)
         # instansiate the generator
         generator = Generator(
@@ -162,7 +162,7 @@ class GerneratorViewset(ViewSet):
         generator.evaluate()
         if isinstance(generator.evaluation, EmptyEvaluatedObject):
             generator_data = {
-                "blocks": generator.evaluation.blocks,
+                "blocks": generator.evaluation.blocks.raw(),
                 "students": {"success":[], "failed": []},
                 "all": generator.data,
                 "success": generator.evaluation.success_percentage,
@@ -199,16 +199,20 @@ class GerneratorViewset(ViewSet):
             serialized["failed"][value]["uuid"] =  str(value)
             
         blocks = generator.evaluation.blocks.with_counts(room_settings.class_size)
+        remaining = blocks.remaining
+        blocks = blocks.raw()
+        print(sum([len(b) for b in blocks]) * room_settings.lesson_cost)
         generator.debug_data["generation_time"] = round(generator.debug_data["generation_time"], 4)
         generator_data = {
-            "blocks": blocks.raw(),
+            "blocks": blocks,
             "students": serialized,
             "all": generator.data,
             "success": generator.evaluation.success_percentage,
             "debug": generator.debug_data,
             "rules_followed": True,
             "class_size": room_settings.class_size,
-            "blocks_meta": blocks.remaining
+            "blocks_meta": remaining,
+            "cost": sum([len(b) for b in blocks]) * room_settings.lesson_cost
         }
         # DEBUG PURPOSES ONLY
         generator.reset()

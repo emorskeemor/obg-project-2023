@@ -25,7 +25,7 @@ from .serializers import (
     OptionSerializer,
 )
 from apps.students.models import Option
-from apps.generator.models import InsertTogether, OptionBlocks
+from apps.generator.models import InsertTogether, OptionBlocks, BlockSubject
 from apps.generator.api.serializers import OptionBlocksSerializer
 from apps.generator.api.serializers import InsertTogetherSerializer
 
@@ -58,7 +58,10 @@ class RoomViewSet(viewsets.ModelViewSet):
         Allow a student to join a room
         '''
         serialized = JoinRoomSerializer(data=request.data)
-        serialized.is_valid(raise_exception=True)
+        if not serialized.is_valid():
+            raise exceptions.ValidationError(
+                {"detail": tuple(serialized.errors.values())[0][0]}
+            )
         cleaned_get = serialized.data.get
         
         room = get_object_or_404(
@@ -68,6 +71,7 @@ class RoomViewSet(viewsets.ModelViewSet):
             )
         # check permissions and ensure room is public for joining
         if room.public is False:
+            
             return response.Response(
                 {"detail":"room is currently unavailable"}, status=status.HTTP_403_FORBIDDEN
                 )
@@ -77,8 +81,9 @@ class RoomViewSet(viewsets.ModelViewSet):
             # TODO THIS WILL BREAK IF MULTIPLE @ signs are PRESENT
             _, domain = email.split("@")
             if domain != room.email_domain:
+                
                 raise exceptions.ValidationError(
-                    {"detail":"domain email given did not match required domain name for the room"}
+                    {"detail": "domain email given did not match required domain name for the room"}
                 )
         # if the student already exists in the room, just return the student
         existing = Student.objects.filter(room=room, email=email)
@@ -131,10 +136,11 @@ class RoomViewSet(viewsets.ModelViewSet):
             serialized_opt_blocks = OptionBlocksSerializer(option_blocks)
             opt_block_codes = []
             for block in option_blocks.blocks.all():
+                obj_blocks = BlockSubject.objects.filter(block=block)
                 block_codes = []
                 for subject in block.options.all():
                     block_codes.append(
-                        (subject.subject_code, subject.title)
+                        (subject.subject_code, subject.title, obj_blocks.get(option=subject).students)
                     )
                 opt_block_codes.append(block_codes)
             serialized_data = serialized_opt_blocks.data.copy()
@@ -286,6 +292,7 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
         # if they do not, then create a new one to be bulk created. If they do,
         # then we just need to update them.
         new_options = []
+        seen_names = set()
         for option in options:
             pk = option.get("id", None)
             serialized = AvailableOptionSerializer(data=option)
@@ -293,6 +300,11 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
             
             classes = serialized.data.get("classes", None)
             title = serialized.data.get("title", None)
+            if title in seen_names:
+                raise exceptions.ValidationError(
+                    {"detail": "Two subject have the same readable id '%s' which is forbidden" % title}
+                )
+            seen_names.add(title)
             ebacc = serialized.data.get("ebacc", None)
             if ebacc is None:
                 ebacc = AvailableOption._meta.get_field("ebacc").get_default().label
@@ -330,7 +342,6 @@ class AvailableOptionChoicesViewset(viewsets.ModelViewSet):
                     found = True
                     break
             if not found:
-                # TODO: not atomic
                 current_option.delete()
         AvailableOption.objects.bulk_create(new_options)
         return response.Response(status=status.HTTP_200_OK)
