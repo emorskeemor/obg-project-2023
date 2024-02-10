@@ -1,5 +1,7 @@
 # option-blocks-website
 
+THIS IS NOT STABLE. 'BLOC' MODULE IS NOT PROVIDED. DO NOT PULL THIS
+
 # POSTGRES SETUP
 postgres will run locally on the machine and will need to be installed  
 
